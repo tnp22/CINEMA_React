@@ -1,0 +1,59 @@
+.btn-purple {
+    background-color: #6c63ff;
+    color: white;
+  }
+  .btn-purple:hover {
+    background-color: rgba(79, 31, 255, 0.7);
+    color: white;
+  }
+  .alert-text {
+    color: red;
+    font-size: 0.875rem;
+  }
+  .title{
+      width: 100%; 
+      height: 60px; 
+      text-align: center; 
+      background-color:#583BBF; 
+      align-content: center; 
+      margin-bottom: 40px;
+  }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+.join-form{
+    background-color: #f8f9fa;
+    padding-bottom: 60px;
+}
+.header {
+    background-color: #6f42c1;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+.logo {
+    text-align: center;
+    margin: 1rem 0;
+}
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.form-container button {
+    width: 100%;
+}
+
+.form-container .form-control {
+    border: 1px solid #583BBF;
+    box-sizing: border-box;
+}
+
+.form-container .form-control:focus {
+    border-color: #583BBF;
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(88, 59, 191, 0.25);
+}
