@@ -240,7 +240,7 @@
             'x' : x,
             'y' : y,
             'mapData' : YMap,
-            'id' : uuid,
+            'id' : uuid, //컨에서
             'name' : name,
             'cinemaId' : cinemaId
         }
@@ -573,7 +573,7 @@
             seatPlus.textContent = "+";
             seatPlus.className = "seatButton plus"; // 클래스 추가
             seatPlus.onclick = function() {
-                event.stopPropagation(); // 부모이벤트 전파 중지
+                event.steopPropagation(); // 부모이벤트 전파 중지
                 test1(map.id);  // 예시로 test1 호출, 필요시 다른 함수로 변경
             }
 

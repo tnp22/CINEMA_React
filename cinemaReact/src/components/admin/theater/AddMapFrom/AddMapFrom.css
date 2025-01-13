@@ -1,0 +1,216 @@
+
+.container_fluid{
+    width: 100%; /* 컨테이너가 항상 화면 전체 너비를 차지 */
+    padding-right: 0.75rem; /* 오른쪽 기본 패딩 */
+    padding-left: 0.75rem; /* 왼쪽 기본 패딩 */
+    margin-right: auto; /* 가운데 정렬 */
+    margin-left: auto; /* 가운데 정렬 */
+    height: 1700px;
+}
+
+.row{
+    display: flex; /* Flexbox를 사용하여 행을 생성 */
+    flex-wrap: wrap; /* 열이 행을 넘어가면 다음 줄로 배치 */
+    margin-right: -0.75rem; /* 오른쪽 여백(기본 gutter의 반) */
+    margin-left: -0.75rem; /* 왼쪽 여백(기본 gutter의 반) */
+    height: 90%;
+}
+
+.col_md_2 {
+    flex: 0 0 16.6667%;
+    max-width: 16.6667%;
+}
+.col_md_2 {
+    flex: 0 0 16.6667%;
+    max-width: 16.6667%;
+}
+.col_md_2 div{
+    margin-top: 100px;
+    font-size: 26px;
+}
+.col_md_2 div ul li a{
+    color: #583BBF;
+}
+
+.col_md_8 {
+    flex: 0 0 66.6667%;
+    max-width: 66.6667%;
+}
+
+/* 좌석 생성 */
+.create_container{
+    width: 1200px auto;
+    margin: 0 auto;
+    /* border: 1px solid black; */
+}
+.create_btn{
+    margin-bottom: 20px;
+    text-align: right;
+}
+.create_btn input{
+    width: 100px;
+}
+.create_btn button{
+    width: 80px;
+}
+
+/* 맵 생성 */
+.map-box{
+    border-style: solid;
+    border-width: 1px;
+    width: auto;
+    height: auto;
+    padding: 20px;
+}
+.screen{
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    background-color: gray;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.map{
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    border: 1px solid gray;
+    max-width: 2240px; 
+    max-height: 600px; 
+    overflow-x: auto; 
+    overflow-y: auto; 
+    white-space: nowrap; 
+    background-color:#C3B2FD
+}
+.btn-map{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+.ExitCreate{
+    display: flex;
+    justify-content: center;
+}
+
+.ExitCreate a{
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border: none;
+    background-color: #e7e7e7;
+    color: rgb(0, 0, 0);
+    border-radius: 12px;
+    margin-right: 10px;
+}
+.ExitCreate a:hover{
+    background-color: #A88EFF;
+    color: #ffffff;
+}
+.ExitCreate button{
+    background-color: #583BBF;
+    color: #ffffff;
+    border: none; 
+    width: 80px;
+    height: 40px;
+    border-radius: 12px;
+  }
+.ExitCreate button:hover{
+    background-color: #A88EFF;
+    color: #ffffff;
+}
+
+
+/* X 버튼 css */
+.closeButton {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: rgb(236, 211, 241);
+    color: white;
+    font-size: 10px;
+    cursor: pointer;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    display: block;
+}
+
+/* mapButton에 position: relative; 추가 */
+.mapButton {
+    width: 75px;
+    height: 75px;
+    border-style: solid;
+    border-width: 1px;
+    background: white;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    position: relative; /* 자식 요소들이 절대 위치를 가질 수 있도록 */
+    min-width: 75px; /* 최소 너비 설정 */
+    min-height: 75px; /* 최소 높이 설정 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    vertical-align: middle;
+}
+
+
+
+/* 행시작문자 css */
+.mapStart {
+    display: inline-block;
+    margin-right: 15px;
+    font-weight: bold;
+    /* font-family: monospace; 고정 폭 글꼴 설정 */
+    font-size: 20px;
+    width: 20px; /* 고정 너비 설정 */
+    text-align: center; /* 중앙 정렬 */
+}
+
+/* btn에 relative 추가 */
+#btn {
+    position: relative; /* 버튼들이 상대적으로 배치되도록 */
+}
+
+/* 버튼 컨테이너가 flex로 +와 - 버튼을 나란히 배치하도록 */
+/* 기본적으로 버튼 컨테이너 숨기기 */
+.button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;  /* 기본적으로 숨김 */
+    opacity: 0;  /* 기본적으로 투명하게 설정 */
+    transition: opacity 0.3s, visibility 0.3s;  /* 부드럽게 나타나도록 */
+}
+
+/* mapButton에 마우스 올렸을 때 button-container 보이게 하기 */
+.mapButton:hover .button-container {
+    visibility: visible;  /* 호버 시 보이게 */
+    opacity: 1;  /* 호버 시 불투명 */
+}
+/* + 버튼 */
+.seatButton.plus {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+}
+
+/* - 버튼 */
+.seatButton.minus {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    white-space: nowrap;  /* 텍스트가 줄 바꿈 없이 가로로 나열되도록 */
+
+    /* 글자 가로, 세로 가운데 정렬 */
+    display: flex;
+    align-items: center;  /* 세로 가운데 정렬 */
+    justify-content: center;  /* 가로 가운데 정렬 */
+}
