@@ -1,14 +1,21 @@
 package com.aloha.movieproject.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,41 +95,63 @@ public class AdminController {
 
     /* ------------------------------------- 영화관 관 련------------------------------------- */
 
-    /**
-     * 관리자 페이지
-     * @return
-     */
-    @GetMapping({"" , "/","/cinema/list","/cinema","/cinema/"})
-    public String index(Model model
-    ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
-    ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size
-    ,@RequestParam(name = "search", required = false) String search) throws Exception {
-        // 데이터 요청
-        PageInfo<Cinema> pageInfo = null;
-        if(search == null || search.equals("")){
-            pageInfo = cinemaService.list(page, size);
-        }
-        else{
-            pageInfo = cinemaService.list(page, size, search);
-        }
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("search", search);
-        return "/admin/index";
-    }
 
     /**
-     * 시네마 생성 진입
+     * 관리자 메인
+     * @param page
+     * @param size
+     * @param search
+     * @return
+     * @throws Exception
+     */
+    @GetMapping({"" , "/","/cinema/list","/cinema","/cinema/"})
+    public ResponseEntity<?> index(
+        @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size
+    ,@RequestParam(name = "search", required = false) String search) throws Exception {
+        try {
+            // 데이터 요청
+            PageInfo<Cinema> pageInfo = null;
+            if(search == null || search.equals("")){
+                pageInfo = cinemaService.list(page, size);
+            }
+            else{
+                pageInfo = cinemaService.list(page, size, search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal(pageInfo.getTotal());
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * 권한 목록 조회
      * @param model
      * @return
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/cinema/insert")
-    public String cinemaInsert(Model model) throws Exception {
-        List<AuthList> authList = authListService.list();
-        model.addAttribute("authList", authList);
-        return "/admin/cinema/insert";
+    @GetMapping("/authList/list")
+    public ResponseEntity<?> authListList() throws Exception {
+        try {
+            // 데이터 요청
+            List<AuthList> authList = authListService.list();
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("authList", authList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -134,10 +163,12 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/cinema/insert")
-    public String cinemaInsert(Model model,
-                              Cinema cinema) throws Exception {
+    public ResponseEntity<?> cinemaInsert(@RequestBody Cinema cinema) throws Exception {
+        log.info("시네마 생성 요청");
         int result = cinemaService.insert(cinema);
-        if(result>0){
+
+        if( result>0 ){
+            log.info("시네마 생성 성공!");
             for (MultipartFile files : cinema.getMainFiles()) {
                 Files file = new Files();
                 file.setFile(files);
@@ -146,11 +177,14 @@ public class AdminController {
                 file.setFkId(cinema.getId());
                 fileService.upload(file);
             }
-
-            return "redirect:/admin/cinema/list";
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "redirect:/admin/cinema/list&error";
+        else{
+            log.info("시네마 생성 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
     }
+
 
     /**
      * 관리자 페이지
@@ -158,10 +192,11 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cinema/updateList")
-    public String cinemaUpdateList(Model model
-    ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> cinemaUpdateList(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size
     ,@RequestParam(name = "search", required = false) String search) throws Exception {
+        log.info("cinema/updateList 요청");
+        try {
         // 데이터 요청
         PageInfo<Cinema> pageInfo = null;
         if(search == null || search.equals("")){
@@ -170,10 +205,18 @@ public class AdminController {
         else{
             pageInfo = cinemaService.list(page, size, search);
         }
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("search", search);
-        return "/admin/cinema/updateList";
+        Pagination pagination = new Pagination();
+        pagination.setPage(page);
+        pagination.setSize(size);
+        pagination.setTotal(pageInfo.getTotal());
+        Map<String, Object> response = new HashMap<String, Object>();
+        response.put("pageInfo", pageInfo.getList());
+        response.put("pagination", pagination);
+        response.put("search",search);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -184,11 +227,16 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/cinema/select")
-    public String cinemaSelect(Model model,@RequestParam("id") String id) throws Exception {
+    @GetMapping("/cinema/select/{id}")
+    public ResponseEntity<?> cinemaSelect(@PathVariable("id") String id) throws Exception {
+        try {
         Cinema cinema = cinemaService.select(id);
-        model.addAttribute("cinema", cinema);
-        return "/admin/cinema/select";
+        Map<String, Object> response = new HashMap<String, Object>();
+        response.put("cinema", cinema);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -199,13 +247,19 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/cinema/update")
-    public String cinemaUpdate(Model model,@RequestParam("id") String id) throws Exception {
-        List<AuthList> authList = authListService.list();
-        model.addAttribute("authList", authList);
-        Cinema cinema = cinemaService.select(id);
-        model.addAttribute("cinema", cinema);
-        return "/admin/cinema/update";
+    @GetMapping("/cinema/update/{id}")
+    public ResponseEntity<?> cinemaUpdate(@PathVariable("id") String id) throws Exception {
+        try {
+            // 데이터 요청
+            List<AuthList> authList = authListService.list();
+            Cinema cinema = cinemaService.select(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("authList", authList);
+            response.put("cinema", cinema);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -218,12 +272,20 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/cinema/update")
-    public String cinemaUpdate(Model model,Cinema cinema) throws Exception {
+    public ResponseEntity<?> cinemaUpdate(@RequestBody Cinema cinema) throws Exception {
         int result = cinemaService.update(cinema);
-        if(result>0){
-            return "redirect:/admin/cinema/select?id="+cinema.getId();
+        // if(result>0){
+        //     return "redirect:/admin/cinema/select?id="+cinema.getId();
+        // }
+        // return "redirect:/admin/cinema/update?id="+cinema.getId()+"&error";
+        if( result>0 ){
+            log.info("시네마 생성 성공!");
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "redirect:/admin/cinema/update?id="+cinema.getId()+"&error";
+        else{
+            log.info("시네마 생성 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
     }
 
 
@@ -237,14 +299,22 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cinema/mainDelete")
-    public String cinemaMainDelete(Model model,@RequestParam("mainId") String mainId
+    public ResponseEntity<?> cinemaMainDelete(@RequestParam("mainId") String mainId
     ,@RequestParam("id") String id) throws Exception {
         // log.info(stilcutId+" 넘버!!!!!!!!!!!!!!!!!!!");
         int result = fileService.delete(mainId);
-        if(result>0){
-            return "redirect:/admin/cinema/update?id="+id;
+        if( result>0 ){
+            log.info("풍경 삭제 성공!");
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "redirect:/admin/cinema/update?id="+id+"&error";
+        else{
+            log.info("풍경 삭제 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
+        // if(result>0){
+        //     return "redirect:/admin/cinema/update?id="+id;
+        // }
+        // return "redirect:/admin/cinema/update?id="+id+"&error";
     }
 
     /**
@@ -256,19 +326,26 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/cinema/mainPlus")
-    public String mainPlus(Model model,
-                              Cinema cinema) throws Exception {
+    public ResponseEntity<?> mainPlus(@RequestBody Cinema cinema) throws Exception {
         // log.info(cinema.toString());
-        fileService.delete(cinema.getFileId());
-        for (MultipartFile files : cinema.getMainFiles()) {
-            Files file = new Files();
-            file.setFile(files);
-            file.setDivision("main");
-            file.setFkTable("cinema");
-            file.setFkId(cinema.getId());
-            fileService.upload(file);
+        int result = fileService.delete(cinema.getFileId());
+
+        if( result>0 ){
+            for (MultipartFile files : cinema.getMainFiles()) {
+                Files file = new Files();
+                file.setFile(files);
+                file.setDivision("main");
+                file.setFkTable("cinema");
+                file.setFkId(cinema.getId());
+                fileService.upload(file);
+            }
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "redirect:/admin/cinema/update?id="+cinema.getId();
+        else{
+            log.info("시네마 생성 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
+        //return "redirect:/admin/cinema/update?id="+cinema.getId();
     }
 
 

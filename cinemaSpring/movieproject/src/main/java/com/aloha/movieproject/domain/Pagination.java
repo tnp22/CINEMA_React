@@ -22,9 +22,10 @@ import lombok.Data;
 
 @Data
 public class Pagination {
+
     // 페이징 기본값
     private static final long PAGE_NUM = 1;   // 현재 페이지 번호 기본값
-    private static final long SIZES = 10;      // 페이지당 게시글 수 기본값
+    private static final long SIZES = 10;     // 페이지당 게시글 수 기본값
     private static final long COUNT = 10;     // 노출 페이지 개수 기본값
 
     // ✅ 필수 정보

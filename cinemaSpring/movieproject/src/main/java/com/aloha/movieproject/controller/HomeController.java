@@ -51,7 +51,7 @@ public class HomeController {
      * @return
      * @throws Exception 
     */
-    //@GetMapping("/")
+    // @GetMapping("/")
     // public String home(Principal principal, Model model) throws Exception {
     // public String home(Authentication authentication, Model model) throws Exception {
     // public String home(@AuthenticationPrincipal User authUser, Model model) throws Exception {
@@ -84,18 +84,6 @@ public class HomeController {
     // }
 
     /**
-     * 회원 가입 화면
-     * 🔗 [GET] - /join
-     * 📄 join.html
-     * @return
-     */
-    @GetMapping("/join")
-    public String join() {
-        log.info(":::::::::: 회원 가입 화면 ::::::::::");
-        return "join";
-    }
-
-    /**
      * 회원 가입 처리
      * 🔗 [POST] - /join
      * ➡   ⭕ /login
@@ -104,33 +92,33 @@ public class HomeController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/join")
-    public String joinPro(Users user, HttpServletRequest request) throws Exception {
-        log.info(":::::::::: 회원 가입 처리 ::::::::::");
-        log.info("user : " + user);
+    // @PostMapping("/join")
+    // public String joinPro(Users user, HttpServletRequest request) throws Exception {
+    //     log.info(":::::::::: 회원 가입 처리 ::::::::::");
+    //     log.info("user : " + user);
 
-        // 암호화 전 비밀번호
-        String plainPassword = user.getPassword();
-        // 회원 가입 요청
-        int result = userService.join(user);
+    //     // 암호화 전 비밀번호
+    //     String plainPassword = user.getPassword();
+    //     // 회원 가입 요청
+    //     int result = userService.join(user);
         
-        // 회원 가입 성공 시, 바로 로그인
-        boolean loginResult = false;
-        if( result > 0 ) {
-            // 암호화 전 비밀번호 다시 세팅
-            // 회원가입 시, 비밀번호 암호화하기 때문에, 
-            user.setPassword(plainPassword);
-        }
-        if (loginResult) {
-            return "redirect:/";        // 메인화면으로 이동
-        }
-        if( result > 0 ) {
-            return "redirect:/login";
-        }
+    //     // 회원 가입 성공 시, 바로 로그인
+    //     boolean loginResult = false;
+    //     if( result > 0 ) {
+    //         // 암호화 전 비밀번호 다시 세팅
+    //         // 회원가입 시, 비밀번호 암호화하기 때문에, 
+    //         user.setPassword(plainPassword);
+    //     }
+    //     if (loginResult) {
+    //         return "redirect:/";        // 메인화면으로 이동
+    //     }
+    //     if( result > 0 ) {
+    //         return "redirect:/login";
+    //     }
         
-        return "redirect/join?error";
+    //     return "redirect/join?error";
         
-    }
+    // }
 
 
     /**
