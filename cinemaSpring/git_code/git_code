@@ -1,0 +1,14 @@
+git remote prune origin
+
+간단한 요약
+메인 브랜치 최신화:
+bash
+코드 복사
+git checkout main
+git pull origin main
+작업 브랜치 병합:
+bash
+코드 복사
+git checkout <작업 브랜치 이름>
+git merge main
+이 방법으로 작업 브랜치에 메인 브랜치의 최신 변경 사항을 가져올 수 있습니다.

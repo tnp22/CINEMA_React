@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.TheaterMapper">
+
+    <resultMap id="TheaterMap" type="Theater">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="cinemaId" column="cinema_id" />
+        <result property="map" column="map" />
+        <result property="seat" column="seat" />
+    </resultMap>
+
+
+    <!-- 전체 목록 -->
+    <select id="list" resultMap="TheaterMap">
+        SELECT m.*
+        FROM theater m 
+        order by m.no DESC
+    </select>
+
+    <!-- 조회 -->
+    <select id="select" resultMap="TheaterMap">
+        SELECT m.*
+        FROM theater m
+        where m.id = #{id}
+    </select>
+
+    <!-- 생성 -->
+    <insert id="insert">
+        INSERT INTO `theater` (`id`,`name`,`cinema_id`,`map`,`seat`)
+        VALUES ( #{id},#{name}, #{cinemaId}, #{map},#{seat})
+    </insert>
+
+    <!-- 정보 수정 -->
+    <update id="update">
+        UPDATE `theater`
+           SET name = #{name}
+              ,map = #{map}
+              ,seat = #{seat}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="String" resultMap="TheaterMap">
+        SELECT m.*
+        FROM theater m 
+        WHERE m.cinema_id = #{keyword}
+    </select>
+
+</mapper>

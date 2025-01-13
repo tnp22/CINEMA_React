@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 검색</title>
+    <link rel="stylesheet" href="/css/movieChart.css">
+</head>
+<body layout:fragment="content" style="margin-top: 200px;">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between">
+          <h2>영화 검색</h2>
+        </div>
+        <hr class=" mb-4">
+        <div class="row gy-5">
+            <th:block  th:each="movie, iterStat  : ${moviePageInfo.list}">
+                <div class="col-md-3 d-flex justify-content-center">
+                  <div class="card">
+                    <div class="card-header">
+                        <p th:text="|No. ${(moviePageInfo.pageNum-1)*8 + 1 + iterStat.index}|" style="position: relative; bottom: 5px;"></p>
+                    </div>
+                    <a th:href="|/movie/movieInfo?id=${movie.id}|">
+                        <img th:src="|/img?id=${movie.files.id}|">
+                    </a>
+                    <div class="card-body">
+                        <a th:href="|/movie/movieInfo?id=${movie.id}|">
+                            <h5 class="card-title" th:text="${movie.title}"></h5>
+                        </a>
+                        <p class="card-text" th:text="|개봉일 ${ #dates.format( movie.releaseDate, 'yyyy. MM. dd' ) }|"></p>
+                        <a th:href="|/m/t?id=${movie.id}|" class="btn btn-purple">예매하기</a>
+                    </div>
+                  </div>
+                </div>
+            </th:block>
+        </div>
+        <!-- 페이지네이션 -->
+        <!-- ⚡ 유동적인 페이지 번호 출력 (pagehelper)  -->
+        <th:block th:if="${moviePageInfo.pages > 0}">
+            <div class="pagination flex justify-content-center">
+            <ul style="display: flex; list-style-type: none; gap: 10px;">
+                <li th:if="${moviePageInfo.pageNum > 1}">
+                    <a th:href="@{/movie/movieInfo(moviePage=1, search=${search})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon" transform="scale(-1, 1)">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+                <li th:if="${moviePageInfo.hasPreviousPage}">
+                    <a th:href="@{/movie/search(moviePage=${moviePageInfo.prePage}, search=${search})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(moviePageInfo.navigateFirstPage, moviePageInfo.navigateLastPage)}">
+                    <a  th:href="@{/movie/search(moviePage=${i}, search=${search})}" 
+                        th:text="${i}"
+                        class="page"
+                        th:classappend="${moviePageInfo.pageNum == i} ? 'active' : ''"></a>
+                </li>
+                <li th:if="${moviePageInfo.hasNextPage}">
+                    <a th:href="@{/movie/search(moviePage=${moviePageInfo.nextPage}, search=${search})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:if="${moviePageInfo.pageNum < moviePageInfo.pages}">
+                    <a th:href="@{/movie/search(moviePage=${moviePageInfo.pages}, search=${search})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+            </div>
+        </th:block>
+    </div>
+</body>
+</html>

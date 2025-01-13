@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- CSRF Token -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <!-- bootstrap css --> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403</title>
+    <style>
+        body{
+            background-color: #583BBF;
+        }
+        a{
+            
+            text-decoration: none;
+            color: #583BBF;
+        }
+        .haman{
+            display: flex; flex-direction: column;justify-content: center; align-items: center;
+            background-color: white; width: 95%; height: 95%; border-radius: 10%;
+        }
+        .haman h1{
+            font-size: 100px;
+        }
+        .haman h3{
+            font-size: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; height: 98vh; display: flex; justify-content: center; align-items: center;">
+        <div class="haman">
+            <img th:src="@{/image(id='C:/upload/vora_purple_black.png')}" style="width: 380px;">
+            <br>
+            <h1>403</h1>
+            <h3>😢접근 권한이 없습니다.</h3>
+            <br><br><br><br><br>
+            <div class="btn-primary">
+                <a href="/">메인 페이지</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

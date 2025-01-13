@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.CinemaMapper">
+
+    <resultMap id="CinemaMap" type="Cinema">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="auth" column="auth" />
+        <result property="area" column="area" />
+        <result property="areaSub" column="area_sub" />
+
+        <association property="files" javaType="Files">
+            <id property="no" column="file_no" />
+            <result property="id" column="file_id" />
+            <result property="fkId" column="fk_id"/>
+            <result property="fkTable" column="fk_table"/>
+            <result property="division" column="division"/>
+            <result property="url" column="url"/>
+        </association>
+    </resultMap>
+
+
+
+    <resultMap id="CinemaMap_select" type="Cinema">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="auth" column="auth" />
+        <result property="area" column="area" />
+        <result property="areaSub" column="area_sub" />
+
+        <collection property="filesList" resultMap="files_select"></collection>
+    </resultMap>
+
+    
+    <resultMap type="Files" id="files_select">
+        <id property="no" column="file_no" />
+        <result property="id" column="file_id" />
+        <result property="fkId" column="fk_id"/>
+        <result property="fkTable" column="fk_table"/>
+        <result property="division" column="division"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+    <!-- 전체 목록 -->
+    <select id="list" resultMap="CinemaMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM cinema m join files f on m.id = f.fk_id
+        order by m.no DESC
+    </select>
+
+    <!-- 조회 -->
+    <select id="select" resultMap="CinemaMap_select">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM cinema m LEFT OUTER JOIN files f on m.id = f.fk_id
+        where m.id = #{id}
+    </select>
+
+    <!-- 영화 생성 -->
+    <insert id="insert">
+        INSERT INTO `cinema` (`id`,`auth`,`area`,`area_sub`)
+        VALUES ( #{id}, #{auth}, #{area}, #{areaSub})
+    </insert>
+
+    <!-- 영화 정보 수정 -->
+    <update id="update">
+        UPDATE `cinema`
+           SET id = #{id}
+              ,auth = #{auth}
+              ,area = #{area}
+              ,area_sub = #{areaSub}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="String" resultMap="CinemaMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM cinema m join files f on m.id = f.fk_id
+        WHERE m.area LIKE CONCAT('%', #{keyword}, '%') OR m.area LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+</mapper>

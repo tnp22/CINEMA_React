@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 상세보기</title>
+    <link rel="stylesheet" href="/css/movieInfo.css">
+</head>
+<body layout:fragment="content" style="margin-top: 150px;">
+    <div class="container py-4">
+        <div class="movie-header d-flex align-items-start gap-4">
+            <img th:src="|/img?id=${movie.files.id}|" alt="Moana 2" class="img-fluid" style="width: 200px; height: 280px; object-fit: cover;">
+            <div style="width: 100%;">
+                <h1 th:text="${movie.title}"></h1>
+                <p>
+                    개봉일 
+                    <span th:text="${#dates.format(movie.releaseDate, 'yyyy.MM.dd')}" style="font-size: small; color: gray;"></span>
+                </p>
+                <hr>
+                <p th:text="|장르 : ${movie.type}|"></p>
+                <p>
+                    감독 : 
+                    <span th:each="cast, iter : ${castList}" 
+                          th:if="${cast.rule == 'director'}"
+                          th:text="${cast.name}"></span>
+                </p>
+                <p>
+                    배우 :
+                    <span th:each="cast, iter : ${castList}" 
+                          th:if="${cast.rule == 'actor'}"
+                          th:text="${cast.name} + ${!iter.last ? ', ' : ''}"></span>
+                </p>
+                <div class="d-flex">
+                    <p>평점 :&nbsp;</p>
+                    <div class="star-ratings">
+                        <div 
+                        class="star-ratings-fill space-x-2 text-lg"
+                        th:style="|width: ${average*20+1}% |"
+                        >
+                             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <div class="star-ratings-base space-x-2 text-lg">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                    </div>
+                    <p th:text="|(${average})|"></p>
+                </div>
+                <button th:attr="data-href=|/m/t?id=${movie.id}|" class="btn btn-purple reserve-btn">예매하기</button>
+            </div>
+        </div>
+
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a th:class="|nav-link ${tab == 'content' ? 'active' : ''}|" data-bs-toggle="tab" href="#info">주요 정보</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#cast">감독/출연</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#stills">스틸컷</a>
+            </li>
+            <li class="nav-item">
+                <a th:class="|nav-link ${tab == 'review' ? 'active' : ''}|" data-bs-toggle="tab" href="#reviews">평점/리뷰</a>
+            </li>
+        </ul>
+
+        <div class="tab-content py-4">
+
+            <div th:class="|tab-pane fade ${tab == 'content' ? 'show active' : ''}|" id="info">
+                <h3 class="ms-3 mb-4">주요 정보</h3>
+                <p th:text="${movie.content}" style="white-space: pre-wrap;"></p>
+            </div>
+
+            <div class="tab-pane fade" id="cast">
+                <h3 class="ms-3 mb-4">감독 / 출연</h3>
+                <div class="row">
+                    <h4>감독</h4>
+                    <div class="mb-4">
+                        <th:block th:each="cast : ${castList}" th:if="${cast.rule == 'director'}">
+                            <div class="col-md-3 d-flex">
+                                <img th:src="|/img?id=${cast.files.id}|" class="thumbnail">
+                                <div class="mt-3 ms-3 w-100">
+                                    <p th:text="${cast.name}" class="mb-3" style="margin-bottom: 0;"></p>
+                                    <hr class="mb-3" style="border-width:2px 0 0 0; border-style:dotted; border-color:gray;">
+                                    <th:block th:each="subHis : ${history}" th:if="${subHis.get(0).name == cast.name}">
+                                        <th:block th:each="ssub : ${subHis}">
+                                            <a th:href="|/movie/movieInfo?id=${ssub.movie.id}|"><p th:text="${ssub.movie.title}" style="margin-bottom: 0; color: black; font-size: 13px;"></p></a>
+                                        </th:block>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <h4>출연</h4>
+                    <th:block th:each="cast : ${castList}" th:if="${cast.rule == 'actor'}">
+                        <div class="col-md-3 d-flex" style="margin-top: 20px;">
+                            <img th:src="|/img?id=${cast.files.id}|" class="thumbnail">
+                            <div class="mt-3 ms-3 w-100">
+                                <p th:text="${cast.name}" class="mb-3" style="margin-bottom: 0;"></p>
+                                <hr class="mb-3" style="border-width:2px 0 0 0; border-style:dotted; border-color:gray;">
+                                <th:block th:each="subHis : ${history}" th:if="${subHis.get(0).name == cast.name}">
+                                    <th:block th:each="ssub : ${subHis}">
+                                        <a th:href="|/movie/movieInfo?id=${ssub.movie.id}|"><p th:text="${ssub.movie.title}" style="margin-bottom: 0; color: black; font-size: 13px;"></p></a>
+                                    </th:block>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- 이미지 목록 -->
+            <div class="tab-pane fade" id="stills">
+                <h3 class="ms-3 mb-4">스틸컷</h3>
+                <div class="row g-3 mb-5" id="stilcut-container">
+                    <th:block th:each="stil, iterStat : ${stilList}">
+                        <div class="col-md-3 stilcut-item">
+                            <img th:src="|/img?id=${stil.id}|" class="img-fluid stilcut" th:data-index="${iterStat.index}">
+                        </div>
+                    </th:block>
+                </div>
+                <button id="showMoreButton" th:if="${#lists.size(stilList) > 8}"><i class="fa-solid fa-down-long"></i>  더보기</button>
+            </div>
+
+            <!-- 모달 -->
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content custom-modal-content">
+                        <div class="modal-body p-0">
+                            <div id="carouselExample" class="carousel slide">
+                                <div class="carousel-inner">
+                                    <th:block th:each="stil, iterStat : ${stilList}">
+                                        <div class="carousel-item no-transition" th:classappend="${iterStat.index == 0} ? 'active'">
+                                            <div class="modal-image-container">
+                                                <img th:src="|/img?id=${stil.id}|" class="d-block">
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 닫기 버튼 -->
+                <button type="button" class="custom-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <!-- 캐러셀 컨트롤 -->
+                <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <div th:class="|tab-pane fade ${tab == 'review' ? 'show active' : ''}|" id="reviews">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="ms-3 mb-4">평점 / 리뷰</h3>
+                    <th:block sec:authorize="isAuthenticated()">
+                        <button class="btn btn-purple insert-review" id="insertReviewButton">평점작성</button>
+                    </th:block>
+                </div>
+                <div id="review-section"></div>
+                <div class="modal" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" style="width: 600px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ratingModalLabel">평점 작성</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body pe-4 ps-4">
+                                <h3 class="text-center" th:text="${movie.title}"></h3>
+                                <div class="text-center mb-3">
+                                    <div class="star-rating" id="star-rating-1">
+                                        <span class="star" data-value="1">&#9733;</span> <!-- 1 -->
+                                        <span class="star" data-value="2">&#9733;</span> <!-- 2 -->
+                                        <span class="star" data-value="3">&#9733;</span> <!-- 3 -->
+                                        <span class="star" data-value="4">&#9733;</span> <!-- 4 -->
+                                        <span class="star" data-value="5">&#9733;</span> <!-- 5 -->
+                                    </div>
+                                    <input type="hidden" id="rating">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="content" maxlength="68" name="content" rows="3" style="resize: none;" required></textarea>
+                                </div>
+                                <!-- CSRF TOKEN -->
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <input type="hidden" name="username" th:value="${#authentication.name}">
+                                <input type="hidden" name="movieId" th:value="${movie.id}">
+                                <div class="modal-footer pe-0 ps-0">
+                                    <button type="button" class="btn btn-purple me-0" onclick="insertReview()" data-bs-dismiss="modal">작성완료</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal" id="updateModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" style="width: 600px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ratingModalLabel">평점 수정</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body pe-4 ps-4">
+                                <h3 class="text-center" th:text="${movie.title}"></h3>
+                                <div class="text-center mb-3">
+                                    <div class="star-rating" id="star-rating-2">
+                                        <span class="star" data-value="1">&#9733;</span> <!-- 1 -->
+                                        <span class="star" data-value="2">&#9733;</span> <!-- 2 -->
+                                        <span class="star" data-value="3">&#9733;</span> <!-- 3 -->
+                                        <span class="star" data-value="4">&#9733;</span> <!-- 4 -->
+                                        <span class="star" data-value="5">&#9733;</span> <!-- 5 -->
+                                    </div>
+                                    <input type="hidden" id="updateRating">
+                                </div>
+                                <div class="mb-3 w-100">
+                                    <textarea class="form-control" id="updateContent" maxlength="68" name="content" rows="3" style="resize: none;" required></textarea>
+                                </div>
+                                <!-- 숨겨진 필드 -->
+                                <!-- CSRF TOKEN -->
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <input type="hidden" id="updateReviewId" name="id">
+                                <input type="hidden" name="movieId" th:value="${movie.id}">
+                                <div class="modal-footer pe-0 ps-0">
+                                    <button type="submit" class="btn btn-purple me-0" onclick="updateReview()" data-bs-dismiss="modal">작성완료</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script>
+        let csrfToken = "[[${_csrf.token}]]"
+        let reviewPage = 1
+        const reviewButton = document.getElementById("insertReviewButton");
+        const isAuthenticated = "[[${#authorization.expression('isAuthenticated()')}]]";
+        document.addEventListener("DOMContentLoaded", function() {
+            const reserveButtons = document.querySelectorAll(".reserve-btn");
+            console.log(isAuthenticated+'입니다.')
+            reserveButtons.forEach(button => {
+                button.addEventListener("click", function(e) {
+                    e.preventDefault(); // 기본 동작 막기
+                    e.stopPropagation(); // 이벤트 버블링 방지 (필요 시)
+                    
+                    if (isAuthenticated=='true') {
+                        // 로그인 상태일 경우 이동
+                        window.location.href = this.getAttribute('data-href');
+                    } else {
+                        // 비로그인 상태일 경우 경고창 표시
+                        alert("로그인 후 이용해 주세요.");
+                    }
+                });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const showMoreButton = document.querySelector("#showMoreButton");
+            const stilcutItems = document.querySelectorAll(".stilcut-item");
+
+            // "더보기" 버튼 클릭 시 동작
+            showMoreButton.addEventListener("click", function () {
+                stilcutItems.forEach(item => {
+                    item.style.display = "block"; // 숨겨진 이미지를 모두 보여줌
+                });
+
+                showMoreButton.style.display = "none"; // "더보기" 버튼 숨기기
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalElement = document.querySelector("#imageModal");
+            const carouselElement = document.querySelector("#carouselExample");
+            const carouselInstance = new bootstrap.Carousel(carouselElement, {
+                interval: false,
+                ride: false,
+                keyboard: true,
+            });
+
+            // 사진 목록에서 stilcut 클릭 시 해당 사진으로 이동
+            const stilcutElements = document.querySelectorAll(".stilcut");
+            if (stilcutElements.length === 0) {
+                console.error("stilcut 요소가 없습니다. HTML 구조를 확인하세요.");
+                return;
+            }
+
+            stilcutElements.forEach((stilcut, index) => {
+                stilcut.addEventListener("click", function () {
+                    console.log(`Clicked on image with index ${index}`); // 디버깅용 로그
+                    // 해당 인덱스로 캐러셀 이동
+                    carouselInstance.to(index);
+
+                    // 모달 창 열기
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                });
+            });
+        });
+
+        // 리뷰 수정창 값 설정
+        function initReviewScripts() {
+            const editButtons = document.querySelectorAll('.edit-review');
+            const modal = document.getElementById('updateModal');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const reviewId = button.getAttribute('data-id');
+                    const ratingValue = button.getAttribute('data-rating');
+                    const content = button.getAttribute('data-content');
+                    const stars = document.querySelectorAll('#star-rating-2 .star');
+                    stars.forEach(star => {
+                        const starValue = parseInt(star.getAttribute('data-value'))
+                        if (starValue <= ratingValue) {
+                            star.classList.add('full');
+                        } else {
+                            star.classList.remove('full');
+                        }
+                    });
+
+                    // 모달 필드에 데이터 설정
+                    document.getElementById('updateReviewId').value = reviewId;
+                    document.getElementById('updateRating').value = ratingValue;
+                    document.getElementById('updateContent').value = content;
+                });
+            });
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            initReviewScripts();
+            initPagination();
+            initRating();
+        });
+
+        // 페이지네이션 이벤트 리스너 초기화 함수
+        function initPagination() {
+            const pagination = document.getElementById('pagination');
+
+            if (pagination) {
+                pagination.addEventListener('click', (event) => {
+                    let target = event.target;
+                    // SVG 클릭 시 부모 <a>로 접근
+                    if (target.tagName === 'svg' || target.tagName === 'path') {
+                        target = target.closest('.custom-page'); // 가장 가까운 .custom-page 클래스 <a> 찾기
+                    }
+                    console.log('페이지버튼클릭')
+                    // 클릭한 요소가 페이지 버튼인지 확인
+                    if (target && target.classList.contains('custom-page')) {
+                        const page = target.getAttribute('data-page'); // 페이지 번호 가져오기
+                        reviewList(page); // reviewList 함수 호출
+                    }
+                });
+            }
+        }
+        // 별점 이벤트
+        function initRating() {
+            // 첫 번째 별점
+            const stars1 = document.querySelectorAll('#star-rating-1 .star');
+            const ratingValue1 = document.getElementById('rating')
+            // 두 번째 별점
+            const stars2 = document.querySelectorAll('#star-rating-2 .star');
+            const ratingValue2 = document.getElementById('updateRating')
+            // 마우스 오버 시 별 색 변경
+            function handleMouseOver(stars, ratingValue) {
+                stars.forEach(star => {
+                    star.addEventListener('mouseover', () => {
+                        const value = star.getAttribute('data-value');
+                        updateStars(stars, value);
+                    })
+                    star.addEventListener('mouseout', () => {
+                        const currentRating = ratingValue.value;
+                        updateStars(stars, currentRating);
+                    })
+                    star.addEventListener('click', () => {
+                        const value = star.getAttribute('data-value');
+                        ratingValue.value = value; // 평점 값 업데이트
+                        updateStars(stars, value); // 별 색상 업데이트
+                    });
+                });
+            }
+            // 별의 색상 업데이트 함수
+            function updateStars(stars, rating) {
+                stars.forEach(star => {
+                    const starValue = parseInt(star.getAttribute('data-value'))
+                    if (starValue <= rating) {
+                        star.classList.add('full');
+                    } else {
+                        star.classList.remove('full');
+                    }
+                });
+            }
+            // 첫 번째 별점 처리
+            handleMouseOver(stars1, ratingValue1)
+            // 두 번째 별점 처리
+            handleMouseOver(stars2, ratingValue2);
+        };
+        reviewList();
+
+        function reviewList(page) {
+            let username = "[[${#authentication.name}]]"
+            // page가 null이거나 undefined면 기본값으로 1 설정
+            page = page || 1;
+            reviewPage = page;
+            let request = new XMLHttpRequest();
+            let movieId = "[[${movie.id}]]"; // Thymeleaf로 서버에서 전달된 변수
+            let url = `/review/list?id=${movieId}&page=${page}&username=${username}`;
+            console.log('페이지는 ' + page)
+            request.open('GET', url, true);
+            request.send();
+
+            request.onreadystatechange = function () {
+                if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+                    let reviewList = request.responseText;
+                    let $reviewList = document.getElementById('review-section');
+                    $reviewList.innerHTML = reviewList;
+                    initPagination(); // 페이지네이션 이벤트 리스너 다시 설정
+                    initReviewScripts(); // 다른 스크립트 초기화
+                    initRating();
+                    
+
+
+                }
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            reviewButton.addEventListener("click", (event) => {
+                let count = document.getElementById('count').value
+                const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
+                console.log('평점 작성 버튼 클릭함' + count)
+                if (count > 0) {
+                    event.preventDefault(); // 버튼 기본 동작 방지
+                    event.stopPropagation(); // 이벤트 전파 방지
+                    alert("이미 평점을 작성하셨습니다."); // 경고창 표시
+                } else {
+                    ratingModal.show();
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ratingButton = document.querySelector('.insert-review'); // 버튼 선택
+
+            // 버튼 클릭 이벤트 처리
+            ratingButton.addEventListener('click', () => {
+                const stars = document.querySelectorAll('#star-rating-1 .star');
+                const content = document.getElementById('content')
+                content.value="";
+                stars.forEach(star => {
+                    star.classList.remove('full');
+                });
+            });
+        });
+
+        function deleteReview(reviewId, movieId) {
+            // 확인 알림창
+            const confirmDelete = confirm("이 리뷰를 삭제하시겠습니까?");
+            console.log(reviewId);
+            if (confirmDelete) {
+                let request = new XMLHttpRequest()
+                request.onreadystatechange = function(){
+                    if(request.readyState == request.DONE && request.status == 200){
+                        let response = request.responseText
+                        if(response == 'SUCCESS'){
+                            reviewList(reviewPage)
+                        }else{
+                            alert('리뷰 삭제 실패')
+                        }
+                    }
+                }
+                const url=`/review/delete/${reviewId}/${movieId}`
+                request.open('DELETE',url,true)
+                request.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+                request.send()
+            }
+        }
+
+        function insertReview(){
+            const movieId = "[[${movie.id}]]"
+            let username = "[[${#authentication.name}]]"
+            let content = document.getElementById('content').value
+            let ratingValue = document.getElementById('rating').value
+            let data = {
+                'movieId': movieId,
+                'ratingValue': ratingValue,
+                'content': content,
+                'username': username
+            }
+
+            let request = new XMLHttpRequest()
+            request.onreadystatechange = function(){
+                if(request.readyState == request.DONE && request.status == 200){
+                    let response = request.responseText
+                    if(response == 'SUCCESS'){
+                        console.log('리뷰 등록 성공')
+                        reviewList(reviewPage);
+                        document.getElementById('content').value=""
+                        document.getElementById('rating').value=""
+                        var modal = new bootstrap.Modal(document.getElementById('ratingModal'));
+                        modal.hide();
+                    }
+                }
+            }
+
+            const url=`/review/insert`
+            request.open('POST',url,true)
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+            request.send(JSON.stringify(data))
+        }
+
+        function updateReview(){
+            console.log('리뷰 업데이트 시도')
+            const movieId = "[[${movie.id}]]"  
+            let content = document.getElementById('updateContent').value
+            let ratingValue = document.getElementById('updateRating').value
+            let reviewId = document.getElementById('updateReviewId').value
+            let data = {
+                'movieId': movieId,
+                'ratingValue': ratingValue,
+                'content': content,
+                'id': reviewId
+            }
+
+            let request = new XMLHttpRequest()
+            request.onreadystatechange = function(){
+                if(request.readyState == request.DONE && request.status == 200){
+                    let response = request.responseText
+                    if(response == 'SUCCESS'){
+                        console.log('리뷰 수정 성공')
+                        reviewList(reviewPage);
+                        document.getElementById('updateContent').value=""
+                        document.getElementById('updateRating').value=""
+                        var modal = new bootstrap.Modal(document.getElementById('ratingModal'));
+                        modal.hide();
+                    }
+                }
+            }
+
+            const url=`/review/update`
+            request.open('PUT',url,true)
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+            request.send(JSON.stringify(data))
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.BannerMapper">
+
+    <resultMap id="BannerMap" type="Banner">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="bannerDivi" column="banner_divi" />
+        <result property="movieId" column="movie_id" />
+
+        <association property="movie" javaType="Movie">
+            <id property="no" column="movie_no" />
+            <result property="id" column="movie_id"/>
+            <result property="title" column="title"/>
+        </association>
+
+        <association property="files" javaType="Files">
+            <id property="no" column="file_no" />
+            <result property="id" column="file_id" />
+            <result property="fkId" column="fk_id"/>
+            <result property="fkTable" column="fk_table"/>
+            <result property="division" column="division"/>
+            <result property="url" column="url"/>
+        </association>
+    </resultMap>
+
+    <select id="mainBannerList" resultMap="BannerMap">
+        SELECT m.*,mm.no movie_no,mm.id movie_id,mm.title, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM banner m
+                join files f on m.id = f.fk_id
+                join movie mm on m.movie_id = mm.id
+        WHERE m.banner_divi = "main"
+        order by m.no desc
+    </select>
+
+    <select id="subBannerList" resultMap="BannerMap">
+        SELECT m.*,mm.no movie_no,mm.id movie_id,mm.title, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM banner m
+                join files f on m.id = f.fk_id
+                join movie mm on m.movie_id = mm.id
+        WHERE m.banner_divi = "sub"
+        order by m.no desc
+    </select>
+
+    <select id="list" resultMap="BannerMap">
+        SELECT m.*,mm.no movie_no,mm.id movie_id,mm.title, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM banner m
+                join files f on m.id = f.fk_id
+                join movie mm on m.movie_id = mm.id
+        order by m.no desc
+    </select>
+    
+    <select id="select" resultMap="BannerMap">
+        SELECT m.*,mm.no movie_no,mm.id movie_id,mm.title, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM banner m
+                join files f on m.id = f.fk_id
+                join movie mm on m.movie_id = mm.id
+        WHERE m.id = #{id}
+    </select>
+
+
+    <!-- 생성 -->
+    <insert id="insert">
+        INSERT INTO `banner` (`id`,`name`,`movie_id`,`banner_divi`)
+        VALUES ( #{id}, #{name}, #{movieId}, #{bannerDivi})
+    </insert>
+
+    <!-- 정보 수정 -->
+    <update id="update">
+        UPDATE `banner`
+           SET name = #{name}
+              ,movie_id = #{movieId}
+              ,`banner_divi` = #{bannerDivi}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 권한 삭제 -->
+    <delete id="delete">
+        DELETE FROM `banner`
+        WHERE id = #{id}
+    </delete>
+
+    
+</mapper>

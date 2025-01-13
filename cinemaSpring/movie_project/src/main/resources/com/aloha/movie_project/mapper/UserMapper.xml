@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aloha.movie_project.mapper.UserMapper">
+
+    <resultMap type="Users" id="userMap">
+        <id property="username" column="username" />
+        
+        <result property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="enabled" column="enabled" />
+        <result property="regDate" column="reg_date" />
+        <result property="updDate" column="upd_date" />
+        
+        <collection property="authList" resultMap="authMap"></collection>
+    </resultMap>
+        
+    <resultMap type="UserAuth" id="authMap">
+        <result property="no" column="no" />
+        <result property="userId" column="user_id" />
+        <result property="auth" column="auth" />
+    </resultMap>
+
+  
+    <!-- 회원 조회 - id -->
+    <select id="select" resultMap="userMap">
+        SELECT u.id 
+              ,u.username
+              ,password
+              ,name
+              ,email
+              ,enabled
+              ,reg_date
+              ,upd_date
+              ,auth.no
+              ,auth
+        FROM users u LEFT OUTER JOIN user_auth auth ON u.username = auth.user_id
+        WHERE u.username = #{username}
+    </select>
+
+    <!-- 회원 가입 -->
+    <insert id="join">
+        INSERT INTO users (id, username, password, name, email, enabled)
+        VALUES (#{id}, #{username}, #{password}, #{name}, #{email}, #{enabled} )
+    </insert>
+
+    <!-- 회원 정보 수정 -->
+    <update id="update">
+        UPDATE users
+           SET name = #{name}
+              ,email = #{email}
+              ,enabled = #{enabled}
+              ,upd_date = now()
+        WHERE username = #{username}
+    </update>
+
+    <!-- 회원 비밀번호 수정 -->
+    <update id="updatePw">
+        UPDATE users
+           SET password = #{password}
+              ,upd_date = now()
+        WHERE username = #{username}
+    </update>
+
+    <!-- 회원 이메일 수정 -->
+    <update id="updateEmail">
+        UPDATE users
+           SET email = #{email}
+              ,upd_date = now()
+        WHERE username = #{username}
+    </update>
+
+    <!-- 회원 권한 등록 -->
+    <insert id="insertAuth">
+        INSERT INTO user_auth( user_id, auth )
+        VALUES ( #{userId}, #{auth} )
+    </insert>
+
+    <!-- 회원 권한 등록 -->
+    <insert id="deleteAuth">
+        DELETE FROM `user_auth`
+        WHERE no = #{no}
+    </insert>
+
+    <!-- 목록 -->
+    <select id="list" resultMap="userMap">
+        SELECT u.username
+              ,name
+              ,email
+              ,enabled
+              ,reg_date
+              ,upd_date
+              ,auth
+        FROM users u LEFT OUTER JOIN user_auth auth ON u.username = auth.user_id
+    </select>
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="String" resultMap="userMap">
+        SELECT u.username,
+            u.name,
+            u.email,
+            u.enabled,
+            u.reg_date,
+            u.upd_date,
+            auth.auth
+        FROM users u
+        LEFT OUTER JOIN user_auth auth ON u.username = auth.user_id
+        WHERE u.username LIKE CONCAT('%', #{keyword}, '%')
+        OR u.name LIKE CONCAT('%', #{keyword}, '%')
+        OR auth.auth LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+</mapper>

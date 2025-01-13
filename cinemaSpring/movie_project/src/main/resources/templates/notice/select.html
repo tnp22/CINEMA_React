@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/noticeSelect.css">
+</head>
+<body layout:fragment="content">
+    <div class="title" style="margin-bottom: 80px;">
+        <h5 style="color: white;">공지사항</h5>
+    </div>
+    <div class="container mb-3" style="min-height: 200px;">
+        <div class="d-flex justify-content-between p-3 notice-title" style="background-color: rgb(243, 243, 243); border-top: 1px solid gray;">
+            <h5 th:text="${notice.title}"></h5>
+            <div class="d-flex">
+                <h6 class="me-3" th:text="|등록일 : ${ #dates.format( notice.regDate, 'yyyy.MM.dd' ) }|"></h6>
+                <h6 th:text="|조회수 : ${notice.view}|"></h6>
+            </div>
+        </div>
+        <p th:text="${notice.content}" class="p-3 notice-content mb-4" style="white-space: pre-wrap; border-bottom: 1px solid gray;"></p>
+        <div class="mb-4 d-flex justify-content-end">
+            <a class="btn list-btn" href="/notice/list">목록</a>
+        </div>
+    </div>
+    <div class="container" style="margin-bottom: 80px;">
+        <th:block th:if="${before != null}">
+            <div class="d-flex notice-bottom before align-items-center">
+                <p class="mb-0">이전글</p>
+                <i class="fa-solid fa-caret-up fs-4"></i>
+                <a th:href="|/notice/select?id=${before.id}|" th:text="${before.title}"></a>
+            </div>
+        </th:block>
+        <th:block th:if="${before == null}">
+            <div class="d-flex notice-bottom before align-items-center">
+                <p class="mb-0">이전글</p>
+                <i class="fa-solid fa-caret-up fs-4"></i>
+                <a>이전 글이 없습니다</a>
+            </div>
+        </th:block>
+        <th:block th:if="${after != null}">
+            <div class="d-flex notice-bottom after">
+                <p class="mb-0">이후글</p>
+                <i class="fa-solid fa-caret-down fs-4"></i>
+                <a th:href="|/notice/select?id=${after.id}|" th:text="${after.title}"></a>
+            </div>
+        </th:block>
+        <th:block th:if="${after == null}">
+            <div class="d-flex notice-bottom after">
+                <p class="mb-0">이후글</p>
+                <i class="fa-solid fa-caret-down fs-4"></i>
+                <a>이후 글이 없습니다</a>
+            </div>
+        </th:block>
+    </div>
+</body>
+</html>

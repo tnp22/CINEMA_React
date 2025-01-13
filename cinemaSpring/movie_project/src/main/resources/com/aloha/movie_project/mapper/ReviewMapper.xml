@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.ReviewMapper">
+
+
+     <insert id="insertReview">
+         insert into review
+         (id,movie_id,user_id,content)
+         VALUES
+         (#{id},#{movieId},#{userId},#{content})
+     </insert>
+
+     <insert id="insertRating">
+         insert into rating
+         (id,review_id,user_id,rating_value)
+         VALUES
+         (#{id},#{reviewId},#{userId},#{ratingValue})
+     </insert>
+
+     <update id="updateReview">
+        update review
+        set content = #{content},
+        reg_date = reg_date
+        where id = #{id} 
+     </update>
+     <update id="updateRating">
+        update rating
+        set rating_value = #{ratingValue}
+        where review_id = #{id}
+     </update>
+     <delete id="deleteReview">
+        delete from review
+        where id = #{id}
+     </delete>
+     <delete id="deleteRating">
+        delete from rating
+        where review_id = #{id}
+     </delete>
+    <select id="reviewList" resultType="ReviewInfo">
+        SELECT e.id, u.username, f.id AS fileId, e.content, a.rating_value
+        FROM rating a
+        JOIN review e ON a.review_id = e.id
+        JOIN users u ON e.user_id = u.id
+        LEFT JOIN files f ON u.id = f.fk_id AND f.division = 'profile'
+        WHERE e.movie_id = #{id}
+        ORDER BY e.reg_date DESC
+    </select>
+    <select id="select" resultType="ReviewInfo">
+        SELECT e.id, u.username, f.id AS fileId, e.content, a.rating_value
+        FROM rating a
+        JOIN review e ON a.review_id = e.id
+        JOIN users u ON e.user_id = u.id
+        LEFT JOIN files f ON u.id = f.fk_id AND f.division = 'profile'
+        WHERE e.movie_id = #{id} and u.username =#{username}
+        ORDER BY e.reg_date DESC
+    </select>
+
+    <select id="adminReviewList" resultType="ReviewInfo">
+        select e.id, u.username, e.content, a.rating_value, m.title
+        from review e
+            JOIN rating a ON e.id = a.review_id
+            JOIN users u ON e.user_id = u.id
+            JOIN movie m ON e.movie_id = m.id
+    </select>
+
+    <select id="searchAdminReviewList" parameterType="String" resultType="ReviewInfo">
+        select e.id, u.username, e.content, a.rating_value, m.title
+        from review e
+            JOIN rating a ON e.id = a.review_id
+            JOIN users u ON e.user_id = u.id
+            JOIN movie m ON e.movie_id = m.id
+        where e.movie_id = (SELECT m.id FROM movie m WHERE m.title LIKE CONCAT('%', #{keyword}, '%') LIMIT 1 ) 
+    </select>
+
+    <select id="countUserReviews" parameterType="String" resultType="int">
+    SELECT COUNT(*)
+    FROM review
+    WHERE user_id = #{userId}
+    </select>
+    
+</mapper>

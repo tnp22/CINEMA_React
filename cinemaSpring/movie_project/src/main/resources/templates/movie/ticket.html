@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영화 예매 페이지</title>
+  <link rel="stylesheet" href="/css/ticket.css">
+</head>
+<body layout:fragment="content">
+  <div class="container-fluid p-0 d-flex">
+    <div class="header flex-fill"></div>
+    <div class="container p-0">
+        <!-- 본문 -->
+        <div class="row  m-0 p-0 w-100 col-3 text-center">
+            <div class="col-2 p-0 b-right">
+                <!-- 지역 -->
+                <div class="header"><h5>지역</h5></div>
+                <!-- 지역 스크롤바 -->
+                <div class="content p-0">
+                  <div class="scroll h-100 w-100 mt-3 mb-3">
+                    <ul class="list-group" id="region-list">
+                      <!-- 비동기 동적 생성?? -->
+                    </ul>
+                  </div>
+                </div>
+            </div>
+            <div class="col-2 p-0 b-right">
+                <!-- 극장 -->
+                <div class="header"><h5>극장</h5></div>
+                <!-- 극장 스크롤바 -->
+                <div class="content">
+                  <div class="scroll mt-3 mb-3">
+                    <ul class="list-group" id="theater-list">
+                      <!-- 동적 생성 -->
+                    </ul>
+                  </div>
+                </div>
+            </div>
+            <div class="col-2 p-0 b-right">
+                <!-- 날짜 -->
+                <div class="header"><h5>날짜</h5></div>
+                <!-- 날짜 스크롤바 -->
+                <div class="content">
+                  <div class="scroll mt-3 mb-3">
+                    <ul class="list-group" id="date-list">
+                      <!-- 동적 생성 -->
+                    </ul>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6 p-0">
+                <!-- 시간 -->
+                <div class="header"><h5>시간</h5></div>
+                <!-- 시간 스크롤바 -->
+                <div class="content">
+                  <div id="time-container" class="scroll mt-3 mb-3">
+                    <!-- 동적 생성 -->
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header flex-fill"></div>
+  </div>
+  <!-- 하단 바 -->
+  <div class="container-fluid b-top">
+    <div class="container d-flex justify-content-between p-0" style="height:200px;">
+        <div class="align-content-center">
+            <div class="d-flex reserve-img">
+                <img th:src="|/img?id=${movie.files.id}|">
+                <div class="align-content-center ms-5">
+                    <h3 th:text="${movie.title}"></h3>
+                </div>
+                <div class="align-content-center ms-5">
+                    <p class="m-1">극장 &nbsp; &nbsp; &nbsp; <span id="theater-info"></span></p>
+                    <p class="m-1">날짜 &nbsp; &nbsp; &nbsp; <span id="date-info"></span></p>
+                    <p class="m-1">시간 &nbsp; &nbsp; &nbsp; <span id="time-info"></span></p>
+                    <input type="hidden" id="seat-info" value="">
+                </div>
+            </div>
+        </div>
+        <div class="align-content-center d-flex align-items-center">
+          <div class="me-5">
+            <div class="d-flex mb-2 align-items-center align-content-center">
+              <p class="p-0 m-0">어른</p>
+              <span style="margin-left: 10px;" id="adult" person="1">1</span>
+              <button class="btn btn-secondary" style="margin-left: 10px;" onclick="aup()"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-secondary" style="margin-left: 5px;" onclick="adown()"><i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+            <div class="d-flex align-items-center align-content-center">
+              <p class="p-0 m-0">학생</p>
+              <span style="margin-left: 10px;" id="student" person="0">0</span>
+              <button class="btn btn-secondary" style="margin-left: 10px;" onclick="sup()"><i class="fa-solid fa-arrow-up"></i></button>
+              <button class="btn btn-secondary" style="margin-left: 5px;" onclick="sdown()"><i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+          </div>
+          <button class="btn reserve-btn" id="ticketSeat"><i class="fa-solid fa-angle-right fa-3x"></i><p>좌석선택</p></button>
+        </div>
+    </div>
+  </div>
+
+  <!-- html로 ticketList 전체 출력 예문 -->
+  <!-- <p th:text="${ticketList}"></p> -->
+
+  <!-- 안에 값 출력 예문 -->
+  <!-- <h1><div th:each="ticket : ${ticketList}"><p th:text="${ticket.theaterName}"></p></div></h1> -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JSON 형식으로 list 안에 값 저장 -->
+  <script th:inline="javascript">
+    var ticketList = /*[[${ticketList}]]*/ [];
+
+    // 출력(값불러오기) 예문
+    console.log("리스트 : ", ticketList); // list[] 안에있는 모든값 로그 출력
+    // console.log("리스트 : ", ticketList[0].theaterName); // JSON 데이터 출력 ?관 출력
+    // console.log("리스트 : ", ticketList[1].theaterName); // JSON 데이터 출력 ?관 출력
+  </script>
+  <script>
+
+    let Region = [] // 지역 데이터 저장
+    let Theaters = [] // 극장 데이터 저장
+    let Dates = [] // 날짜 데이터 저장
+    // let Time = [] // 시간 데이터 저장
+
+    // // 지역 데이터 저장
+    for(var list of ticketList){
+      Region.push(list.area);
+    }
+    // 중복제거 오름차순 정렬
+    Region = [...new Set(Region)].sort((a, b) => a.localeCompare(b));
+    console.log(Region);
+    
+    // 지역 출력
+    function area(){
+        const region = document.getElementById("region-list")
+        region.innerHTML = "";
+
+        for(R of Region){
+          const newli = document.createElement("li");
+          newli.className = "list-group-item"
+          newli.setAttribute("data-region", R);
+          newli.textContent = R;
+          region.appendChild(newli); // 새 리스트 항목을 리스트에 추가
+
+        }
+    }
+
+    // ticketList 정렬 (areaSub -> time 순서로 정렬)
+    ticketList.sort((a, b) => {
+        if (a.areaSub === b.areaSub) {
+            return new Date(a.time) - new Date(b.time); // 시간 순 정렬
+        }
+        return a.areaSub.localeCompare(b.areaSub); // areaSub 기준 정렬
+    });
+    // // 지역데이터에 비교해서 극장 데이터 저장
+    console.log("여기서부터")
+    for (var R of Region) {
+      let Theater = [];
+      let regionDate = {}; // areaSub을 기준으로 그룹화하기 위해 객체 사용
+      for (var [index, list] of ticketList.entries()) {
+        // console.log(list.theaterName) // 상영관 출력
+        if (R === list.area) {
+          Theater.push(list.areaSub);
+          
+          const dateObj = new Date(list.time);
+          // 날짜 분리 (연-월-일)
+          const datePart = dateObj.toISOString().split("T")[0]; // "2024-12-23"
+          
+          // 다음 요소 확인 및 초기화 조건
+          // if (index + 1 < ticketList.length) {
+          //   if (list.areaSub != ticketList[index + 1].areaSub) {
+          //     // 새로운 areaSub로 넘어가면 초기화
+          //     regionDate[list.areaSub] = [];
+          //   }
+          // }
+          // areaSub 기준으로 날짜 추가
+          // if (!regionDate[list.areaSub]) {
+          //   regionDate[list.areaSub] = []; // areaSub 키가 존재하지 않으면 초기화
+          // }
+          // regionDate[list.areaSub].push(datePart);
+          if (!regionDate[list.areaSub]) {
+                regionDate[list.areaSub] = []; // 초기화는 딱 한 번만 수행
+            }
+            if (!regionDate[list.areaSub].includes(datePart)) {
+                regionDate[list.areaSub].push(datePart); // 중복 방지
+            }
+          // console.log(regionDate[list.areaSub])
+          // console.log(list.areaSub);
+          // console.log(datePart);
+          
+          
+          // 날짜 기준 시간 분리 (시:분) + seat 분리
+          const timePart = dateObj.toTimeString().slice(0, 5); // "15:40"
+          // console.log(index + " " +list.seat)
+          // console.log(timePart);
+        }
+      }
+      Theaters.push(Theater);
+      Dates.push(regionDate); // 이제 Dates에는 areaSub 기준으로 나눈 객체가 저장됨
+    }
+    // console.log(Theaters)
+    // console.log(Dates)
+    console.log(Dates)
+    
+
+    const regionTheaterData = {};
+    // regionTheaterData[Region[0]] = Theaters[0]; // JSON 형식으로 저장
+    Region.forEach((region, index) => {
+      if (regionTheaterData[region]) {
+        // 중복 제거 및 정렬
+        const mergedTheaters = [...new Set([...regionTheaterData[region], ...Theaters[index]])].sort((a, b) => a.localeCompare(b));
+        regionTheaterData[region] = mergedTheaters;
+      } else {
+        // 초기 데이터 설정 및 중복 제거 및 정렬 적용
+        regionTheaterData[region] = [...new Set(Theaters[index])].sort((a, b) => a.localeCompare(b));
+      }
+    });
+    console.log(regionTheaterData);
+
+    let theaterDateData = {}; // 코드 실행 전에 정의
+    for (let i = 0; i < Dates.length; i++) {
+      const regionTheaters = Dates[i]; // Dates에서 각 지역별 데이터 가져오기
+      for (let areaSub in regionTheaters) { 
+        // theaterDateData 초기화
+        if (!theaterDateData[areaSub]) {
+          theaterDateData[areaSub] = [];
+        }
+
+        // 중복 제거 후 날짜 병합
+        const uniqueDates = [...new Set([...theaterDateData[areaSub], ...regionTheaters[areaSub]])];
+
+        theaterDateData[areaSub] = uniqueDates;
+      }
+    }
+    console.log(theaterDateData);
+
+    const dateTimeData = {};
+
+    // 시간 및 관 JSON 형식 저장 코드 
+    // ticketList를 순회하며 dateTimeData를 구성
+    for (let list of ticketList) {
+      const { areaSub, time, seat, theaterName } = list;
+      
+      const dateObj = new Date(time);
+      const datePart = dateObj.toISOString().split("T")[0]; // 날짜 부분 추출
+      const timePart = dateObj.toTimeString().slice(0, 5); // 시간 부분 추출
+      const MovieId = list.id;
+      
+      // 지역이 없으면 초기화
+      if (!dateTimeData[areaSub]) {
+        dateTimeData[areaSub] = [];
+      }
+      
+      // 날짜 엔트리가 없으면 생성
+      let dateEntry = dateTimeData[areaSub].find(entry => entry.date === datePart);
+      if (!dateEntry) {
+        dateEntry = {
+          date: datePart,
+          theaters: []
+        };
+        dateTimeData[areaSub].push(dateEntry);
+      }
+      
+      // 극장 정보가 없으면 생성
+      let theater = dateEntry.theaters.find(t => t.theater === theaterName);
+      if (!theater) {
+        theater = {
+          theater: theaterName,
+          times: []
+        };
+        dateEntry.theaters.push(theater);
+      }
+       
+      // console.log(list.id)
+
+      // 시간 및 좌석 정보를 추가
+      theater.times.push({
+        time: timePart,
+        seats: seat,
+        movieId: MovieId
+      });
+    }
+
+    // 결과 확인
+    // console.log(JSON.stringify(dateTimeData, null, 2));
+
+
+
+
+    /** 저장 예시  **/
+
+    // 지역별 극장 데이터
+    // regionTheaterData = { "지역" : ["극장", "극장", "극장"] }
+
+    // 극장별 날짜 데이터
+    // theaterDateData = { "극장" : ["날짜", "날짜"] }
+
+    // 날짜별 시간 데이터
+    // const dateTimeData = {
+    //                       "부평": [{  date: "2025-01-01",
+    //                                   theaters: [{
+    //                                             theater: "1관",
+    //                                             times: [{ time: "09:10", seats: 156 }]},
+    //                                           {
+    //                                             theater: "2관",
+    //                                             times: [{ time: "11:30", seats: 120 }]}
+    //                                   ]}
+    //                               ],
+    //                       "시흥": [{  date: "2025-01-01",
+    //                                   theaters: [{
+    //                                             theater: "1관",
+    //                                             times: [{ time: "09:10", seats: 156 }]},
+    //                                           {
+    //                                             theater: "2관",
+    //                                             times: [{ time: "11:30", seats: 120 }]}
+    //                                   ]},
+    //                                 { date: "2025-01-02",
+    //                                   theaters: [{
+    //                                               theater: "3관",
+    //                                               times: [{ time: "10:00", seats: 100 }]
+    //                                             }
+    //                                   ]}
+    //                               ],
+    //                       "강남": [{  date: "2025-01-01",
+    //                                   theaters: [{
+    //                                             theater: "2관",
+    //                                             times: [{ time: "09:10", seats: 156 }]},
+    //                                           {
+    //                                             theater: "4관",
+    //                                             times: [{ time: "11:30", seats: 120 }]}
+    //                                   ]},
+    //                                 { date: "2025-01-02",
+    //                                   theaters: [{
+    //                                               theater: "1관",
+    //                                               times: [{ time: "10:00", seats: 100 }]
+    //                                             }
+    //                                   ]}
+    //                               ]
+    //                             };
+
+    // 지역별 극장 데이터
+
+    // 극장별 날짜 데이터
+    // const theaterDateData = {
+    //   "부평": ["2024-12-25", "2024-12-26"],
+    // };
+
+   
+
+
+    // DOM 요소
+    const regionList = document.getElementById("region-list");
+    const theaterList = document.getElementById("theater-list");
+    const dateList = document.getElementById("date-list");
+    const timeContainer = document.getElementById("time-container");
+
+    // 추가부분
+    // 하단의 예매 정보 띄우는 부분
+    const theaterInfo = document.querySelector("#theater-info");
+    const dateInfo = document.querySelector("#date-info");
+    const timeInfo = document.querySelector("#time-info");
+
+    // 추가부분
+    // 스크롤바의 날짜 포맷함수
+    function formatDate(dateString) {
+      const days = ["일", "월", "화", "수", "목", "금", "토"];
+      const date = new Date(dateString);
+      const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+      const day = date.getDate(); // 일(day) 얻기
+      const dayOfWeek = days[date.getDay()]; // 요일 얻기
+
+      
+      // 요일에 따라 색상 결정
+      let color = "black"; // 기본 글자색
+      if (dayOfWeek === "토") {
+        color = "#6781E8"; // 토요일은 파란색
+      } else if (dayOfWeek === "일") {
+        color = "#F47777"; // 일요일은 빨간색
+      }
+
+      return { formattedDate: `${month}/${day} (${dayOfWeek})`, color };
+    }
+
+    // 추가부분
+    // 하단의 정보창의 날짜 포맷 함수
+    function formatDate2(dateString) {
+      const days = ["일", "월", "화", "수", "목", "금", "토"];
+      const date = new Date(dateString);
+      const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+      const day = date.getDate(); // 일(day) 얻기
+      const dayOfWeek = days[date.getDay()]; // 요일 얻기
+      
+      return `${date.getFullYear()}.${month.toString().padStart(2, "0")}.${day.toString().padStart(2, "0")}(${dayOfWeek})`;
+    }
+    
+    // 지역 클릭 이벤트
+    regionList.addEventListener("click", function (e) {
+      const region = e.target.getAttribute("data-region");
+      if (!region) return;
+
+      // 스크롤바에서 선택한 부분 active 클래스 추가해서 활성화
+      const activeItem = document.querySelector("#region-list .list-group-item.active");
+      if (activeItem) {
+        // active 모두 지우기
+        activeItem.classList.remove("active");
+      }
+      // 클릭된 항목에 'active' 클래스 추가
+      e.target.classList.add("active");
+      
+      // 하단의 정보창 비우기
+      theaterInfo.textContent="";
+      dateInfo.textContent="";
+      timeInfo.textContent="";
+      
+      
+      // 극장 리스트 업데이트
+      theaterList.innerHTML = "";
+      regionTheaterData[region].forEach(theater => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = theater;
+        li.setAttribute("data-theater", theater);
+        theaterList.appendChild(li);
+      });
+
+      // 초기화
+      dateList.innerHTML = "";
+      timeContainer.innerHTML = "";
+    });
+
+    // 극장 클릭 이벤트
+    theaterList.addEventListener("click", function (e) {
+      const theater = e.target.getAttribute("data-theater");
+      if (!theater) return;
+      
+      // 스크롤바에서 선택한 부분 active 클래스 추가해서 활성화
+      const activeItem = document.querySelector("#theater-list .list-group-item.active");
+      if (activeItem) {
+        // active 모두 지우기
+        activeItem.classList.remove("active");
+      }
+      // 클릭된 항목에 'active' 클래스 추가
+      e.target.classList.add("active");
+      
+      // 하단의 정보창 비우기
+      dateInfo.textContent="";
+      timeInfo.textContent="";
+      // 하단의 극장 정보에 선택한 극장 정보 입력
+      theaterInfo.textContent = theater+' VORA';
+      
+      // 날짜 리스트 업데이트
+      dateList.innerHTML = "";
+      theaterDateData[theater].forEach(date => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        const { formattedDate, color } = formatDate(date); // 날짜 포맷과 색상 정보 받기
+        li.textContent = formattedDate; // 날짜 텍스트만 추가
+        li.setAttribute("data-date", date);
+        li.setAttribute("cinema", theater)
+        li.style.color = color; // 색상 적용
+        li.style.textAlign = "center"; // 가운데 정렬
+        dateList.appendChild(li);
+
+        // 클릭 이벤트 리스너 추가
+        li.addEventListener("click", function (e) {
+          const selectedDate = e.target.getAttribute("data-date");
+          const selectedCinema = e.target.getAttribute("cinema");
+
+          // console.log("클릭된 날짜:", selectedDate);
+          // console.log("클릭된 영화관:", selectedCinema);
+
+          // 선택 후 원하는 작업 수행
+          handleDateClick(selectedCinema, selectedDate);
+        });
+
+      });
+
+      // 초기화
+      timeContainer.innerHTML = "";
+    });
+
+    // 클릭 이벤트 처리 함수
+    function handleDateClick(cinema, date) {
+      // console.log(`선택된 영화관: ${cinema}, 선택된 날짜: ${date}`);
+
+      // 선택 후 DOM 요소 활성화
+      const activeItem = document.querySelector("#date-list .list-group-item.active");
+      if (activeItem) {
+        activeItem.classList.remove("active");
+      }
+      const clickedItem = document.querySelector(`[data-date="${date}"][cinema="${cinema}"]`);
+      if (clickedItem) {
+        clickedItem.classList.add("active");
+      }
+
+      // 시간 정보 초기화 및 업데이트
+      timeInfo.textContent = "";
+      dateInfo.textContent = formatDate2(date);
+
+      // 하단 데이터 초기화 및 새 시간 리스트 업데이트
+      const timeContainer = document.querySelector("#time-container");
+      timeContainer.innerHTML = "";
+      
+      const selectedData = dateTimeData[cinema].find(d => d.date === date);
+
+      if (selectedData && selectedData.theaters) {
+        selectedData.theaters.forEach(({ theater, times }) => {
+          const theaterHeader = document.createElement("h5");
+          theaterHeader.className = "theater-header";
+          theaterHeader.textContent = `${theater} 상영실`;
+          timeContainer.appendChild(theaterHeader);
+
+          const flexContainer = document.createElement("div");
+          flexContainer.className = "d-flex flex-wrap";
+
+          times.forEach(({ time, seats , movieId }) => {
+            const timeBox = document.createElement("div");
+            timeBox.className = "d-flex align-items-center me-3 mb-3 time-box";
+            timeBox.innerHTML = `
+              <button class="${seats !== 0 ? "btn-time" : "btn-mazin"}" seat="${seats}" data-MovieId="${movieId}" data-theater="${theater}" ${seats === 0 ? "disabled" : ""}>
+                ${time}
+              </button>
+              <p class="m-0">${seats === 0 ? "매진" : `${seats}석`}</p>
+            `;
+            flexContainer.appendChild(timeBox);
+          });
+
+          timeContainer.appendChild(flexContainer);
+          const theaterHr = document.createElement("hr");
+          timeContainer.appendChild(theaterHr);
+        });
+      } else {
+        console.error("해당 선택한 날짜 및 영화관 데이터가 존재하지 않습니다.");
+      }
+    }
+
+    var seatInfo = document.querySelector("#seat-info")
+    // 시간 버튼 클릭 이벤트
+    timeContainer.addEventListener("click", function (e) {
+      if (e.target && e.target.classList.contains("btn-time")) {
+        const button = e.target;
+        const time = button.textContent;
+        const theater = button.getAttribute("data-theater"); // 상영관 정보 가져오기
+        var movieId = e.target.getAttribute("data-movieId"); // 상영시간 무비ID 가져오기
+        // console.log("아이디 : ",movieId)
+        timeInfo.textContent = theater+' 상영실, '+time
+        seatInfo.textContent = e.target.getAttribute("seat")
+        // console.log(seatInfo.textContent)
+
+        // **활성화된 항목 관리**: 기존 활성화된 항목 제거
+        // 모든 .btn-time 버튼들을 선택
+        const timeButtons = document.querySelectorAll('.btn-time');
+        // 각 버튼에 대해 배경색을 하얀색으로 설정
+        timeButtons.forEach(button => {
+          button.classList.remove("active");
+        });
+        // 클릭된 항목에 'active' 클래스 추가
+        e.target.classList.add("active");
+        
+        // 좌석선택 버튼 클릭 이벤트 초기화 및 재등록
+        const ticketSeatButton = document.getElementById("ticketSeat");
+
+        // 기존 이벤트 리스너 제거
+        ticketSeatButton.replaceWith(ticketSeatButton.cloneNode(true));
+        
+        document.getElementById("ticketSeat").addEventListener("click", function() {
+          ticketSeat(movieId)
+        });
+      }
+    });
+      
+    // 좌석선택 이동
+    function ticketSeat(movieId){
+      // seat값이랑 person 값 비교문 넣어야합 if
+      // **********************************
+      let theaterListId = movieId; //햇갈릴까봐 변경 상영시간기준 영화ID
+      var adult = document.getElementById("adult")
+      var student = document.getElementById("student")
+      var person1 = parseInt(adult.getAttribute("person"))
+      var person2 = parseInt(student.getAttribute("person"))
+      
+      var person = person1 + person2;
+
+      if(parseInt(seatInfo.textContent) < person){
+        alert("남은 좌석수가 부족합니다.")
+        return
+      }
+
+      var money = (person1 * 10000) + (person2 * 5000);
+
+
+      location.href = "/m/s?theaterListId="+theaterListId+"&person=" + person +"_"+money;
+    }
+
+    function aup(){
+      var adult = document.getElementById("adult")
+      var person = parseInt(adult.getAttribute("person"))
+      person = person + 1;
+      adult.setAttribute("person", person);
+      adult.textContent = person;
+      // console.log(person);
+    }
+    function adown(){
+      var adult = document.getElementById("adult")
+      var person = parseInt(adult.getAttribute("person"))
+      if(person > 0){
+        person = person - 1;
+      }
+      adult.setAttribute("person", person);
+      adult.textContent = person;
+      
+    }
+    function sup(){
+      var student = document.getElementById("student")
+      var person = parseInt(student.getAttribute("person"))
+      person = person + 1;
+      student.setAttribute("person", person);
+      student.textContent = person;
+      
+    }
+    function sdown(){
+      var student = document.getElementById("student")
+      var person = parseInt(student.getAttribute("person"))
+      if(person > 0){
+        person = person - 1;
+      }
+      student.setAttribute("person", person);
+      student.textContent = person;
+
+    }
+
+    // 페이지 로딩이 끝난 후 area() 실행
+    window.onload = function() {
+      area();
+    };
+  </script>
+</body>
+</html>

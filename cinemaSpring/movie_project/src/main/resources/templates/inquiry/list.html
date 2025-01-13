@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 리스트</title>
+    <link rel="stylesheet" href="/css/noticeList.css">
+</head>
+<body layout:fragment="content">
+    <div class="title" style="margin-bottom: 80px;">
+        <h5 style="color: white;">고객센터</h5>
+    </div>
+    <div class="container" style="min-height: 450px;">
+        <form action="/inquiry/list" method="get" id="form">
+            <div class="mb-2" style="display:flex;">
+                <select class="form-select" style="width: 100px; margin-right: 1px;" name="option">
+                    <option value="1" th:selected="${option==1}">제목</option>
+                    <option value="2" th:selected="${option==2}">내용</option>
+                    <option value="3" th:selected="${option==3}">작성자</option>
+                </select>
+                <input type="text" class="form-control" style="width: 200px; margin-right: 1px;" name="keyword" placeholder="검색어를 입력해주세요."
+                    th:value="${param.keyword}">
+                <button type="submit" class="btn custom-btn" style="width: 80px;">검색</button>
+            </div>
+        </form>
+        <table class="custom-table mb-3">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center" style="width:10%">번호</th>
+                    <th scope="col" class="text-center" style="width:10%">상태</th>
+                    <th scope="col" style="width:50%">제목</th>
+                    <th scope="col" class="text-center" style="width:20%">작성자</th>
+                    <th scope="col" class="text-center" style="width:10%">등록일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <th:block th:each="inquiry : ${inquiryList.list}">
+                    <tr>
+                        <th class="text-center" scope="row" th:text="${inquiry.no}"></th>
+                        <td class="text-center" scope="row" th:text="${inquiry.status == 1 ? '답변완료' : '답변대기'}"></td>
+                        <td class="text-start">
+                            <a style="color: black;" href="#" 
+                            th:attr="data-id=${inquiry.id},
+                            data-type=${inquiry.type},
+                            data-password=${inquiry.password}"
+                            onclick="checkType(this)">
+                                <i class="fa fa-lock me-1" th:if="${inquiry.type == 0}"></i> 
+                                <span th:text="${inquiry.title}"></span>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <span th:text="${inquiry.username}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span th:text="${ #dates.format( inquiry.regDate, 'yyyy.MM.dd' ) }"></span>
+                        </td>
+                    </tr>
+                </th:block>
+            </tbody>
+        </table>
+        <th:block sec:authorize="isAuthenticated()">
+            <a href="/inquiry/insert" class="btn custom-btn float-end">작성</a>
+        </th:block>
+        <th:block th:if="${inquiryList.pages > 0}">
+            <div class="pagination mt-5 flex justify-content-center">
+            <ul style="display: flex; list-style-type: none; gap: 10px; justify-content: center;">
+                <li th:if="${inquiryList.pageNum > 1}">
+                    <a th:href="@{/inquiry/list(page=1),option=${option},keyword=${keyword}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon" transform="scale(-1, 1)">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+                <li th:if="${inquiryList.hasPreviousPage}">
+                    <a th:href="@{/inquiry/list(page=${inquiryList.prePage},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(inquiryList.navigateFirstPage, inquiryList.navigateLastPage)}">
+                    <a  th:href="@{/inquiry/list(page=${i},option=${option},keyword=${keyword})}" 
+                        th:text="${i}"
+                        class="page"
+                        th:classappend="${inquiryList.pageNum == i} ? 'active' : ''"></a>
+                </li>
+                <li th:if="${inquiryList.hasNextPage}">
+                    <a th:href="@{/inquiry/list(page=${inquiryList.nextPage},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:if="${inquiryList.pageNum < inquiryList.pages}">
+                    <a th:href="@{/inquiry/list(page=${inquiryList.pages},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+            </div>
+        </th:block>
+        <div class="modal" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="width: 300px;">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-center align-items-center">
+                        <h5 class="modal-title" id="passwordModalLabel">비밀번호 인증</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="password" id="modalPassword" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <small class="text-danger mt-2 d-none" id="passwordError">비밀번호가 틀렸습니다.</small>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" id="confirmPasswordBtn">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    let selectedInquiryId = null;
+    let actualPassword = null;
+    const userRoles = "[[${#authentication.authorities}]]";
+
+    function checkType(element) {
+        const inquiryId = element.getAttribute('data-id');
+        const inquiryType = element.getAttribute('data-type');
+        const inquiryPassword = element.getAttribute('data-password');
+        console.log()
+        if (userRoles.includes('ROLE_SUPER') || userRoles.includes('ROLE_INQUIRY')) {
+            // 사용자가 admin 또는 role_inquiry 권한을 가지면 바로 이동
+            window.location.href = `/inquiry/select/${inquiryId}`;
+            return;
+        }
+        if (inquiryType === '0') {
+            // Type이 0인 경우 모달 창 표시
+            selectedInquiryId = inquiryId;
+            actualPassword = inquiryPassword;
+
+            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+        } else {
+            // Type이 1인 경우 바로 이동
+            window.location.href = `/inquiry/select/${inquiryId}`;
+        }
+    }
+
+    document.getElementById('confirmPasswordBtn').addEventListener('click', () => {
+        const inputPassword = document.getElementById('modalPassword').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (inputPassword === actualPassword) {
+            // 비밀번호가 맞으면 다음 화면으로 이동
+            window.location.href = `/inquiry/select/${selectedInquiryId}/${actualPassword}`;
+        } else {
+            // 비밀번호가 틀리면 에러 메시지 표시
+            passwordError.classList.remove('d-none');
+        }
+    });
+</script>
+
+</body>
+</html>

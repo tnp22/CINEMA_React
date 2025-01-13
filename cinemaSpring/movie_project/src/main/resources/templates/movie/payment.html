@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영화 좌석선택 페이지</title>
+  <link rel="stylesheet" href="/css/ticket.css">
+</head>
+<body layout:fragment="content">
+  <div class="container-fluid p-0 d-flex">
+    <div class="header flex-fill"></div>
+    <div class="container p-0">
+        <!-- 본문 -->
+        <div class="row  m-0 p-0 w-100 col-3 text-center">
+            <div class="col p-0">
+                <!-- 좌석 -->
+                <div class="header"><h5>좌석 선택</h5></div>
+                <div class="container mt-5">
+                  <!-- Header -->
+                  <div class="text-center mb-4">
+                      <h2>결제가 완료되었습니다.</h2>
+                  </div>
+          
+                  <div class="row">
+                      <!-- 영화 이미지 -->
+                      <div class="col-md-4">
+                          <img th:src="|/img?id=${movie.files.id}|" width="200" height="300" alt="영화 포스터" class="img-fluid rounded">
+                      </div>
+          
+                      <!-- 결제 정보 -->
+                      <div class="col-md-8">
+                          <table class="table table-bordered">
+                              <tbody>
+                                  <tr>
+                                      <th>영화명</th>
+                                      <td th:text="${reserve.title}"></td>
+                                      <th>일시</th>
+                                      <td th:text="${reserve.date}"></td>
+                                  </tr>
+                                  <tr>
+                                      <th>극장</th>
+                                      <td th:text="${reserve.areaSub} + ' VORA'"></td>
+                                      <th>거래일시</th>
+                                      <td th:text="${ #dates.format( reserve.regDate, 'yyyy년 MM월 dd일(E) HH시 mm분' ) }"></td>
+                                  </tr>
+                                  <tr>
+                                      <th>상영관</th>
+                                      <td th:text="${reserve.theater}+' 상영관, '+${reserve.time}"></td>
+                                      <th>거래상태</th>
+                                      <td>승인</td>
+                                  </tr>
+                                  <tr>
+                                      <th>좌석</th>
+                                      <td colspan="3" th:text="${reserve.seat}"></td>
+                                  </tr>
+                                  <tr>
+                                      <th>인원</th>
+                                      <td colspan="3" th:text="'총 '+${reserve.person}+'명'">총 6명</td>
+                                  </tr>
+                                  <tr>
+                                      <th>승인번호</th>
+                                      <td colspan="3" th:text="${reserve.id}">00000000</td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="header flex-fill"></div>
+  </div>
+  <!-- 하단 바 -->
+  <div class="container-fluid">
+    <div class="container d-flex justify-content-center p-0 " style="height:200px;">
+        <!-- 버튼 영역 -->
+        <div class="text-center mt-4">
+          <button class="btn btn-secondary me-2" th:onclick="remove([[${reserve.id}]])">예매취소</button>
+          <button class="btn btn-primary me-2" onclick="List()">예매 내역</button>
+          <button class="btn btn-primary" onclick="window.location.href='/'">메인으로</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function List(){
+        location = '/m/rsList';
+    }
+    function remove(id){
+
+    let data = {
+        'id' : id
+    };
+    if (confirm("삭제하시겠습니까?")) {
+        let request = new XMLHttpRequest();
+    let url = '/m/delete';
+    request.open('DELETE', url, true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    let csrfToken = "[[${_csrf.token}]]";
+    request.setRequestHeader("X-CSRF-TOKEN", csrfToken);
+    request.onreadystatechange = function() {
+    if( request.readyState == request.DONE && request.status == 200){
+        let response = request.responseText
+        if(response == 'SUCCESS'){
+            console.log('예매 취소 성공')
+            window.location.href = "/m/rsList";
+        }
+        else{
+            alert('예매 취소 실패')
+        }
+    }}
+
+    request.send(JSON.stringify(data));
+    }
+
+
+    }
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

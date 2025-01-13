@@ -1,0 +1,101 @@
+/* 스크롤 박스 스타일 */
+.scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll; /* 수직 스크롤 활성화 */
+  border: none;
+  padding-left: 20px;
+  padding-right: 15px;
+}
+/* 스크롤 커스터마이징 */
+.scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: white;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: #666;
+}
+.header {
+  height: 70px;
+  background-color: #583BBF;
+  color: white;
+  text-align: center;
+  align-content: center;
+}
+.content {
+  width: 100%;
+  height: 500px;
+  text-align: left;
+}
+
+.b-top {
+  border-top: 2px solid #C3B2FD;
+}
+
+.b-right{
+  border-right: 2px solid #C3B2FD;
+}
+.reserve-img img{
+  width: 140px; 
+  height: 180px; 
+  object-fit: cover;
+}
+.reserve-btn{
+  border-radius: 10%;
+  background-color: #583BBF;
+  color: white;
+  width: 130px;
+  height: 130px;
+}
+.reserve-btn:hover{
+  opacity: 90%;
+  background-color: #583BBF;
+  color: white;
+}
+.list-group{
+  border-radius: 0;
+}
+.list-group-item{
+    text-align: center;
+  border: none;
+}
+.list-group-item:hover{
+  background-color: #C3B2FD;
+  color: #583BBF;
+  font-size: 18px;
+}
+.list-group-item.active {
+  background-color: #C3B2FD;
+  color: #583BBF;
+  font-weight:600;
+  font-size: 18px;
+}
+
+.btn-time{
+    background-color: white;
+    border: 1px solid #C3B2FD;
+    margin-right: 5px;
+}
+
+.btn-time:hover{
+    background-color: #583BBF;
+    color: white;
+}
+
+.btn-time.active{
+    background-color: #583BBF;
+    color: white;
+}
+.btn-mazin{
+    background-color: white;
+    border: 1px solid #C3B2FD;
+    margin-right: 5px;
+}
+span{
+    font-weight: normal;
+}
+.time-box{
+    width: 120px;
+}

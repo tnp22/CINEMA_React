@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.InquiryMapper">
+    <select id="list" resultType="Inquiry">
+       select * from inquiry 
+      <if test="option==1">
+      where
+         title LIKE CONCAT('%', #{keyword}, '%')
+      </if>
+      <if test="option==2">
+      where
+         content LIKE CONCAT('%', #{keyword}, '%')
+      </if>
+      <if test="option==3">
+      where
+         username LIKE CONCAT('%', #{keyword}, '%')
+      </if>
+       order by reg_date desc
+    </select> 
+
+    <select id="inquiries" resultType="Inquiry">
+       select * from inquiry 
+      <if test="option==1">
+      where
+         title LIKE CONCAT('%', #{keyword}, '%') and username=#{username}
+      </if>
+      <if test="option==2">
+      where
+         content LIKE CONCAT('%', #{keyword}, '%') and username=#{username}
+      </if>
+      <if test="option==3">
+      where
+         username LIKE CONCAT('%', #{keyword}, '%') and username=#{username}
+      </if>
+      <if test="option==0">
+      where username=#{username}
+      </if>
+       order by reg_date desc
+    </select> 
+
+    <select id="select" resultType="Inquiry">
+        select * from inquiry where id = #{id}
+     </select>
+
+     <insert id="insert">
+         insert into inquiry
+         (id,type
+         <if test="type==0">
+            ,password
+         </if>
+         ,title,content,username)
+         VALUES
+         (#{id},#{type}
+         <if test="type==0">
+            ,#{password}
+         </if>
+         ,#{title},#{content},#{username})
+     </insert>
+
+     <update id="update">
+         update inquiry
+         set title = #{title}
+           , content = #{content}
+           , upd_date = now()
+           , type = #{type}
+           <if test="type==1">
+           , password=""
+           </if>
+           <if test="type==0">
+           , password = #{password}
+           </if>
+         where id = #{id}
+     </update>
+
+    <update id="replyUpdate">
+        update inquiry
+         set reply = #{reply},
+         status = 1
+         where id = #{id}
+    </update>
+
+    <update id="replyDelete">
+        update inquiry
+         set reply = "",
+         status = 0
+         where id = #{id}
+    </update>
+
+     <delete id="delete">
+         delete from inquiry where id = #{id}
+     </delete>
+</mapper>

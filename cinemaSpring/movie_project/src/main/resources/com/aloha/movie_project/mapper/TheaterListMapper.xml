@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movie_project.mapper.TheaterListMapper">
+
+    <resultMap id="TheaterMap" type="TheaterList">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="movieId" column="movie_id" />
+        <result property="theaterId" column="theater_id" />
+        <result property="cinemaId" column="cinema_id" />
+        <result property="time" column="time" />
+
+        <association property="cinema" javaType="Cinema">
+            <id property="no" column="cinema_no" />
+            <result property="id" column="cinema_id" />
+            <result property="area" column="area" />
+            <result property="areaSub" column="area_sub" />
+        </association>
+
+        <association property="theater" javaType="Theater">
+            <id property="no" column="theater_no" />
+            <result property="id" column="theater_id" />
+            <result property="name" column="theater_name" />
+            <result property="map" column="map" />
+            <result property="seat" column="seat" />
+        </association>
+    
+        <association property="movie" javaType="Movie">
+            <id property="no" column="movie_no" />
+            <result property="id" column="movie_id" />
+            <result property="title" column="title" />
+        </association>
+    </resultMap>
+
+
+
+    <!-- 조회 -->
+    <select id="select" resultMap="TheaterMap">
+        SELECT tl.*, c.no cinema_no, c.id cinema_id, c.area, c.area_sub
+            , t.no theater_no, t.id theater_id, t.name theater_name, t.map,t.seat seat
+            , m.no movie_no, m.id movie_id, m.title
+        FROM 
+            theater_list tl
+        JOIN 
+            cinema c ON tl.cinema_id = c.id
+        JOIN 
+            theater t ON tl.theater_id = t.id
+        JOIN 
+            movie m ON tl.movie_id = m.id  <!-- 수정된 부분 -->
+        WHERE 
+            tl.id = #{id}
+    </select>
+
+    <!-- 영화 생성 -->
+    <insert id="insert">
+        INSERT INTO `theater_list` (`id`,`movie_id`,`theater_id`,`cinema_id`,`time`)
+        VALUES ( #{id},#{movieId}, #{theaterId}, #{cinemaId}, #{time})
+    </insert>
+
+    <!-- 영화 정보 수정 -->
+    <update id="update">
+        UPDATE `theater_list`
+           SET movie_id = #{movieId}
+              ,theater_id = #{theaterId}
+              ,cinema_id = #{cinemaId}
+              ,time = #{time}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="Map" resultMap="TheaterMap">
+        SELECT tl.*, c.no cinema_no, c.id cinema_id, c.area, c.area_sub
+            , t.no theater_no, t.id theater_id, t.name theater_name, t.map,t.seat seat
+            , m.no movie_no, m.id movie_id, m.title
+        FROM 
+            theater_list tl
+        JOIN 
+            cinema c ON tl.cinema_id = c.id
+        JOIN 
+            theater t ON tl.theater_id = t.id
+        JOIN 
+            movie m ON tl.movie_id = m.id  <!-- 수정된 부분 -->
+        WHERE 
+            (tl.cinema_id = #{keyword1})
+            AND (m.title LIKE CONCAT('%', #{keyword2}, '%') )
+    </select>
+
+        <!-- 검색 목록 -->
+    <select id="list" parameterType="String" resultMap="TheaterMap">
+        SELECT tl.*, c.no cinema_no, c.id cinema_id, c.area, c.area_sub
+            , t.no theater_no, t.id theater_id, t.name theater_name, t.map,t.seat seat
+            , m.no movie_no, m.id movie_id, m.title
+        FROM 
+            theater_list tl
+        JOIN 
+            cinema c ON tl.cinema_id = c.id
+        JOIN 
+            theater t ON tl.theater_id = t.id
+        JOIN 
+            movie m ON tl.movie_id = m.id  <!-- 수정된 부분 -->
+        WHERE 
+            tl.cinema_id = #{keyword}
+    </select>
+
+    <!-- 검색 목록 -->
+    <select id="timeSearch" parameterType="String" resultMap="TheaterMap">
+        SELECT tl.*, c.no cinema_no, c.id cinema_id, c.area, c.area_sub
+            , t.no theater_no, t.id theater_id, t.name theater_name, t.map,t.seat seat
+            , m.no movie_no, m.id movie_id, m.title
+        FROM 
+            theater_list tl
+        JOIN 
+            cinema c ON tl.cinema_id = c.id
+        JOIN 
+            theater t ON tl.theater_id = t.id
+        JOIN 
+            movie m ON tl.movie_id = m.id  <!-- 수정된 부분 -->
+        WHERE
+            <![CDATA[tl.time >= CURRENT_TIMESTAMP]]> and m.id LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+</mapper>

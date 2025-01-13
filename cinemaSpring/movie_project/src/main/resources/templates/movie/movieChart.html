@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 차트 및 상영 예정작</title>
+    <link rel="stylesheet" href="/css/movieChart.css">
+</head>
+<body layout:fragment="content" style="margin-top: 200px;">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>영화차트</h2>
+          <ul class="nav nav-tabs" id="movieTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                  <a th:class="|nav-link ${tab == 'movie' ? 'active' : ''}|" id="chart-tab" data-bs-toggle="tab" data-bs-target="#chart" type="button" role="tab">영화 차트</a>
+              </li>
+              <h3 style="opacity: 50%;">│</h3>
+              <li class="nav-item" role="presentation">
+                  <a th:class="|nav-link ${tab == 'expect' ? 'active' : ''}|" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">상영 예정작</a>
+              </li>
+          </ul>
+        </div>
+        <hr class=" mb-4">
+
+        <div class="tab-content">
+            <!-- 영화 차트 -->
+            <div th:class="|tab-pane fade${tab == 'movie' ? 'show active' : ''}|" id="chart" role="tabpanel" aria-labelledby="chart-tab">
+                <div class="row gy-5 mb-5">
+                    <th:block  th:each="movie, iterStat  : ${moviePageInfo.list}">
+                        <div class="col-md-3 d-flex justify-content-center">
+                          <div class="card">
+                            <div class="card-header">
+                                <p th:text="|No. ${(moviePageInfo.pageNum-1)*8 + 1 + iterStat.index}|" style="position: relative; bottom: 5px;"></p>
+                            </div>
+                            <a th:href="|/movie/movieInfo?id=${movie.id}|">
+                                <img th:src="|/img?id=${movie.files.id}|">
+                            </a>
+                            <div class="card-body">
+                                <a th:href="|/movie/movieInfo?id=${movie.id}|"><h5 class="card-title" th:text="${movie.title}"></h5></a>
+                                <p class="card-text" th:text="|개봉일 ${ #dates.format( movie.releaseDate, 'yyyy. MM. dd' ) }|"></p>
+                                <a th:href="|/m/t?id=${movie.id}|" class="btn btn-purple">예매하기</a>
+                            </div>
+                          </div>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- 페이지네이션 -->
+                <!-- ⚡ 유동적인 페이지 번호 출력 (pagehelper)  -->
+                <th:block th:if="${moviePageInfo.pages > 0}">
+                    <div class="pagination flex justify-content-center">
+                    <ul style="display: flex; list-style-type: none; gap: 10px;">
+                        <li th:if="${moviePageInfo.pageNum > 1}">
+                            <a th:href="@{/movie/movieChart(moviePage=1, expectPage=${expectPage})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon" transform="scale(-1, 1)">
+                                <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li th:if="${moviePageInfo.hasPreviousPage}">
+                            <a th:href="@{/movie/movieChart(moviePage=${moviePageInfo.prePage}, expectPage=${expectPage})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                            </a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(moviePageInfo.navigateFirstPage, moviePageInfo.navigateLastPage)}">
+                            <a  th:href="@{/movie/movieChart(moviePage=${i}, expectPage=${expectPage})}" 
+                                th:text="${i}"
+                                class="page"
+                                th:classappend="${moviePageInfo.pageNum == i} ? 'active' : ''"></a>
+                        </li>
+                        <li th:if="${moviePageInfo.hasNextPage}">
+                            <a th:href="@{/movie/movieChart(moviePage=${moviePageInfo.nextPage}, expectPage=${expectPage})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                            </a>
+                        </li>
+                        <li th:if="${moviePageInfo.pageNum < moviePageInfo.pages}">
+                            <a th:href="@{/movie/movieChart(moviePage=${moviePageInfo.pages}, expectPage=${expectPage})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon">
+                                <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </th:block>
+            </div>
+            <!-- 상영 예정작 -->
+            <div th:class="|tab-pane fade${tab == 'expect' ? 'show active' : ''}|" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                <div class="row gy-5 mb-5">
+                    <th:block  th:each="expect, iterStat : ${expectPageInfo.list}">
+                        <div class="col-md-3 d-flex justify-content-center">
+                          <div class="card">
+                            <div class="card-header">
+                                <p th:text="|No. ${(expectPageInfo.pageNum-1)*8 + 1 + iterStat.index}|" style="position: relative; bottom: 5px;"></p>
+                            </div>
+                            <a th:href="|/movie/movieInfo?id=${expect.id}|">
+                                <img th:src="|/img?id=${expect.files.id}|">
+                            </a>
+                            <div class="card-body">
+                                <a th:href="|/movie/movieInfo?id=${expect.id}|">
+                                    <h5 class="card-title" th:text="${expect.title}"></h5>
+                                </a>
+                                <p class="card-text" th:text="|개봉일 ${ #dates.format( expect.releaseDate, 'yyyy. MM. dd' ) }|"></p>
+                                <a th:href="|/m/t?id=${expect.id}|" class="btn btn-purple">예매하기</a>
+                            </div>
+                          </div>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- 페이지네이션 -->
+                <!-- ⚡ 유동적인 페이지 번호 출력 (pagehelper)  -->
+                <th:block th:if="${expectPageInfo.pages > 0}">
+                    <div class="pagination flex justify-content-center">
+                    <ul style="display: flex; list-style-type: none; gap: 10px;">
+                        <li th:if="${expectPageInfo.pageNum > 1}">
+                            <a th:href="@{/movie/movieChart(expectPage=1, moviePage=${moviePage}, tab=expect)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon" transform="scale(-1, 1)">
+                                <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li th:if="${expectPageInfo.hasPreviousPage}">
+                            <a th:href="@{/movie/movieChart(expectPage=${expectPageInfo.prePage}, moviePage=${moviePage}, tab=expect)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                            </a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(expectPageInfo.navigateFirstPage, expectPageInfo.navigateLastPage)}">
+                            <a  th:href="@{/movie/movieChart(expectPage=${i}, moviePage=${moviePage}, tab=expect)}" 
+                                th:text="${i}"
+                                class="page"
+                                th:classappend="${expectPageInfo.pageNum == i} ? 'active' : ''"></a>
+                        </li>
+                        <li th:if="${expectPageInfo.hasNextPage}">
+                            <a th:href="@{/movie/movieChart(expectPage=${expectPageInfo.nextPage}, moviePage=${moviePage}, tab=expect)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                            </a>
+                        </li>
+                        <li th:if="${expectPageInfo.pageNum < expectPageInfo.pages}">
+                            <a th:href="@{/movie/movieChart(expectPage=${expectPageInfo.pages}, moviePage=${moviePage}, tab=expect)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon">
+                                <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

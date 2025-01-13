@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    /* X 버튼 css */
+    .closeButton {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: skyblue;
+        color: white;
+        font-size: 10px;
+        cursor: pointer;
+        /* display: flex; */
+        align-items: center;
+        justify-content: center;
+        display: block;
+    }
+
+    /* mapButton에 position: relative; 추가 */
+    .mapButton {
+        width: 75px;
+        height: 75px;
+        border-style: solid;
+        border-width: 1px;
+        background: white;
+        margin-right: 5px;
+        margin-top: 5px;
+        display: inline-block;
+        position: relative; /* 자식 요소들이 절대 위치를 가질 수 있도록 */
+        min-width: 75px; /* 최소 너비 설정 */
+        min-height: 75px; /* 최소 높이 설정 */
+        text-align: center; /* 텍스트 가운데 정렬 */
+        vertical-align: middle;
+    }
+        
+
+
+    /* 행시작문자 css */
+    .mapStart {
+        display: inline-block;
+        margin-right: 15px;
+        font-weight: bold;
+        /* font-family: monospace; 고정 폭 글꼴 설정 */
+        font-size: 20px;
+        width: 20px; /* 고정 너비 설정 */
+        text-align: center; /* 중앙 정렬 */
+    }
+
+    /* btn에 relative 추가 */
+    #btn {
+        position: relative; /* 버튼들이 상대적으로 배치되도록 */
+    }
+    
+
+</style>
+<style>
+
+
+    /* 버튼 컨테이너가 flex로 +와 - 버튼을 나란히 배치하도록 */
+/* 기본적으로 버튼 컨테이너 숨기기 */
+.button-container {
+display: flex;
+flex-direction: row;
+gap: 5px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+visibility: hidden;  /* 기본적으로 숨김 */
+opacity: 0;  /* 기본적으로 투명하게 설정 */
+transition: opacity 0.3s, visibility 0.3s;  /* 부드럽게 나타나도록 */
+}
+
+/* mapButton에 마우스 올렸을 때 button-container 보이게 하기 */
+.mapButton:hover .button-container {
+visibility: visible;  /* 호버 시 보이게 */
+opacity: 1;  /* 호버 시 불투명 */
+}
+/* + 버튼 */
+.seatButton.plus {
+width: 30px;
+height: 30px;
+font-size: 18px;
+}
+
+/* - 버튼 */
+.seatButton.minus {
+width: 30px;
+height: 30px;
+font-size: 13px;
+white-space: nowrap;  /* 텍스트가 줄 바꿈 없이 가로로 나열되도록 */
+
+/* 글자 가로, 세로 가운데 정렬 */
+display: flex;
+align-items: center;  /* 세로 가운데 정렬 */
+justify-content: center;  /* 가로 가운데 정렬 */
+}
+
+
+</style>
+<body>
+    <div style="width: 1200px auto; margin: 0 auto;">
+        <h1>좌석 생성</h1>
+        <div style="margin-bottom: 20px; text-align: right;">
+            <input type="number" name="width_length" style="width: 100px;" value="8">
+            <input type="number" name="height_length" style="width: 100px;" value="4">
+            <button type="button" onclick="create()" style="width: 80px;">생성</button>
+        </div>
+        <div style="border-style: solid; border-width: 1px; width: auto; height: auto; padding: 20px;">
+            <div style="width: auto; height: auto; margin: 0 auto; background-color: gray; text-align: center; margin-bottom: 20px;">
+                <h1>SCREEN</h1>
+            </div>
+            
+            <!-- btn안에 빈공간으로 나둬야함 -->
+            <!-- <button style="width: 50px; height: 50px; border-style: solid; border-width: 1px; background: white;"></button> -->
+            <!-- 값 저장 -->
+            <!-- <input type="hidden" value="{좌표,내용}"> -->
+            <div style="width: auto; height: auto; margin: 0 auto; border: 1px solid grey; max-width: 2240px; max-height: 600px; overflow-x: auto; overflow-y: auto; white-space: nowrap;">
+                <div id="btn" style="display: inline-block; width: 100%; height: 100%; background-color: lightblue;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="addButton">저장하기</button>
+    <button id="readButton" onclick="readMap()">불러오기(로그)</button>
+    <button id="readButton" onclick="automap()">일괄 번호새성</button>
+
+    <section id="readMap"></section>
+
+
+
+</body>
+
+    <script>
+
+
+        function readMap() {
+            // btn id 값 기준으로 자식데이터 존재여부 확인 (중복생성방지)
+            var btn = document.getElementById('btn');
+            if( btn.innerHTML.trim() !== ""){
+                if(confirm("기존 내용을 삭제합니까?")){
+                    // btn 자식데이터 삭제
+                    btn.innerHTML = "";
+                }
+            }
+            let request = new XMLHttpRequest();
+            let url = `/admin/addMap`;
+            let mapData = [];  // 함수 외부에서 mapData 선언
+
+            request.open('PUT', url, true);
+            request.setRequestHeader('Content-Type', 'application/json');
+
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        const response = JSON.parse(request.responseText);
+                        // 응답에서 mapData,x,y 할당
+                        mapData = response.readMapData;
+                        var x = mapData[0].length;
+                        var y = mapData.length;
+                        // 불러오기 실행 맵생성
+                        readMapAdd(x,y,mapData)
+                    } else {
+                        console.error("Error:", request.status, request.statusText);
+                    }
+                }
+            };
+            // 빈 객체를 전송
+            request.send(JSON.stringify({}));
+        }
+
+        
+
+        // +버튼클릭
+        function test1(id) {
+            var map = document.getElementById(id);
+
+            // 'name' 속성 값 가져오기
+            var mapValue = map.getAttribute('name');
+
+            // 'name' 속성 값 분할 (예: A_1 -> ['A', '1'])
+            var value = mapValue.split("_");
+
+            // valueId 조합 (A + 1 = A1)
+            var valueId = value[0] + value[1];
+            // console.log("valueId : " + valueId); // A1
+
+            // map의 value 속성에 valueId 설정
+            value = document.getElementById(id).value;
+            // console.log("기존 벨류값 : " + value )
+
+            values = value.split("_");
+            for (let v of values) {
+                if(v == '통로'){
+                    mapValue = '통로';
+                }
+            }
+            if(mapValue == '통로'){
+                map.value = valueId+"_"+mapValue;
+            } else{
+                map.value = valueId;
+            }
+            // 기존 텍스트노드 제거 및 텍스트 추가
+            removeNode(map, valueId)
+            // 모든 자식 요소 순회하여 숨김 처리
+            children(map)
+        }
+
+        // 통로 버튼 클릭시 (통로클릭)
+        function test2(id) {
+            var map = document.getElementById(id);
+            var mapvalue = document.getElementById(id).value;
+            map.style.marginRight = '85px';
+            value = mapvalue.split("_")
+            for (let v of value) {
+                if(v != 'null'){
+                    if(v == '통로'){
+                        map.style.marginRight = '5px';
+                        map.value = id;
+                    } else{
+                        map.value = id+"_"+'통로';
+                    }
+                }
+                else{
+                    map.value = '통로'
+                }
+            }
+            //console.log("테스트 : " + id);
+
+            // 모든 자식 요소 순회하여 숨김 처리
+            children(map)
+        }
+
+
+        
+        
+        // 맵제작 그리드 생성
+        function create(){
+            // width_length의 첫 번째 요소 값 가져오기
+            var x = document.getElementsByName('width_length')[0]?.value || null;
+            // height_length의 첫 번째 요소 값 가져오기
+            var y = document.getElementsByName('height_length')[0]?.value || null;
+
+            // btn id 값 기준으로 자식데이터 존재여부 확인 (중복생성방지)
+            var btn = document.getElementById('btn');
+            if( btn.innerHTML.trim() !== ""){
+                if(confirm("기존 내용을 삭제합니까?")){
+                    // btn 자식데이터 삭제
+                    btn.innerHTML = "";
+                }
+            }
+
+            // console.log(x);
+            // console.log(y);
+
+            // A 부터 시작하는 아스키코드
+            let ascii = 65; // 정수 = 'A'
+
+            for (var n = 0; n < y; n++) {
+                var count = 0;
+
+                    // 행 시작 문자를 표시하는 요소 생성
+                    var mapStart = document.createElement('p');
+                    mapStart.className = "mapStart";    // 행 시작문자 css 요소 클래스에 주입
+                    mapStart.textContent = String.fromCharCode(ascii)+"열"; // 현재 아스키코드 문자 (A, B, C...)
+                    btn.appendChild(mapStart); // 버튼 컨테이너에 추가
+
+                for (var i = 0; i < x; i++) {
+                    count++;
+                    // 버튼 생성
+                    var map = document.createElement("button"); // 버튼 요소 생성
+                    map.className = "mapButton"; // CSS 클래스 추가
+
+                    // 맵버튼에 onclick 속성 추가
+                    // map.onclick = function (){
+                    //     newSeat(this.id);
+                    // };
+                    addSeat(map);
+                    
+                    // id 값 A1 A2 ..... F숫자ㅑ
+                    let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환
+                    map.id = ascii2+count;
+                    var name = ascii2+"_"+count;
+                    map.setAttribute('name',name);
+                    // 벨류값 1 ~ x 저장
+                    map.value = ascii2+count;
+                    
+
+                    //map.textContent = count;
+                    // div태그에 btn ID를 가진거 밑으로 map button생성  
+                    btn.appendChild(map);
+
+                    // X 버튼 생성
+                    var closeButton = document.createElement("span");
+                    closeButton.className = "closeButton"; // CSS 클래스 추가
+                    closeButton.id = "closeButton_" + ascii2 + count; // id 추가
+                    closeButton.textContent = "X"; // 닫기 버튼 텍스트
+
+                    // X 버튼 눌렀을때 실행
+                    closeButton.onclick = function(){
+                        event.stopPropagation(); // 부모이벤트 전파 중지
+                        var parentMap = this.parentElement; // 부모 요소(버튼)에 접근
+                        // X 버튼 클릭 이벤트
+                        Xclick(this.id, parentMap)
+                    }
+                    
+                    // X 버튼을 map에 추가
+                    map.appendChild(closeButton);
+                }
+
+                // 아스키 코드 값 + 1
+                ascii += 1; // 'A' > 'B' > 'C'
+
+                // 줄바꿈 추가
+                var lineBreak = document.createElement("br");
+                btn.appendChild(lineBreak);
+            }
+
+        }
+
+        // 저장하기
+        document.getElementById('addButton').addEventListener('click', function() {
+            // width_length의 첫 번째 요소 값 가져오기
+            var x = document.getElementsByName('width_length')[0]?.value || null;
+            // height_length의 첫 번째 요소 값 가져오기
+            var y = document.getElementsByName('height_length')[0]?.value || null;
+
+            // A 부터 시작하는 아스키코드
+            let ascii = 65; // 정수 = 'A'
+            var YMap = [];
+            
+            for(var n = 1; n <= y; n++){
+                var XMap = [];
+                let count = 1;
+                let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환 (65 = 'A')
+                for(var i = 1; i <= x; i++){
+                    var contentElement = document.getElementById(ascii2 + count);
+                    if (contentElement != null) {
+                        var content = contentElement.value;
+                        XMap.push(content);
+                    } else {
+                        console.log(ascii2 + count + " 아이디가 없습니다");  // 아이디가 없으면 출력
+                    }
+                    count++;
+                }
+                YMap.push(XMap);
+                ascii++;
+            }
+            // console.log(YMap);
+            let data = {
+                'x' : x,
+                'y' : y,
+                'mapData' : YMap
+            }
+            let request = new XMLHttpRequest()
+            let url = '/admin/addMap'
+            request.open('POST', url, true)
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.send(JSON.stringify(data))
+            //console.log(YMap[2][3]);
+            request.onreadystatechange = function() {
+                if( request.readyState == request.DONE && request.status == 200){
+                    let response = request.responseText
+                    if(response == 'SUCCESS'){
+                        console.log('맵데이터 전송 성공')
+                    }
+                    else{
+                        alert('맵데이터 전송 실패')
+                    }
+                }
+            }
+        });
+
+        // 번호 일괄 생성
+        function automap(){
+            var automaping = document.getElementById("btn");
+
+            // 자식 요소가 있는지 확인
+            if (automaping.children.length > 0) {
+                //console.log("자식 요소가 있습니다.");
+
+                // width_length의 첫 번째 요소 값 가져오기
+                var x = document.getElementsByName('width_length')[0]?.value || null;
+                // height_length의 첫 번째 요소 값 가져오기
+                var y = document.getElementsByName('height_length')[0]?.value || null;
+
+                // A 부터 시작하는 아스키코드
+                let ascii = 65; // 정수 = 'A'
+                
+                var YMap = [];
+                
+                for(var n = 1; n <= y; n++){
+                    var XMap = [];
+                    let count = 1;
+                    let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환 (65 = 'A')
+
+                    for(var i = 1; i <= x; i++){
+                        var map = document.getElementById(ascii2 + count);
+                        if (map != null) {
+                            // value 값 추가
+                            map.value = ascii2 + count;
+                            var valueId = ascii2 + count
+                            
+                            // 텍스트 추가
+                            removeNode(map, valueId);
+                            
+
+                        } else {
+                            // console.log(ascii2 + count + " 아이디가 없습니다");  // 아이디가 없으면 출력
+                        }
+                        count++;
+                    }
+                    ascii++;
+                }
+
+            } else {
+                // console.log("자식 요소가 없습니다.");
+            }
+        }
+
+        //**************** 참조 기능 ****************//
+
+        // 텍스트 노드 제거
+        function removeNode(map, valueId){
+            // 기존 텍스트 노드가 있으면 제거
+            var existingTextNode = null;
+            for (const child of map.childNodes) {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    existingTextNode = child;
+                    break;
+                }
+            }
+            // 기존 텍스트 노드가 있으면 제거
+            if (existingTextNode) {
+                map.removeChild(existingTextNode);
+            }
+            // 새로운 텍스트 노드 생성 후 추가
+            var textNode = document.createTextNode(valueId);
+            map.appendChild(textNode); // map에 텍스트 노드 추가
+        }
+
+        // 모든 자식요소 순환 display = none 처리
+        function children(map){
+            const children = map.children;
+            for (const child of children) {
+                child.style.display = 'felx';
+            }
+        }
+
+        // X버튼 클릭시
+        function Xclick(id,parentMap){
+            let btnId = id.split("_")
+            // console.log(btnId[1]); //closeButton_ID > split > ID
+            var btn = document.getElementById(btnId[1])
+            btn.value = null;
+            // console.log(btn)
+            // 모든 자식 요소 순회
+            children(btn)
+
+            parentMap.style.marginRight = '5px';
+            parentMap.value = 'null';
+            removeNode(parentMap,'빈공간')
+        }
+
+        // addSeat
+        function addSeat(map, ascii2, count) {
+            // 이미 "좌석생성" 버튼이 있는지 확인
+            if (!map.querySelector(".button-container")) {
+                // 좌석생성 버튼이 없으면 새로 생성
+                var buttonContainer = document.createElement("div"); // 버튼 컨테이너 생성
+                buttonContainer.className = "button-container"; // 클래스 추가
+
+                // + 버튼 생성
+                var seatPlus = document.createElement("button");
+                seatPlus.textContent = "+";
+                seatPlus.className = "seatButton plus"; // 클래스 추가
+                seatPlus.onclick = function() {
+                    event.stopPropagation(); // 부모이벤트 전파 중지
+                    test1(map.id);  // 예시로 test1 호출, 필요시 다른 함수로 변경
+                }
+
+                // - 버튼 생성
+                var seatMinus = document.createElement("button");
+                seatMinus.textContent = "통로";
+                seatMinus.className = "seatButton minus"; // 클래스 추가
+                seatMinus.onclick = function() {
+                    event.stopPropagation(); // 부모이벤트 전파 중지
+                    test2(map.id);  // 예시로 test2 호출, 필요시 다른 함수로 변경
+                }
+
+                // 버튼들을 컨테이너에 추가
+                buttonContainer.appendChild(seatPlus);
+                buttonContainer.appendChild(seatMinus);
+
+                // 버튼 컨테이너를 map에 추가
+                map.appendChild(buttonContainer);
+            }
+        }
+
+    //**************** 불러오기 참조 기능 ****************//
+    function readMapAdd(x,y,mapData){
+        console.log(mapData);
+        console.log(" X : " + x);
+        console.log(" Y : " + y);
+        // console.log(mapData[2][0]); // (2.0 = 3.1)3.1 좌표에 기본값 C_1 출력
+
+        // A 부터 시작하는 아스키코드
+        let ascii = 65; // 정수 = 'A'
+
+        for (var n = 0; n < y; n++) {
+            var count = 0;
+
+                // 행 시작 문자를 표시하는 요소 생성
+                var mapStart = document.createElement('p');
+                mapStart.className = "mapStart";    // 행 시작문자 css 요소 클래스에 주입
+                mapStart.textContent = String.fromCharCode(ascii)+"열"; // 현재 아스키코드 문자 (A, B, C...)
+                btn.appendChild(mapStart); // 버튼 컨테이너에 추가
+
+            for (var i = 0; i < x; i++) {
+                count++;
+                // 버튼 생성
+                var map = document.createElement("button"); // 버튼 요소 생성
+                map.className = "mapButton"; // CSS 클래스 추가
+
+                // id 값 A1 A2 ..... F숫자ㅑ
+                let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환
+                map.id = ascii2+count;
+                var name = ascii2+"_"+count;
+                map.setAttribute('name',name);
+                // 벨류값 1 ~ x 저장
+                //console.log(y," ", x)
+                var mapvalue = mapData[n][i].split("_");
+                
+                // 맵불러올때 통로값 marginRigth 주기
+                var value1 = "1";
+                for (let value of mapvalue) {
+                    if(value == '통로'){
+                        map.style.marginRight = '85px';
+                        value1 = '통로'
+                        console.log(name+" : 통로라서 콘솔찍힘 : " + value)
+                        if(mapvalue[0] == '통로' || mapvalue[0] == ascii2){
+                            mapvalue[0] = '빈공간';
+                        }
+                    }
+                }
+                if(value1 == '통로' && mapvalue[0] != 'null'){
+                    map.value = mapvalue[0]+"_"+value1;
+                    map.textContent = mapvalue[0];
+                } else if(mapvalue == 'null'){
+                    map.value = mapvalue[0];
+                    map.textContent = '빈공간';
+                } else{
+                    map.value = mapvalue[0];
+                    map.textContent = mapvalue[0];
+                }
+
+                //map.textContent = count;
+                // div태그에 btn ID를 가진거 밑으로 map button생성  
+                btn.appendChild(map);
+
+                // X 버튼 생성
+                var closeButton = document.createElement("span");
+                closeButton.className = "closeButton"; // CSS 클래스 추가
+                closeButton.id = "closeButton_" + ascii2 + count; // id 추가
+                closeButton.textContent = "X"; // 닫기 버튼 텍스트
+
+                // X 버튼 눌렀을때 실행
+                closeButton.onclick = function(){
+                    event.stopPropagation(); // 부모이벤트 전파 중지
+                    var parentMap = this.parentElement; // 부모 요소(버튼)에 접근
+                    // X 버튼 클릭 이벤트
+                    Xclick(this.id, parentMap)
+                }
+                // X 버튼을 map에 추가
+                map.appendChild(closeButton);
+                // plus 통과 버튼 생성
+                addSeat(map)
+            }
+            // 아스키 코드 값 + 1
+            ascii += 1; // 'A' > 'B' > 'C'
+            // 줄바꿈 추가
+            var lineBreak = document.createElement("br");
+            btn.appendChild(lineBreak);
+        }
+    }
+    </script>
+</html>

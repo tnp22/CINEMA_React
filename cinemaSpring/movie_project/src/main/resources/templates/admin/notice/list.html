@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMINISTRATOR</title>
+    <!-- bootstrap css --> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="/script/jquery.js"></script>
+    <script src="/script/adminScript.js"></script>
+    <script src="/script/movieLi.js"></script>
+    <style>
+        .subLi{
+            display: none;
+        }
+        .movieLi{
+            display: none;
+        }
+    </style>
+    <!-- <script src="/script/adminScript.js"></script> -->
+</head>
+<body>
+    <div class="container-fluid" style="height: 98vh;">
+        <br>
+        <div>
+            <div style="display: flex; align-items: center; justify-content: start;">
+                <a style="margin-right: 30px;" href="/"><img th:src="@{/image(id='C:/upload/vora_purple_black.png')}" style="width: 105px; height: 40px;"></a>
+                <h1><a href="/admin">ADMINISTRATOR : <span class="adminTitle" sec:authentication="principal.user.name"></span></a></h1>
+            </div>
+            <div>
+                <hr class="ms-0" style="width: 700px;">
+            </div>           
+        </div>
+        <div class="row" style="height: 90%;">
+            <div class="col-md-2">
+                <div style="margin-top: 100px; font-size: 26px;">
+                    <ul>
+                        <li><a href="/admin/cinema/list">영화관</a></li>
+                        <li class="mainLi">
+                            <a href="/admin/movie/list">영화관리</a>
+                            <nav class="movieLi">
+                                <li><a href="/admin/movie/list" >영화 관리</a></li>
+                                <li><a href="/admin/cast/list" >출연진 관리</a></li>
+                            </nav>
+                        </li>
+                        <li class="mainLi">
+                            <a href="/admin/userManager/user/list">유저관리</a>
+                            <nav class="subLi">
+                                <li><a href="/admin/userManager/user/list">유저 관리</a></li>
+                                <li><a href="/admin/userManager/auth/list">권한 관리</a></li>
+                            </nav>
+                        </li>
+                        <li><a href="/admin/banner/list">배너관리</a></li>
+                        <li><a href="/admin/reviewManager/list">리뷰관리</a></li>
+                        <li><a href="/admin/notice/list" style="color: #583BBF;">공지관리</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8" style="text-align: center; padding: 20px;">
+                <h1>공지 관리</h1>
+                <br>
+                <div class="container mt-5">
+                    <table class="table table-striped table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">제목</th>
+                          <th scope="col">생성일자</th>
+                          <th scope="col">수정일자</th>
+                          <th scope="col">비고</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <th:block th:each="notice : ${pageInfo.list}">
+                            <tr style="line-height: 40px;">
+                                <td th:text="${notice.title}"></td>
+                                <td th:text="${ #dates.format( notice.regDate, 'yyyy-MM-dd (E) HH:mm' ) }"></td>
+                                <td th:text="${ #dates.format( notice.updDate, 'yyyy-MM-dd (E) HH:mm' ) }"></td>
+                                <td> 
+                                  <button class="butten" 
+                                  type="button" th:onclick="select( [[${notice.id}]] )">조회</button>
+                                </td>
+                              </tr> 
+                        </th:block>
+                        <!-- 추가 행 삽입 -->
+                      </tbody>
+                    </table>
+                    <div class="container mt-4">
+                        <form action="/admin/notice/list" class="d-flex" method="get">
+                          <input class="form-control me-3" style="width: 90%;" name="search" type="search" th:value="${search}" placeholder="검색어를 입력하세요" aria-label="Search">
+                          <input class="btn btn-outline-success" type="submit" value="검색"></input>
+                        </form>
+                    </div>
+                    <!-- 페이지네이션 -->
+                    <!-- ⚡ 유동적인 페이지 번호 출력 (pagehelper)  -->
+                    <th:block th:if="${pageInfo.pages > 0}">
+                    <div class="pagination flex justify-content-center">
+                        <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:if="${pageInfo.pageNum > 1}">
+                                <a class="page-link" th:href="@{/admin/notice/list(page=1, search=${search}, size=${pageInfo.pageSize})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" fill="currentColor" transform="scale(-1, 1)">
+                                    <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                                </a>
+                            </li>
+                            <li class="page-item" th:if="${pageInfo.hasPreviousPage}">
+                                <a class="page-link" th:href="@{/admin/notice/list(page=${pageInfo.prePage},search=${search}, size=${pageInfo.pageSize})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" fill="currentColor"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(pageInfo.navigateFirstPage, pageInfo.navigateLastPage)}">
+                                <a  th:href="@{/admin/notice/list(page=${i},search=${search}, size=${pageInfo.pageSize})}" 
+                                    th:text="${i}"
+                                    class="page-link"
+                                    th:classappend="${pageInfo.pageNum == i} ? 'active' : ''"></a>
+                            </li>
+                            <li class="page-item" th:if="${pageInfo.hasNextPage}">
+                                <a class="page-link" th:href="@{/admin/notice/list(page=${pageInfo.nextPage},search=${search}, size=${pageInfo.pageSize})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" fill="currentColor"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                                </a>
+                            </li>
+                            <li class="page-item" th:if="${pageInfo.pageNum < pageInfo.pages}">
+                                <a class="page-link" th:href="@{/admin/notice/list(page=${pageInfo.pages},search=${search}, size=${pageInfo.pageSize})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" fill="currentColor">
+                                    <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                                </svg>
+                                </a>
+                            </li>
+                        </ul>
+                        </nav>
+                    </div>
+                    </th:block>              
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div style="margin-top: 100px; font-size: 26px;">
+                    <ul class="mt-5">
+                        <li><a href="/admin/notice/insert">공지 생성</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br><br><br><br><br><br>
+        <br><br><br>
+    </div>
+
+    <script>
+        function select( id ){
+        window.location.href = '/admin/notice/select?id='+ id // 요청 전송
+      }
+    </script>
+</body>
+</html>

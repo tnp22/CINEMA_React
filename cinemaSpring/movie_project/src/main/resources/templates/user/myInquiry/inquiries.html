@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 리스트</title>
+    <link rel="stylesheet" href="/css/noticeList.css">
+</head>
+<body layout:fragment="content">
+    <div class="title" style="margin-bottom: 80px;">
+        <h5 style="color: white;">문의내역</h5>
+    </div>
+    <div class="container" style="min-height: 450px;">
+        <form action="/user/myInquiry/inquiries" method="get" id="form">
+            <div class="mb-2" style="display:flex;">
+                <select class="form-select" style="width: 100px; margin-right: 1px;" name="option">
+                    <option value="1" th:selected="${option==1}">제목</option>
+                    <option value="2" th:selected="${option==2}">내용</option>
+                    <option value="3" th:selected="${option==3}">작성자</option>
+                </select>
+                <input type="text" class="form-control" style="width: 200px; margin-right: 1px;" name="keyword" placeholder="검색어를 입력해주세요."
+                    th:value="${param.keyword}">
+                <button type="submit" class="btn custom-btn" style="width: 80px;">검색</button>
+            </div>
+        </form>
+        <table class="custom-table mb-3">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center" style="width:10%">번호</th>
+                    <th scope="col" class="text-center" style="width:10%">상태</th>
+                    <th scope="col" style="width:50%">제목</th>
+                    <th scope="col" class="text-center" style="width:20%">작성자</th>
+                    <th scope="col" class="text-center" style="width:10%">등록일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <th:block th:each="inquiry : ${inquiryList.list}">
+                    <tr>
+                        <th class="text-center" scope="row" th:text="${inquiry.no}"></th>
+                        <td class="text-center" scope="row" th:text="${inquiry.status == 1 ? '답변완료' : '답변대기'}"></td>
+                        <td class="text-start">
+                            <a th:href="|/user/myInquiry/select/${inquiry.id}|" >
+                                <span th:text="${inquiry.title}"></span>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <span th:text="${inquiry.username}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span th:text="${ #dates.format( inquiry.regDate, 'yyyy.MM.dd' ) }"></span>
+                        </td>
+                    </tr>
+                </th:block>
+            </tbody>
+        </table>
+        <a href="/user/myInquiry/insert" class="btn custom-btn float-end">작성</a>
+        <th:block th:if="${inquiryList.pages > 0}">
+            <div class="pagination mt-5 flex justify-content-center">
+            <ul style="display: flex; list-style-type: none; gap: 10px; justify-content: center;">
+                <li th:if="${inquiryList.pageNum > 1}">
+                    <a th:href="@{/user/myInquiry/inquiries(page=1),option=${option},keyword=${keyword}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon" transform="scale(-1, 1)">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+                <li th:if="${inquiryList.hasPreviousPage}">
+                    <a th:href="@{/user/myInquiry/inquiries(page=${inquiryList.prePage},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(inquiryList.navigateFirstPage, inquiryList.navigateLastPage)}">
+                    <a  th:href="@{/user/myInquiry/inquiries(page=${i},option=${option},keyword=${keyword})}" 
+                        th:text="${i}"
+                        class="page"
+                        th:classappend="${inquiryList.pageNum == i} ? 'active' : ''"></a>
+                </li>
+                <li th:if="${inquiryList.hasNextPage}">
+                    <a th:href="@{/user/myInquiry/inquiries(page=${inquiryList.nextPage},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16" class="icon"><path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z"/></svg>
+                    </a>
+                </li>
+                <li th:if="${inquiryList.pageNum < inquiryList.pages}">
+                    <a th:href="@{/user/myInquiry/inquiries(page=${inquiryList.pages},option=${option},keyword=${keyword})}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" class="icon">
+                        <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z"/>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+            </div>
+        </th:block>
+    </div>
+</body>
+</html>
