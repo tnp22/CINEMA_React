@@ -80,7 +80,7 @@ public class JwtProvider {
         // Authorization : "Bearer {jwt}"
         try{
             //jwt 추출
-            String jwt = authorization.replace("Bearar ", "");
+            String jwt = authorization.replace("Bearer ", "");
             log.info("jwt : "+jwt);
 
             SecretKey shaKey = getShaKey();
