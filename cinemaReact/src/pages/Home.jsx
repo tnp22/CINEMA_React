@@ -1,70 +1,42 @@
-import React from 'react'
-import Header from '../components/Layout/Header'
+import React, { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import HomeForm from '../components/Home/HomeForm';
-import Footer from '../components/Layout/Footer';
+import * as movie from '../apis/movie'
 
 const Home = () => {
+  const [moviePageInfo, setMoviePageInfo] = useState([]);
+  const [expectPageInfo, setExpectPageInfo] = useState([]);
+  const [bannerList, setBannerList] = useState([]);
+  const [subBannerList, setSubBannerList] = useState([]);
+  const [noticeList, setNoticeList] = useState([]);
 
-  const bannerList = [
-    { movie: { id: 1 }, files: { id: "banner1.png" } },
-    { movie: { id: 2 }, files: { id: "banner2.png" } },
-    { movie: { id: 3 }, files: { id: "banner3.png" } },
-  ];
 
-  const moviePageInfo = {
-    list: [
-      { id: 1, title: "영화 1", files: { id: "movie1.png" } },
-      { id: 2, title: "영화 2", files: { id: "movie2.png" } },
-      { id: 3, title: "영화 3", files: { id: "movie3.png" } },
-      { id: 4, title: "영화 4", files: { id: "movie4.png" } },
-      { id: 5, title: "영화 5", files: { id: "movie5.png" } },
-      { id: 6, title: "영화 6", files: { id: "movie6.png" } },
-      { id: 7, title: "영화 1", files: { id: "movie1.png" } },
-      { id: 8, title: "영화 2", files: { id: "movie2.png" } },
-      { id: 9, title: "영화 3", files: { id: "movie3.png" } },
-      { id: 10, title: "영화 4", files: { id: "movie4.png" } },
-      { id: 11, title: "영화 5", files: { id: "movie5.png" } },
-      { id: 12, title: "영화 6", files: { id: "movie6.png" } }
-    ],
+  // 게시글 목록 데이터를 가져오는 함수
+  const getList = async () => {
+    try {     
+      const response = await movie.list();
+      const data = response.data;
+      setMoviePageInfo(data.moviePageInfo);
+      setExpectPageInfo(data.expectPageInfo);
+      setBannerList(data.bannerList);
+      setSubBannerList(data.subBannerList);
+      setNoticeList(data.noticeList);
+    } catch (error) {
+      console.error('목록 데이터를 가져오는 중 오류 발생:', error);
+    }
   };
 
-  const expectPageInfo = {
-    list: [
-      { id: 7, title: "예정작 1", files: { id: "expect1.png" } },
-      { id: 8, title: "예정작 2", files: { id: "expect2.png" } },
-      { id: 9, title: "예정작 3", files: { id: "expect3.png" } },
-      { id: 10, title: "예정작 4", files: { id: "expect4.png" } },
-      { id: 11, title: "예정작 5", files: { id: "expect5.png" } },
-      { id: 12, title: "예정작 6", files: { id: "expect6.png" } },
-      { id: 13, title: "예정작 1", files: { id: "expect1.png" } },
-      { id: 14, title: "예정작 2", files: { id: "expect2.png" } },
-      { id: 15, title: "예정작 3", files: { id: "expect3.png" } },
-      { id: 16, title: "예정작 4", files: { id: "expect4.png" } },
-      { id: 17, title: "예정작 5", files: { id: "expect5.png" } },
-      { id: 18, title: "예정작 6", files: { id: "expect6.png" } }
-    ],
-  };
-
-  const noticeList = [
-    { id: 1, title: "공지사항 1" },
-    { id: 2, title: "공지사항 2" },
-  ];
-
-  const subBannerList = [
-    { files: { id: "sub-banner1.png" } },
-    { files: { id: "sub-banner2.png" } },
-  ];
-
-  const isAuthenticated = true; // 예시 로그인 상태
+  useEffect(() => {
+    getList();
+  }, []);
+  
   return (
     <>
-        <HomeForm bannerList={bannerList}
-        moviePageInfo={moviePageInfo}
-        expectPageInfo={expectPageInfo}
-        noticeList={noticeList}
-        subBannerList={subBannerList}
-        isAuthenticated={isAuthenticated}/>
+        <HomeForm moviePageInfo={moviePageInfo} 
+                  expectPageInfo={expectPageInfo} 
+                  noticeList={noticeList} 
+                  bannerList={bannerList} 
+                  subBannerList={subBannerList} />
     </>
   )
 }

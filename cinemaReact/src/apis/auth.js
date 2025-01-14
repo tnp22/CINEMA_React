@@ -1,7 +1,11 @@
 import api from './api'
 
 // 회원가입
-export const join = (data) => api.post(`/users`, data)
+export const join = (data) => api.post(`/join`, data,{
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
 // 로그인
 export const login = (username, password) => { 
@@ -16,3 +20,6 @@ export const update = (data) => api.put(`/users`, data)
 
 // 회원 탈퇴
 export const remove = (username) => api.delete(`/users/${username}`)
+
+// 중복 확인
+export const check = (username) => api.get(`/check/${username}`)

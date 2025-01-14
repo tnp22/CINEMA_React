@@ -204,7 +204,6 @@
     border-color: transparent;
     box-shadow: none;
 }
-
 .nav-tabs .nav-link{
     font-weight: normal;
     border: none;
@@ -231,5 +230,15 @@
 
 #scrollToTopBtn:hover {
   opacity: 0.9; /* 호버 시 약간 투명해지도록 설정 */
+}
+
+a{ color: black;}
+.notice-title{
+    color: black;
+}
+
+.notice-title:hover{
+    color: black;
+    text-decoration:  underline !important;
 }
   
