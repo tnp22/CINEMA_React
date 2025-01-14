@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movieproject.mapper.MovieMapper">
+
+    <resultMap id="MovieMap" type="Movie">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="type" column="type" />
+        <result property="releaseDate" column="release_date" />
+        <result property="regDate" column="reg_date" />
+        <result property="updDate" column="upd_date" />
+
+        <association property="files" javaType="Files">
+            <id property="no" column="file_no" />
+            <result property="id" column="file_id" />
+            <result property="fkId" column="fk_id"/>
+            <result property="fkTable" column="fk_table"/>
+            <result property="division" column="division"/>
+            <result property="url" column="url"/>
+        </association>
+    </resultMap>
+
+    <select id="movieList" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        <![CDATA[where m.release_date <= CURRENT_TIMESTAMP]]> and f.division = 'main'
+        order by m.release_date desc
+    </select>
+
+    <select id="expectList" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        <![CDATA[where m.release_date > CURRENT_TIMESTAMP]]> and f.division = 'main'
+        order by m.release_date desc
+    </select>
+
+    <resultMap id="MovieMap_select" type="Movie">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="type" column="type" />
+        <result property="releaseDate" column="release_date" />
+        <result property="regDate" column="reg_date" />
+        <result property="updDate" column="upd_date" />
+
+        <collection property="filesList" resultMap="files_select"></collection>
+    </resultMap>
+
+    
+    <resultMap type="Files" id="files_select">
+        <id property="no" column="file_no" />
+        <result property="id" column="file_id" />
+        <result property="fkId" column="fk_id"/>
+        <result property="fkTable" column="fk_table"/>
+        <result property="division" column="division"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+
+    <!-- 전체 목록 -->
+    <select id="list" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        where f.division = "main"
+        order by m.reg_date DESC
+    </select>
+
+    <!-- 사진 하나 조회 -->
+    <select id="select_a" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        where m.id = #{id}
+    </select>
+
+    <!-- 사진 여러 개 조회 -->
+    <select id="select" resultMap="MovieMap_select">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m LEFT OUTER JOIN files f on m.id = f.fk_id
+        where m.id = #{id}
+    </select>
+
+    <!-- 영화 생성 -->
+    <insert id="insert">
+        INSERT INTO `movie` (`id`,`title`,`content`,`type`,release_date,reg_date,upd_date)
+        VALUES ( #{id}, #{title}, #{content}, #{type}, #{releaseDate}, now(), now())
+    </insert>
+
+
+    <!-- 영화 정보 수정 -->
+    <update id="update">
+        UPDATE `movie`
+           SET title = #{title}
+              ,content = #{content}
+              ,type = #{type}
+              ,release_date = #{releaseDate}
+              ,upd_date = now()
+        WHERE id = #{id}
+    </update>
+
+    
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="String" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        WHERE (m.title LIKE CONCAT('%', #{keyword}, '%') OR m.content LIKE CONCAT('%', #{keyword}, '%')
+                OR m.type LIKE CONCAT('%', #{keyword}, '%')) and f.division = 'main'
+    </select>
+
+    <!-- 영화 상세보기 스틸컷 리스트 -->
+    <select id="stilList" resultType="Files">
+        select * from files where fk_id=#{id} and fk_table='movie' and division = 'stilcut' order by no desc
+    </select>
+
+
+    <select id="movieInfo" resultMap="MovieMap">
+        SELECT m.*, f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM movie m join files f on m.id = f.fk_id
+        where m.id = #{id} and f.division='main'
+    </select>
+</mapper> 

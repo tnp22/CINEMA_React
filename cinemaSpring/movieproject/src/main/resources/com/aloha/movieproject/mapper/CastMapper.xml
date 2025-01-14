@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="매퍼 인터페이스 경로" -->
+<mapper namespace="com.aloha.movieproject.mapper.CastMapper">
+
+    <resultMap id="CastMap" type="Cast">
+        <id property="no" column="no" />
+        <result property="id" column="id" />
+        <result property="movieId" column="movie_id" />
+        <result property="rule" column="rule" />
+        <result property="name" column="name" />
+
+        <association property="movie" javaType="Movie">
+            <id property="no" column="movie_no" />
+            <result property="id" column="movie_id"/>
+            <result property="title" column="title"/>
+        </association>
+
+        <association property="files" javaType="Files">
+            <id property="no" column="file_no" />
+            <result property="id" column="file_id" />
+            <result property="fkId" column="fk_id"/>
+            <result property="fkTable" column="fk_table"/>
+            <result property="division" column="division"/>
+            <result property="url" column="url"/>
+        </association>
+    </resultMap>
+
+    <select id="castList" resultMap="CastMap">
+        SELECT c.*,m.no movie_no ,m.id movie_id, m.title , f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM `cast` c join files f on c.id = f.fk_id
+                        join movie m on c.movie_id = m.id
+        where c.movie_id = #{id}
+    </select>
+
+    <select id="history" resultMap="CastMap">
+        SELECT c.*,m.no movie_no ,m.id movie_id, m.title 
+        FROM `cast` c join movie m on c.movie_id = m.id
+        where c.name = #{name}
+        order by c.no desc
+    </select>
+
+    <!-- 관리자용 -->
+    <select id="list" resultMap="CastMap">
+        SELECT c.*,m.no movie_no ,m.id movie_id, m.title , f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM `cast` c join files f on c.id = f.fk_id
+                    join movie m on c.movie_id = m.id
+    </select>
+
+    <select id="select" resultMap="CastMap">
+        SELECT c.*,m.no movie_no ,m.id movie_id, m.title , f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+         FROM `cast` c join files f on c.id = f.fk_id
+                    join movie m on c.movie_id = m.id
+        where c.id = #{id}
+    </select>
+
+    <!-- 생성 -->
+    <insert id="insert">
+        INSERT INTO `cast` (`id`,`name`,`movie_id`,`rule`)
+        VALUES ( #{id}, #{name}, #{movieId}, #{rule})
+    </insert>
+
+    <!-- 수정 -->
+    <update id="update">
+        UPDATE `cast`
+           SET movie_id = #{movieId}
+              ,rule = #{rule}
+              ,name = #{name}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검색 목록 -->
+    <select id="search" parameterType="String" resultMap="CastMap">
+        SELECT c.*,m.no movie_no ,m.id movie_id, m.title , f.no file_no, f.id file_id, f.fk_id, f.fk_table, f.division, f.url
+        FROM `cast` c join files f on c.id = f.fk_id
+                            join movie m on c.movie_id = m.id
+        WHERE (c.name LIKE CONCAT('%', #{keyword}, '%') OR c.rule = REPLACE(#{keyword}, '감독', 'director')
+                OR c.rule = REPLACE(#{keyword}, '배우', 'actor')
+                OR c.movie_id = (SELECT m.id FROM movie m WHERE m.title LIKE CONCAT('%', #{keyword}, '%') LIMIT 1 ) )
+    </select>
+
+    <!-- 삭제 -->
+    <delete id="delete">
+        DELETE FROM `cast`
+        WHERE id = #{id}
+    </delete>
+    
+
+</mapper> 
