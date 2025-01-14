@@ -13,8 +13,6 @@
         <h5 style="color: white;">회원가입</h5>
     </div>
     <form id="form" action="/join" method="post" class="needs-validation" enctype="multipart/form-data" onsubmit="return checkSubmit(event)">
-        <!-- CSRF TOKEN -->
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
 
                 <!-- 회원가입 폼 -->
@@ -49,23 +47,9 @@
                 <button type="submit" style="width: 150px;" class="btn btn-purple">회원 가입</button>
             </div>
         </div>
-            <!-- <div class="profile-image-container">
-                <div class="profile-image" id="profileImage">
-                  <span style="font-size: 50px;"></span>
-                </div>
-            </div>
-            <div class="profile-upload-btn mb-4">
-                <label for="fileInput" class="btn">이미지 등록</label>
-                <input type="file" name="file" id="fileInput" accept="image/*">
-            </div> -->
-
     </form>
 
     <script>
-        // const fileInput = document.getElementById('fileInput');
-        // const profileImage = document.getElementById('profileImage');
-        // 💍 CRSF TOKEN
-        const csrfToken = "[[${_csrf.token}]]"
         const password = document.getElementById('password');
         const passwordCheck = document.getElementById('passwordCheck');
         const errorMessage = document.getElementById('errorMessage');
@@ -84,22 +68,6 @@
         }
         // 입력 필드에 이벤트 리스너 추가
         passwordCheck.addEventListener('blur', validatePasswords);
-
-        // // 프로필 이미지 추가
-        // fileInput.addEventListener('change', function(event) {
-        //     const file = event.target.files[0];
-
-        //     if (file) {
-        //         const reader = new FileReader();
-
-        //         reader.onload = function(e) {
-        //         // 이미지 태그 추가
-        //         profileImage.innerHTML = `<img src="${e.target.result}" alt="프로필 이미지">`;
-        //         };
-
-        //         reader.readAsDataURL(file);
-        //     }
-        // });
 
         /*
             아이디 중복 확인
