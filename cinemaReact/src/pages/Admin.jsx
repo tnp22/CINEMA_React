@@ -70,8 +70,8 @@ const admin = () => {
           <Route path="/cinema/update" element={<CinemaUpdate/>}></Route>
           <Route path="/cinema/updateList" element={<CinemaUpdateList/>}></Route>
 
-          <Route path="/movie/list" element={<MovieInsert/>}></Route>
-          <Route path="/movie/insert" element={<MovieList/>}></Route>
+          <Route path="/movie/list" element={<MovieList/>}></Route>
+          <Route path="/movie/insert" element={<MovieInsert/>}></Route>
           <Route path="/movie/select" element={<MovieSelect/>}></Route>
           <Route path="/movie/update" element={<MovieUpdate/>}></Route>
 

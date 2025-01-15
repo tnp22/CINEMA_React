@@ -1,64 +1,83 @@
-import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 const LeftSideBar1 = () => {
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // 스타일을 동적으로 삽입하기
+    const links = document.querySelectorAll('.AdminCINEMA');
+    links.forEach(link => {
+      if (link.getAttribute('to') === "/admin") {
+        link.classList.add('aactivee');  // 특정 링크에만 'aactivee' 클래스 추가
+      }
+    });
+
+    return () => {
+    };
+  }, []);
+
   return (
     <div className="col-md-2">
-        <style>
-    {`
-        .aactivee {
-        color: #583BBF;
-        }
-    `}
-    </style>
+      <style>
+        {`
+          .aactivee {
+            color: #583BBF !important;
+          }
+          .aactivee:hover {
+            color: #A88EFF !important;
+          }
+        `}
+      </style>
     <div style={{ marginTop: '100px', fontSize: '26px' }}>
       <ul>
         <li>
-          <NavLink to={`/admin`}
-            className={({ isActive }) => (isActive ? "aactivee" : "")}
-          >
+          <Link className={location.pathname === "/admin" ? "aactivee" : ""}
+            to={`/admin`}>
             영화관
-          </NavLink>
+          </Link>
         </li>
         <li className="mainLi">
-          <NavLink to={`/admin/movie/list`}
-          className={({ isActive }) => (isActive ? "aactivee" : "")} >영화관리</NavLink>
-          <nav className="subLi">
+          <Link to={`/admin/movie/list`}
+            className={location.pathname.startsWith("/admin/movie") ? "aactivee" : ""} 
+          >영화관리</Link>
+          <nav className="movieLi">
             <li>
-              <NavLink to={`/admin/movie/list`}
-              className={({ isActive }) => (isActive ? "aactivee" : "")}>영화 관리</NavLink>
+              <Link to={`/admin/movie/list`}
+             className={location.pathname.startsWith("/admin/movie") ? "aactivee" : ""}>영화 관리</Link>
             </li>
             <li>
-              <NavLink to={`/admin/cast/list`} 
-              className={({ isActive }) => (isActive ? "aactivee" : "")}>출연진 관리</NavLink>
+              <Link to={`/admin/cast/list`} 
+              className={location.pathname.startsWith("/admin/cast") ? "aactivee" : ""}>출연진 관리</Link>
             </li>
           </nav>
         </li>
         <li className="mainLi">
-          <NavLink to={`/admin/userManager/user/list`}
-          className={({ isActive }) => (isActive ? "aactivee" : "")}>유저관리</NavLink>
+          <Link to={`/admin/user/list`}
+          className={location.pathname.startsWith("/admin/user") ? "aactivee" : ""}>유저관리</Link>
           <nav className="subLi">
             <li>
-              <NavLink to={`/admin/userManager/user/list`}
-              className={({ isActive }) => (isActive ? "aactivee" : "")}>유저 관리</NavLink>
+              <Link to={`/admin/user/list`}
+              className={location.pathname.startsWith("/admin/user") ? "aactivee" : ""}>유저 관리</Link>
             </li>
             <li>
-              <NavLink to={`/admin/userManager/auth/list`}
-              className={({ isActive }) => (isActive ? "aactivee" : "")} >권한 관리</NavLink>
+              <Link to={`/admin/auth/list`}
+              className={location.pathname.startsWith("/admin/auth") ? "aactivee" : ""} >권한 관리</Link>
             </li>
           </nav>
         </li>
         <li>
-          <NavLink to={`/admin/banner/list`}
-          className={({ isActive }) => (isActive ? "aactivee" : "")}>배너관리</NavLink>
+          <Link to={`/admin/banner/list`}
+          className={location.pathname.startsWith("/admin/banner") ? "aactivee" : ""}>배너관리</Link>
         </li>
         <li>
-          <NavLink to={`/admin/reviewManager/list`} 
-          className={({ isActive }) => (isActive ? "aactivee" : "")}>리뷰관리</NavLink>
+          <Link to={`/admin/reviewManager/list`} 
+          className={location.pathname.startsWith("/admin/reviewManager") ? "aactivee" : ""}>리뷰관리</Link>
         </li>
         <li>
-          <NavLink to={`/admin/notice/list`}
-          className={({ isActive }) => (isActive ? "aactivee" : "")}>공지관리</NavLink>
+          <Link to={`/admin/notice/list`}
+          className={location.pathname.startsWith("/admin/notice") ? "aactivee" : ""}>공지관리</Link>
         </li>
       </ul>
     </div>

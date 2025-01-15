@@ -41,47 +41,47 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @Autowired ResourceLoader resourceLoader;
+    //@Autowired ResourceLoader resourceLoader;
 
     /**
      * 썸네일 이미지
      * @param id
      * @throws IOException 
      */
-    @GetMapping("/img/{id}")
-    public void thumbnailImg(
-        @PathVariable("id") String id,
-        HttpServletResponse response
-    ) throws Exception {
-        Files file = fileService.select(id);
-        String filePath = file != null ? file.getUrl() : null;
+    // @GetMapping("/img/{id}")
+    // public void thumbnailImg(
+    //     @PathVariable("id") String id,
+    //     HttpServletResponse response
+    // ) throws Exception {
+    //     Files file = fileService.select(id);
+    //     String filePath = file != null ? file.getUrl() : null;
 
-        File imgFile;
-        // 파일 경로가 null 또는 파일이 존재하지 않는 경우
-        Resource resource = resourceLoader.getResource("classpath:static/img/no-image.png");
-        if( filePath == null || !(imgFile = new File(filePath)).exists() ) {
-            // no-image.png 적용
-            imgFile = resource.getFile();
-            filePath = imgFile.getPath();
-        }
+    //     File imgFile;
+    //     // 파일 경로가 null 또는 파일이 존재하지 않는 경우
+    //     Resource resource = resourceLoader.getResource("classpath:static/img/no-image.png");
+    //     if( filePath == null || !(imgFile = new File(filePath)).exists() ) {
+    //         // no-image.png 적용
+    //         imgFile = resource.getFile();
+    //         filePath = imgFile.getPath();
+    //     }
 
-        // 확장자
-        String ext = filePath.substring(filePath.lastIndexOf(".") + 1);
-        String mimeType = MimeTypeUtils.parseMimeType("image/" + ext).toString();
-        MediaType mType = MediaType.valueOf(mimeType);
+    //     // 확장자
+    //     String ext = filePath.substring(filePath.lastIndexOf(".") + 1);
+    //     String mimeType = MimeTypeUtils.parseMimeType("image/" + ext).toString();
+    //     MediaType mType = MediaType.valueOf(mimeType);
 
-        if( mType == null ) {
-            // 이미지 타입이 아닌 경우
-            response.setContentType(MediaType.IMAGE_PNG_VALUE);
-            imgFile = resource.getFile();
-        } else {
-            // 이미지 타입인 경우
-            response.setContentType(mType.toString());
-        }
-        FileInputStream fis = new FileInputStream(imgFile);
-        ServletOutputStream sos = response.getOutputStream();
-        FileCopyUtils.copy(fis, sos);
-    }
+    //     if( mType == null ) {
+    //         // 이미지 타입이 아닌 경우
+    //         response.setContentType(MediaType.IMAGE_PNG_VALUE);
+    //         imgFile = resource.getFile();
+    //     } else {
+    //         // 이미지 타입인 경우
+    //         response.setContentType(mType.toString());
+    //     }
+    //     FileInputStream fis = new FileInputStream(imgFile);
+    //     ServletOutputStream sos = response.getOutputStream();
+    //     FileCopyUtils.copy(fis, sos);
+    // }
     
     /**
      * 이미지 썸네일

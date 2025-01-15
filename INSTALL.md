@@ -1,5 +1,5 @@
 ## 라이브러리 전체 설치
-npm install react-router-dom axios js-cookie sweetalert2 sweetalert2-react-content bootstrap@5
+npm install react-router-dom axios js-cookie sweetalert2 sweetalert2-react-content bootstrap@5 jquery
 
 npm install react-router-dom axios
 
