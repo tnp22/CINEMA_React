@@ -46,11 +46,11 @@ const LoginForm = () => {
         <div className={styles.loginHeader}>
           <h5>로그인</h5>
         </div>
-        <div className="container-md">
+        <div className="container">
           <div className={styles.loginLogo}>
-            <img src="/upload/vora_purple_black.png" alt="Vora Logo" style={{ width: "105px", height: "40px" }} />
+            <img src="/upload/vora_purple_black.png" alt="Vora Logo" style={{ width: "105px", height: "40px", marginTop:"20px"}} />
           </div>
-          <div className="mb-3 text-center">
+          <div className="mb-3 d-flex justify-content-center align-items-center">
             <FontAwesomeIcon icon={faUser} />
             <input
               type="text"
@@ -62,7 +62,7 @@ const LoginForm = () => {
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
-          <div className="mb-5 text-center">
+          <div className="mb-5 d-flex justify-content-center align-items-center">
             <FontAwesomeIcon icon={faLock} />
             <input
               type="password"
@@ -74,7 +74,7 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="form-check text-start my-3 d-flex justify-content-around mb-3">
+          <div className="form-check text-start my-3 d-flex justify-content-around mb-5">
             <div className="item">
               <input
                 className="form-check-input"
