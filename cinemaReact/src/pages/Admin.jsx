@@ -1,15 +1,15 @@
 import React from 'react'
-import {Route, Routes } from 'react-router-dom'
-import AdminMainForm from '../components/Admin/AdminMainForm'
+import { Route, Routes } from 'react-router-dom'
 import AddMap from '../components/Admin/AddMap/AddMap'
+import AdminMainForm from '../components/Admin/AdminMainForm'
 
 import BannerInsert from '../components/Admin/Banner/BannerInsert'
 import BannerList from '../components/Admin/Banner/BannerList'
 import BannerSelect from '../components/Admin/Banner/BannerSelect'
 import BannerUpdate from '../components/Admin/Banner/BannerUpdate'
 
-import CastList from '../components/Admin/Cast/CastList'
 import CastInsert from '../components/Admin/Cast/CastInsert'
+import CastList from '../components/Admin/Cast/CastList'
 import CastSelect from '../components/Admin/Cast/CastSelect'
 import CastUpdate from '../components/Admin/Cast/CastUpdate'
 
@@ -18,25 +18,25 @@ import CinemaSelect from '../components/Admin/Cinema/CinemaSelect'
 import CinemaUpdate from '../components/Admin/Cinema/CinemaUpdate'
 import CinemaUpdateList from '../components/Admin/Cinema/CinemaUpdateList'
 
-import MovieList from '../components/Admin/Movie/MovieList'
 import MovieInsert from '../components/Admin/Movie/MovieInsert'
+import MovieList from '../components/Admin/Movie/MovieList'
 import MovieSelect from '../components/Admin/Movie/MovieSelect'
 import MovieUpdate from '../components/Admin/Movie/MovieUpdate'
 
-import NoticeList from '../components/Admin/Notice/NoticeList'
 import NoticeInsert from '../components/Admin/Notice/NoticeInsert'
+import NoticeList from '../components/Admin/Notice/NoticeList'
 import NoticeSelect from '../components/Admin/Notice/NoticeSelect'
 import NoticeUpdate from '../components/Admin/Notice/NoticeUpdate'
 
 import ReviewManagerList from '../components/Admin/ReviewManager/ReviewManagerList'
 
-import TheaterList from '../components/Admin/Theater/TheaterList'
 import TheaterInsert from '../components/Admin/Theater/TheaterInsert'
+import TheaterList from '../components/Admin/Theater/TheaterList'
 import TheaterSelect from '../components/Admin/Theater/TheaterSelect'
 import TheaterUpdate from '../components/Admin/Theater/TheaterUpdate'
 
-import TheaterListList from '../components/Admin/TheaterList/TheaterListList'
 import TheaterListInsert from '../components/Admin/TheaterList/TheaterListInsert'
+import TheaterListList from '../components/Admin/TheaterList/TheaterListList'
 import TheaterListSelect from '../components/Admin/TheaterList/TheaterListSelect'
 import TheaterListUpdate from '../components/Admin/TheaterList/TheaterListUpdate'
 
@@ -53,7 +53,7 @@ const admin = () => {
       <Routes>
           <Route path="/" element={<AdminMainForm/>}></Route>
 
-          <Route path="/addMap/addMap" element={<AddMap/>}></Route>
+          <Route path="/addmap/addmap" element={<AddMap/>}></Route>
 
           <Route path="/banner/list" element={<BannerList/>}></Route>
           <Route path="/banner/insert" element={<BannerInsert/>}></Route>
@@ -99,6 +99,7 @@ const admin = () => {
           <Route path="/user/list" element={<UserList/>}></Route>
           <Route path="/user/insert" element={<UserSelect/>}></Route>
           <Route path="/user/select" element={<UserUpdate/>}></Route>
+
 
       </Routes>
   )

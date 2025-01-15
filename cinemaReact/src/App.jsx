@@ -31,6 +31,7 @@ function App() {
             <Route path="/movie/movieChart" element={<MovieChart/>}></Route>
             <Route path="/movie/search" element={<MovieSearch/>}></Route>
           </Route>
+            <Route path="/Ticket/*" element={<Ticket />}></Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>
