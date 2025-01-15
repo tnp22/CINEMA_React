@@ -1,12 +1,13 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from './Layout.module.css';
 
 const Footer = () => {
   return (
-    <footer className="py-4">
+    <footer className={`${styles.footerForm} py-4`}>
       <div className="container">
         <div className="row">
-          <div className="col-12 footer-links mb-3">
+          <div className={`col-12 ${styles.footerLink} mb-3`}>
             <p>회사소개</p>
             <p>지속가능경영</p>
             <p>IR</p>
@@ -19,7 +20,7 @@ const Footer = () => {
             <p>사이트맵</p>
           </div>
           <hr />
-          <div className="col-md-10 footer-info">
+          <div className={`col-md-10 ${styles.footerInfo}`}>
             <p>(21404) 인천광역시 부평구 부평동 534-48 스테이션 타워</p>
             <p>대표이사: 한성호</p>
             <p>
