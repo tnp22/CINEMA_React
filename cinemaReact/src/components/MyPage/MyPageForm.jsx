@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { LoginContext } from '../../contexts/LoginContextProvider';
 import { useNavigate } from 'react-router-dom'; // React Router 사용
-import './MyPageForm.css';
+import styles from './MyPageForm.module.css'; // CSS Module을 import
 import * as auth from "../../apis/auth";
 import * as Swal from "../../apis/alert";
 
@@ -37,16 +37,16 @@ const MyPageForm = () => {
   const handleCancel = () => setPassword("");
 
   return (
-    <div className="page-wrapper">
-      <div className="mypage-container">
+    <div className={styles.pageWrapper}>
+      <div className={styles.mypageContainer}>
         {/* Header Section */}
-        <div className="mypage-header">
-          <div className="profile-image-container">
+        <div className={styles.mypageHeader}>
+          <div className={styles.profileImageContainer}>
             <img
               id="profileImage"
               src={
                 userInfo.orifile
-                  ? `/api/img?id=${userInfo.orifile.id}`
+                  ? `/api/files/img?id=${userInfo.orifile.id}`
                   : "/api/image?id=C:/upload/normal.png"
               }
               style={{
@@ -59,10 +59,10 @@ const MyPageForm = () => {
               alt="프로필 이미지"
             />
           </div>
-          <div className="text-section">
+          <div className={styles.textSection}>
             <h2>{`${userInfo.username}님, 반갑습니다.`}</h2>
           </div>
-          <div className="user-stats">
+          <div className={styles.userStats}>
             <span>
               시청한 영화: <strong>{userInfo.movieCount || 0}</strong>
             </span>
@@ -73,9 +73,9 @@ const MyPageForm = () => {
         </div>
 
         {/* Main Section */}
-        <div className="mypage-main">
+        <div className={styles.mypageMain}>
           {/* Sidebar */}
-          <div className="mypage-sidebar">
+          <div className={styles.mypageSidebar}>
             <ul>
               <li>
                 <a href="/mypageedit">나의 정보</a>
@@ -89,38 +89,26 @@ const MyPageForm = () => {
             </ul>
           </div>
 
-            {/* Content */}
-            <div className="mypage-content">
-            <div className="profile-section">
-                {/* 프로필 이미지 */}
-                <div className="logo-and-upload">
-                <div
-                    className="logo-container"
-                    style={{ marginRight: "auto", display: "flex", justifyContent: "center" }}
-                >
-                    <img
-                    id="profileImage"
-                    src={
-                        userInfo.orifile
-                        ? `/api/img?id=${userInfo.orifile.id}`
-                        : "/api/image?id=C:/upload/normal.png"
-                    }
-                    alt="프로필 이미지"
-                    style={{
-                        width: "124px",
-                        height: "124px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                    }}
-                    />
-                </div>
-                </div>
-                {/* 텍스트와 입력 필드 */}
-                <p>회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.</p>
-                <form id="passwordForm" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <input
+          {/* Content */}
+          <div className={styles.mypageContent}>
+            <div className={styles.profileSection}>
+              {/* 프로필 이미지 */}
+              <div className={styles.logoContainer}>
+                <img
+                  id="profileImage"
+                  src={
+                    userInfo.orifile
+                      ? `/api/files/img?id=${userInfo.orifile.id}`
+                      : "/api/image?id=C:/upload/normal.png"
+                  }
+                  alt="프로필 이미지"
+                  className={styles.profileImage}
+                />
+              </div>
+              <p>회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.</p>
+              <form id="passwordForm" onSubmit={handleSubmit}>
+                <div className={styles.formGroup}>
+                  <input
                     type="password"
                     id="password"
                     name="password"
@@ -128,24 +116,23 @@ const MyPageForm = () => {
                     value={password}
                     onChange={handlePasswordChange}
                     required
-                    />
+                  />
                 </div>
-                <div className="form-buttons">
-                    <button
+                <div className={styles.formButtons}>
+                  <button
                     type="button"
-                    className="btn-cancel"
+                    className={styles.btnCancel}
                     onClick={handleCancel}
-                    >
+                  >
                     취소
-                    </button>
-                    <button type="submit" className="btn-confirm">
+                  </button>
+                  <button type="submit" className={styles.btnConfirm}>
                     확인
-                    </button>
+                  </button>
                 </div>
-                </form>
+              </form>
             </div>
-            </div>
-
+          </div>
         </div>
       </div>
     </div>
