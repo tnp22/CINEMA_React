@@ -82,7 +82,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                     {bannerList.map((banner, index) => (
                     <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
                         <a href={`/movie/movieInfo?id=${banner.movie.id}`}>
-                        <img src={`/api/img?id=${banner.files.id}`} alt={banner.files} />
+                        <img src={`/api/files/img?id=${banner.files.id}`} alt={banner.files} />
                         </a>
                     </div>
                     ))}
@@ -125,7 +125,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                             {moviePageInfo && moviePageInfo.list && moviePageInfo.list.length > 0 && moviePageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기
@@ -175,7 +175,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                             {expectPageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기
