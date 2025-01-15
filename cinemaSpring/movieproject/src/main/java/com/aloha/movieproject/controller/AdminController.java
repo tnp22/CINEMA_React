@@ -1104,7 +1104,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/movie/list")
     public ResponseEntity<?> movieList( @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size
@@ -1149,7 +1149,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/movie/select")
     public ResponseEntity<?> movieSelect(@RequestParam("id") String id) throws Exception {
         try {

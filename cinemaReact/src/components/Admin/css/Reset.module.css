@@ -58,12 +58,12 @@
   line-height: 40px;
   border: none;
   background-color: #583BBF;
-  color: white;
+  color: white !important;
   border-radius: 12px;
 }
 .a_butten:hover{
   background-color: #A88EFF;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .li_butten{
@@ -107,4 +107,30 @@
 .delete_butten:hover {
   background-color: #A88EFF;
   color: #ffffff;
+}
+
+
+.btnPPage {
+  width: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 8px;
+  background-color: #583BBF;
+  border-radius: 8px;
+  color: #f1f1f1 !important;
+  margin: 0px 2px;
+}
+.activI{
+  /* display: inline-block; */
+  font-weight: bold !important;
+  background-color: #A88EFF !important;
+}
+.btnPPage:hover {
+  text-decoration: none !important;
+  color: #f1f1f1 !important;
+  background-color: #A88EFF;
+}
+.btnPPage a:hover {
+  color: #f1f1f1 !important;
 }

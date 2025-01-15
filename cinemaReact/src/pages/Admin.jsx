@@ -57,23 +57,23 @@ const admin = () => {
 
           <Route path="/banner/list" element={<BannerList/>}></Route>
           <Route path="/banner/insert" element={<BannerInsert/>}></Route>
-          <Route path="/banner/select" element={<BannerSelect/>}></Route>
-          <Route path="/banner/update" element={<BannerUpdate/>}></Route>
+          <Route path="/banner/select/:id" element={<BannerSelect/>}></Route>
+          <Route path="/banner/update/:id" element={<BannerUpdate/>}></Route>
           
           <Route path="/cast/list" element={<CastList/>}></Route>
           <Route path="/cast/insert" element={<CastInsert/>}></Route>
-          <Route path="/cast/select" element={<CastSelect/>}></Route>
-          <Route path="/cast/update" element={<CastUpdate/>}></Route>
+          <Route path="/cast/select/:id" element={<CastSelect/>}></Route>
+          <Route path="/cast/update/:id" element={<CastUpdate/>}></Route>
 
           <Route path="/cinema/insert" element={<CinemaInsert/>}></Route>
-          <Route path="/cinema/select" element={<CinemaSelect/>}></Route>
-          <Route path="/cinema/update" element={<CinemaUpdate/>}></Route>
+          <Route path="/cinema/select/:id" element={<CinemaSelect/>}></Route>
+          <Route path="/cinema/update/:id" element={<CinemaUpdate/>}></Route>
           <Route path="/cinema/updateList" element={<CinemaUpdateList/>}></Route>
 
           <Route path="/movie/list" element={<MovieList/>}></Route>
           <Route path="/movie/insert" element={<MovieInsert/>}></Route>
-          <Route path="/movie/select" element={<MovieSelect/>}></Route>
-          <Route path="/movie/update" element={<MovieUpdate/>}></Route>
+          <Route path="/movie/select/:id" element={<MovieSelect/>}></Route>
+          <Route path="/movie/update/:id" element={<MovieUpdate/>}></Route>
 
 
           <Route path="/notice/list" element={<NoticeList/>}></Route>

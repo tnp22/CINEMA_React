@@ -18,3 +18,9 @@ npm install --save @fortawesome/react-fontawesome @fortawesome/free-solid-svg-ic
 npm install jquery
 
 npm install bootstrap-icons
+
+### 설치안되면
+npm config set registry https://registry.npmjs.org/
+
+npm install @mui/icons-material
+npm install @emotion/react @emotion/styled

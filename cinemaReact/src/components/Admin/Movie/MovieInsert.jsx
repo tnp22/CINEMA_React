@@ -4,6 +4,7 @@ import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 �
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
 import { Link } from 'react-router-dom';
 import LeftSideBar1 from '../LeftSideBar1'
+import AdminHeader from '../AdminHeader';
 
 const MovieInsert = () => {
 
@@ -35,25 +36,7 @@ const MovieInsert = () => {
         `}
       </style>
       <br />
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
-          <Link style={{ marginRight: '30px' }} to={"/"}>
-            <img
-              src="/image(id='C:/upload/vora_purple_black.png')"  // 리액트에서 th:src는 사용 불가. 경로를 직접 설정.
-              alt="Logo"
-              style={{ width: '105px', height: '40px' }}
-            />
-          </Link>
-          <h1>
-            <Link to={"/admin"}>
-              ADMINISTRATOR : <span className="adminTitle" sec:authentication="principal.user.name"></span>
-            </Link>
-          </h1>
-        </div>
-        <div>
-          <hr className="ms-0" style={{ width: '700px' }} />
-        </div>
-      </div>
+      <AdminHeader/>
       <div className="row" style={{ height: '90%' }}>
         <LeftSideBar1/>
         <div className="col-md-8">
