@@ -5,22 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aloha.movieproject.domain.AuthList;
@@ -362,20 +358,29 @@ public class AdminController {
     //해당 아이디 권한 추가 요망
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/cinema/enter")
-    public String cinemaEnter(Model model, @RequestParam("id") String id
+    public ResponseEntity<?> cinemaEnter(@RequestParam("id") String id
     ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
     ) throws Exception {
-        // 데이터 요청
-        PageInfo<Theater> pageInfo = null;
-
-        pageInfo = theaterService.list(page, size, id);
-        
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("search", id);
-        return "/admin/theater/list";
+        try {
+            // 데이터 요청
+            PageInfo<Theater> pageInfo = null;
+            pageInfo = theaterService.list(page, size, id);
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal(pageInfo.getTotal());
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("pageInfo", pageInfo.getList());
+            //response.put("pageInfo", pageInfo);
+            response.put("pagination", pagination);
+            response.put("cinema",cinemaService.select(id));
+            response.put("search",id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/theater/list";
     }
 
     /**
@@ -386,12 +391,18 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theater/insert")
-    public String theaterInsert(Model model,@RequestParam("id") String id,
+    public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
                     @RequestParam(name = "fileName", required = false) String fileName) throws Exception {
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("UUID", UUID.randomUUID().toString());
-        model.addAttribute("fileName", fileName);
-        return "/admin/theater/insert";
+        try {
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("cinema",cinemaService.select(id));
+            response.put("UUID",UUID.randomUUID().toString());
+            response.put("fileName",fileName);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/theater/insert";
     }
 
 
@@ -405,9 +416,9 @@ public class AdminController {
      * @throws Exception
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
-    @ResponseBody
+    //@ResponseBody
     @PostMapping("/theater/insert")
-    public String theaterInsert(Model model,@RequestParam("id") String id,
+    public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
                               @RequestBody Theater theater) throws Exception {
         theater.setMap(theater.getId());
         theater.setMapSize(theater.getX() * theater.getY());
@@ -456,10 +467,19 @@ public class AdminController {
 
     /*****----------------------------------------------- */
 
-        if(rs>0){
-            return "SUCCESS";
+        // if(rs>0){
+        //     return "SUCCESS";
+        // }
+        // return "FAIL";
+
+        if( rs>0 ){
+            log.info("상영관 생성 성공!");
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "FAIL";
+        else{
+            log.info("상영관 생성 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
     }
 
 
@@ -473,11 +493,19 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theater/select")
-    public String theaterSelect(Model model,@RequestParam("id") String id
+    public ResponseEntity<?> theaterSelect(@RequestParam("id") String id
                         ,@RequestParam("theaterId") String theaterId) throws Exception {
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("theater", theaterService.select(theaterId));
-        return "/admin/theater/select";
+        
+        try {
+            // 데이터 요청
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("cinema", cinemaService.select(id));
+            response.put("theater",theaterService.select(theaterId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/theater/select";
     }
 
     /**
@@ -489,12 +517,20 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theater/update")
-    public String theaterUpdate(Model model,@RequestParam("id") String id
+    public ResponseEntity<?> theaterUpdate(@RequestParam("id") String id
                         ,@RequestParam("theaterId") String theaterId) throws Exception {
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("theater", theaterService.select(theaterId));
 
-        return "/admin/theater/update";
+        try {
+            // 데이터 요청
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("cinema", cinemaService.select(id));
+            response.put("theater",theaterService.select(theaterId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        //return "/admin/theater/update";
     }
 
 
@@ -506,9 +542,9 @@ public class AdminController {
      * @throws Exception
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
-    @ResponseBody
+    //@ResponseBody
     @PostMapping("/theater/update")
-    public String theaterUpate(Model model,@RequestParam("id") String id,
+    public ResponseEntity<?> theaterUpate(@RequestParam("id") String id,
                               @RequestBody Theater theater) throws Exception {
         theater.setMap(theater.getId());
         theater.setMapSize(theater.getX() * theater.getY());
@@ -557,10 +593,18 @@ public class AdminController {
 
     /*****----------------------------------------------- */
 
-        if(rs>0){
-            return "SUCCESS";
+        if( rs > 0 ){
+            log.info("상영관 업데이트 성공!");
+            return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
         }
-        return "FAIL";
+        else{
+            log.info("상영관 업데이트 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        }
+        // if(rs>0){
+        //     return "SUCCESS";
+        // }
+        // return "FAIL";
     }
 
 
@@ -580,29 +624,40 @@ public class AdminController {
     //해당 아이디 권한 추가 요망
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theaterList/list")
-    public String theaterListList(Model model, @RequestParam("id") String id
+    public ResponseEntity<?> theaterListList(@RequestParam("id") String id
     ,@RequestParam(name = "search", required = false) String search
     ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
     ) throws Exception {
-        // 데이터 요청
-        PageInfo<TheaterList> pageInfo = null;
 
-        if(search == null || search.equals("")){
-            pageInfo = theaterListService.list(page, size, id);
+        try {
+             // 데이터 요청
+            PageInfo<TheaterList> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search == null || search.equals("")){
+                pageInfo = theaterListService.list(page, size, id);
+            }
+            else
+            {
+                pageInfo = theaterListService.list(page, size, id, search);
+                response.put("search",search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal(pageInfo.getTotal());
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("cinema", cinemaService.select(id));
+            response.put("id", id);
+            //model.addAttribute("pageInfo", pageInfo);
+            //model.addAttribute("cinema", cinemaService.select(id));
+            //model.addAttribute("id", id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else
-        {
-            pageInfo = theaterListService.list(page, size, id, search);
-            model.addAttribute("search", search);
-        }
-        
-        
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        return "/admin/theaterList/list";
+        //return "/admin/theaterList/list";
     }
 
 
@@ -613,26 +668,35 @@ public class AdminController {
     //해당 아이디 권한 추가 요망
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theaterList/insert")
-    public String theaterListInsert(Model model, @RequestParam("id") String id
+    public ResponseEntity<?> theaterListInsert(@RequestParam("id") String id
     ,@RequestParam(name = "search", required = false) String search
     ) throws Exception {
 
-        List<Theater> theaterLists = theaterService.list(id);
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
+        try {
+            // 데이터 요청
+            List<Theater> theaterLists = theaterService.list(id);
+            List<Movie> movieList = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if (search == null || search.isEmpty()) {
+                movieList = movieService.list();
+           }
+           else{
+               movieList = movieService.list(search);
+               response.put("search",search);
+           }
+            response.put("theaterLists",theaterLists);
+            response.put("pageInfo",movieList);
+            response.put("cinema",cinemaService.select(id));
+            response.put("id",id);
+            //model.addAttribute("theaterLists", theaterLists);
+           //model.addAttribute("pageInfo", movieList);
+            //model.addAttribute("cinema", cinemaService.select(id));
+            //model.addAttribute("id", id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
-        }
-        
-        // 모델 등록
-        model.addAttribute("theaterLists", theaterLists);
-        model.addAttribute("pageInfo", movieList);
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        return "/admin/theaterList/insert";
+        //return "/admin/theaterList/insert";
     }
 
     /**
@@ -644,15 +708,31 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @PostMapping("/theaterList/insert")
-    public String theaterListInsert(Model model, @RequestParam("cinemaId") String id,
-                            TheaterList theaterList) throws Exception {
-        int result = theaterListService.insert(theaterList);
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        if(result>0){
-            return "redirect:/admin/theaterList/list?id="+id;
+    public ResponseEntity<?> theaterListInsert(@RequestParam("cinemaId") String id,
+        @RequestBody TheaterList theaterList) throws Exception {
+        try {
+            // 데이터 요청
+            int result = theaterListService.insert(theaterList);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("cinema", cinemaService.select(id));
+            response.put("id", id);
+            //model.addAttribute("cinema", );
+            //model.addAttribute("id", id);
+            if( result>0 ){
+                log.info("상영리스트 생성 성공!");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("상영리스트 생성 실패!");
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/theaterList/list?id=id&error";
+        // if(result>0){
+        //     return "redirect:/admin/theaterList/list?id="+id;
+        // }
+        // return "redirect:/admin/theaterList/list?id=id&error";
     }
 
     /**
@@ -664,15 +744,21 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theaterList/select")
-    public String theaterListSelect(Model model, @RequestParam("id") String id,
+    public ResponseEntity<?> theaterListSelect(@RequestParam("id") String id,
                     @RequestParam("theaterListId") String theaterListId) throws Exception {
-        TheaterList theaterList = theaterListService.select(theaterListId);
+        try {
+            // 데이터 요청
+            TheaterList theaterList = theaterListService.select(theaterListId);
 
-        model.addAttribute("theaterList", theaterList);
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        
-        return "/admin/theaterList/select";
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("theaterList", theaterList);
+            response.put("cinema", cinemaService.select(id));
+            response.put("id", id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/theaterList/select";
     }
 
 
@@ -685,34 +771,44 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @GetMapping("/theaterList/update")
-    public String theaterListUpdate(Model model, @RequestParam("id") String id,
+    public ResponseEntity<?> theaterListUpdate(@RequestParam("id") String id,
                     @RequestParam("theaterListId") String theaterListId,
                     @RequestParam(name = "search", required = false) String search) throws Exception {
-        //해당 검색을 위한거
-        TheaterList theaterList = theaterListService.select(theaterListId);
 
-        // 1관,2관,3관...
-        List<Theater> theaterLists = theaterService.list(id);
+        try {
+            //해당 검색을 위한거
+            TheaterList theaterList = theaterListService.select(theaterListId);
+             // 1관,2관,3관...
+            List<Theater> theaterLists = theaterService.list(id);
 
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
-        }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
+            Map<String, Object> response = new HashMap<String, Object>();
+            List<Movie> movieList = null;
+            if (search == null || search.isEmpty()) {
+                 movieList = movieService.list();
+            }
+            else{
+                movieList = movieService.list(search);
+                response.put("search",search);
+            }
+            
+            response.put("pageInfo", movieList);
+            response.put("theaterLists", theaterLists);
+            log.info(theaterList.toString());
+            response.put("theaterList", theaterList);
+            response.put("cinema", cinemaService.select(id));
+            response.put("id", id);
+            // 모델 등록
+            // model.addAttribute("theaterLists", theaterLists);
+            // model.addAttribute("pageInfo", movieList);
+            // model.addAttribute("theaterList", theaterList);
+            // model.addAttribute("cinema", cinemaService.select(id));
+            // model.addAttribute("id", id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
-        // 모델 등록
-        model.addAttribute("theaterLists", theaterLists);
-        model.addAttribute("pageInfo", movieList);
-
-        model.addAttribute("theaterList", theaterList);
-        log.info(theaterList.toString());
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        
-        return "/admin/theaterList/Update";
+        //return "/admin/theaterList/Update";
     }
 
 
@@ -725,23 +821,36 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     @PostMapping("/theaterList/update")
-    public String theaterListUpdate(Model model, @RequestParam("cinemaId") String id,
-                            TheaterList theaterList) throws Exception {
-        int result = theaterListService.update(theaterList);
-        log.info(theaterList.toString());
-        model.addAttribute("cinema", cinemaService.select(id));
-        model.addAttribute("id", id);
-        if(result>0){
-            log.info("성공!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            return "redirect:/admin/theaterList/select?id="+id+"&theaterListId="+theaterList.getId();
+    public ResponseEntity<?> theaterListUpdate(@RequestParam("cinemaId") String id,
+    @RequestBody TheaterList theaterList) throws Exception {
+        
+        try {
+            // 데이터 요청
+            int result = theaterListService.update(theaterList);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("cinema", cinemaService.select(id));
+            response.put("id", id);
+            log.info(theaterList.toString());
+            //model.addAttribute("cinema", cinemaService.select(id));
+            //model.addAttribute("id", id);
+            if( result>0 ){
+                log.info("상영리스트 업뎃 성공!");
+                return new ResponseEntity<>(response,HttpStatus.OK);
+            }
+            else{
+                log.info("상영리스트 업뎃 실패!");
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        log.info("실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        return "redirect:/admin/theaterList/select?id="+id+"&theaterListId="+theaterList.getId()+"&error";
+        // if(result>0){
+        //     log.info("성공!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //     return "redirect:/admin/theaterList/select?id="+id+"&theaterListId="+theaterList.getId();
+        // }
+        // log.info("실패!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        // return "redirect:/admin/theaterList/select?id="+id+"&theaterListId="+theaterList.getId()+"&error";
     }
-
-
-
-
 
 
 
@@ -753,12 +862,20 @@ public class AdminController {
 
     @Secured("ROLE_SUPER")
     @GetMapping("/banner/list")
-    public String bannerList(Model model) throws Exception {
-        List<Banner> bannerList = bannerService.list();
-        List<Banner> subBannerList = bannerService.subBannerList();
-        model.addAttribute("bannerList", bannerList);
-        model.addAttribute("subBannerList", subBannerList);
-        return "/admin/banner/list";
+    public ResponseEntity<?> bannerList() throws Exception {
+        try {
+            // 데이터 요청
+            List<Banner> bannerList = bannerService.list();
+            List<Banner> subBannerList = bannerService.subBannerList();
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("bannerList", bannerList);
+            response.put("subBannerList", subBannerList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/banner/list";
     }
     
 
@@ -771,10 +888,18 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/banner/select")
-    public String bannerSelect(Model model,@RequestParam("id") String id) throws Exception {
-        Banner banner = bannerService.select(id);
-        model.addAttribute("banner", banner);
-        return "/admin/banner/select";
+    public ResponseEntity<?> bannerSelect(@RequestParam("id") String id) throws Exception {
+        try {
+            // 데이터 요청
+            Banner banner = bannerService.select(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("banner", banner);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+        //return "/admin/banner/select";
     }
 
     /**
@@ -786,19 +911,27 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/banner/insert")
-    public String bannerInsert(Model model,
+    public ResponseEntity<?> bannerInsert(
     @RequestParam(name = "search", required = false) String search) throws Exception {
 
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
+        try {
+            // 데이터 요청
+            List<Movie> movieList = null;
+	        Map<String, Object> response = new HashMap<String, Object>();
+            if (search == null || search.isEmpty()) {
+                movieList = movieService.list();
+            }
+            else{
+                movieList = movieService.list(search);
+                response.put("search",search);
+            }
+            response.put("pageInfo", movieList);
+            //model.addAttribute("pageInfo", movieList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
-        }
-        model.addAttribute("pageInfo", movieList);
-        return "/admin/banner/insert";
+        //return "/admin/banner/insert";
     }
 
     /**
@@ -810,22 +943,30 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/banner/insert")
-    public String bannerInsert(Model model,
-                              Banner banner) throws Exception {
-        int result = bannerService.insert(banner);
-        if(result>0){
-            for (MultipartFile files : banner.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("banner");
-                file.setFkId(banner.getId());
-    
-                fileService.upload(file);
+    public ResponseEntity<?> bannerInsert(@RequestBody Banner banner) throws Exception {
+        
+        try {
+            // 데이터 요청
+            int result = bannerService.insert(banner);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(result>0){
+                for (MultipartFile files : banner.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("banner");
+                    file.setFkId(banner.getId());
+        
+                    fileService.upload(file);
+                }
+                //return "redirect:/admin/banner/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            return "redirect:/admin/banner/list";
-        }
-        return "redirect:/admin/banner/list&error";
+            //return "redirect:/admin/banner/list&error";
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
 
@@ -838,22 +979,30 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/banner/update")
-    public String bannerUpdate(Model model,@RequestParam("id") String id,
+    public ResponseEntity<?> bannerUpdate(@RequestParam("id") String id,
     @RequestParam(name = "search", required = false) String search) throws Exception {
 
-        Banner banner = bannerService.select(id);
-        model.addAttribute("banner", banner);
-
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
+        try {
+            // 데이터 요청
+            Banner banner = bannerService.select(id);
+	        Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("banner", banner);
+            response.put("banner",banner);
+            List<Movie> movieList = null;
+            if (search == null || search.isEmpty()) {
+                 movieList = movieService.list();
+            }
+            else{
+                movieList = movieService.list(search);
+                response.put("search",search);
+            }
+            //model.addAttribute("pageInfo", movieList);
+            response.put("pageInfo", movieList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
-        }
-        model.addAttribute("pageInfo", movieList);
-        return "/admin/banner/update";
+        //return "/admin/banner/update";
     }
 
 
@@ -866,25 +1015,33 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/banner/update")
-    public String bannerUpdate(Model model,
-                              Banner banner) throws Exception {
-        Banner pastBanner = bannerService.select(banner.getId());
-        int result = bannerService.update(banner);
-        log.info(pastBanner.toString());       
+    public ResponseEntity<?> bannerUpdate(@RequestBody Banner banner) throws Exception {
+        
+        try {
+            // 데이터 요청
+            Banner pastBanner = bannerService.select(banner.getId());
+            int result = bannerService.update(banner);
+            log.info(pastBanner.toString());
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(result>0){
+                for (MultipartFile files : banner.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("banner");
+                    file.setFkId(banner.getId());
 
-        if(result>0){
-            for (MultipartFile files : banner.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("banner");
-                file.setFkId(banner.getId());
-    
-                fileService.update(file,pastBanner.getFiles().getId());
+                    fileService.update(file,pastBanner.getFiles().getId());
+                }
+                response.put("id", banner.getId());
+                //return "redirect:/admin/banner/select?id="+banner.getId();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            return "redirect:/admin/banner/select?id="+banner.getId();
+            //return "redirect:/admin/banner/update?id="+banner.getId()+"&error";
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/banner/update?id="+banner.getId()+"&error";
     }
 
 
@@ -898,47 +1055,43 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/banner/delete")
-    public String bannerDelete(@RequestParam("id") String id) throws Exception {
+    public ResponseEntity<?> bannerDelete(@RequestParam("id") String id) throws Exception {
+        
 
-        Banner banner = bannerService.select(id);
+        try {
+            // 데이터 요청
+            Banner banner = bannerService.select(id);
 
-        int rs= fileService.delete(banner.getFiles().getId());
-        int rss=0;
-        if(rs>0){
-            rss = bannerService.delete(id);
-        }
-        else{
-            return "redirect:/admin/banner/update?id="+id+"&error=fileDeleteFail";
-        }
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("id", id);
 
-        if(rss>0){
-            return "redirect:/admin/banner/list";
+            int rs= fileService.delete(banner.getFiles().getId());
+            int rss=0;
+            if(rs>0){
+                rss = bannerService.delete(id);
+            }
+            else{
+                response.put("error", "fileDeleteFail");
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+                //return "redirect:/admin/banner/update?id="+id+"&error=fileDeleteFail";
+            }
+            if(rss>0){
+                //return "redirect:/admin/banner/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            //return "redirect:/admin/banner/update?id="+id+"&error=bannerDeleteFail";
+            response.put("error", "bannerDeleteFail");
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/banner/update?id="+id+"&error=bannerDeleteFail";
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
     /* --------------------------------------- 배너 관리 끝 ------------------------------------ */
 
     
-
-
 
     /* ------------------------------------- 영화 관련------------------------------------- */
 
@@ -953,29 +1106,39 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/movie/list")
-    public String movieList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> movieList( @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size
                       ,@RequestParam(name = "search", required = false) String search) throws Exception {
-        // 데이터 요청
-        PageInfo<Movie> pageInfo = null;
-        if(search == null || search.equals("")){
-            pageInfo = movieService.list(page, size);
-        }
-        else{
-            pageInfo = movieService.list(page, size, search);
-        }
-        Pagination pagination = new Pagination();
-        pagination.setPage(page);
-        pagination.setSize(size);
-        pagination.setTotal( pageInfo.getTotal());
+        
+        try {
+            // 데이터 요청
+            PageInfo<Movie> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search == null || search.equals("")){
+                pageInfo = movieService.list(page, size);
+            }
+            else{
+                pageInfo = movieService.list(page, size, search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal( pageInfo.getTotal());
+            
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
 
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("search", search);
+            // 모델 등록
+            //model.addAttribute("pageInfo", pageInfo);
+            //model.addAttribute("pagination", pagination);
+            //model.addAttribute("search", search);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         // 뷰 페이지 지정
-        return "/admin/movie/list";
+        //return "/admin/movie/list";
     }
 
 
@@ -988,11 +1151,20 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/movie/select")
-    public String movieSelect(Model model,@RequestParam("id") String id) throws Exception {
-        Movie movie = movieService.select(id);
-        // log.info(movie.toString());
-        model.addAttribute("movie", movie);
-        return "/admin/movie/select";
+    public ResponseEntity<?> movieSelect(@RequestParam("id") String id) throws Exception {
+        try {
+            // 데이터 요청
+            Movie movie = movieService.select(id);
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("movie", movie);
+            // log.info(movie.toString());
+            //model.addAttribute("movie", movie);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/movie/select";
     }
 
     /**
@@ -1001,12 +1173,12 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
-    @GetMapping("/movie/insert")
-    public String movieInsert(Model model) throws Exception {
+    // @Secured("ROLE_SUPER")
+    // @GetMapping("/movie/insert")
+    // public String movieInsert(Model model) throws Exception {
 
-        return "/admin/movie/insert";
-    }
+    //     return "/admin/movie/insert";
+    // }
 
     /**
      * 영화 생성
@@ -1017,10 +1189,12 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/insert")
-    public String movieInsert(Model model,
-                              Movie movie) throws Exception {
-        int result = movieService.insert(movie);
-        if(result>0){
+    public ResponseEntity<?> movieInsert(@RequestBody Movie movie) throws Exception {
+
+        try {
+            // 데이터 요청
+            int result = movieService.insert(movie);
+
             for (MultipartFile files : movie.getMainFiles()) {
                 Files file = new Files();
                 file.setFile(files);
@@ -1039,9 +1213,19 @@ public class AdminController {
                 stilfile.setFkId(movie.getId());
                 fileService.upload(stilfile);
             }
-            return "redirect:/admin/movie/list";
+            if( result>0 ){
+                log.info("영화 생성 성공!");
+                return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+                //return "redirect:/admin/movie/list";
+            }
+            else{
+                log.info("영화 생성 실패!");
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+                //return "redirect:/admin/movie/list&error";
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/movie/list&error";
     }
 
 
@@ -1054,10 +1238,20 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/movie/update")
-    public String movieUpdate(Model model,@RequestParam("id") String id) throws Exception {
-        Movie movie = movieService.select(id);
-        model.addAttribute("movie", movie);
-        return "/admin/movie/update";
+    public ResponseEntity<?> movieUpdate(@RequestParam("id") String id) throws Exception {
+
+        try {
+            // 데이터 요청
+            Movie movie = movieService.select(id);
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("movie", movie);
+            //model.addAttribute("movie", movie);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            //return "/admin/movie/update";
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -1069,12 +1263,27 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/update")
-    public String movieUpdate(Model model,Movie movie) throws Exception {
-        int result = movieService.update(movie);
-        if(result>0){
-            return "redirect:/admin/movie/select?id="+movie.getId();
+    public ResponseEntity<?> movieUpdate(Movie movie) throws Exception {
+
+        try {
+            // 데이터 요청
+            int result = movieService.update(movie);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("id", movie.getId());
+            if( result>0 ){
+                log.info("상영리스트 생성 성공!");
+                //return "redirect:/admin/movie/select?id="+movie.getId();
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("상영리스트 생성 실패!");
+                //return "redirect:/admin/movie/update?id="+movie.getId()+"&error";
+                response.put("error", "error");
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/movie/update?id="+movie.getId()+"&error";
     }
 
 
@@ -1088,15 +1297,28 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/movie/stilcutDelete")
-    public String stilcutDelete(Model model,@RequestParam("stilcutId") String stilcutId
+    public ResponseEntity<?> stilcutDelete(@RequestParam("stilcutId") String stilcutId
     ,@RequestParam("id") String id) throws Exception {
-        // log.info(stilcutId+" 넘버!!!!!!!!!!!!!!!!!!!");
-        int result = fileService.delete(stilcutId);
-        if(result>0){
-            return "redirect:/admin/movie/update?id="+id;
-        }
-        return "redirect:/admin/movie/update?id="+id+"&error";
-        
+
+        try {
+            // log.info(stilcutId+" 넘버!!!!!!!!!!!!!!!!!!!");
+            int result = fileService.delete(stilcutId);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("id", id);
+            if( result>0 ){
+                log.info("스틸컷 삭제 성공!");
+                //return "redirect:/admin/movie/update?id="+id;
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("스틸컷 삭제 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/movie/update?id="+id+"&error";
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
     /**
@@ -1108,18 +1330,25 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/stilcutPlus")
-    public String stilcutPlus(Model model,
-                              Movie movie) throws Exception {
-        log.info(movie.toString());
-        for (MultipartFile stilcut : movie.getStilcuts()) {
-            Files stilfile = new Files();
-            stilfile.setFile(stilcut);
-            stilfile.setDivision("stilcut");
-            stilfile.setFkTable("movie");
-            stilfile.setFkId(movie.getId());
-            fileService.upload(stilfile);
+    public ResponseEntity<?> stilcutPlus(@RequestBody Movie movie) throws Exception {
+
+        try {
+            Map<String, Object> response = new HashMap<String, Object>();
+            log.info(movie.toString());
+            for (MultipartFile stilcut : movie.getStilcuts()) {
+                Files stilfile = new Files();
+                stilfile.setFile(stilcut);
+                stilfile.setDivision("stilcut");
+                stilfile.setFkTable("movie");
+                stilfile.setFkId(movie.getId());
+                fileService.upload(stilfile);
+            }
+            response.put("id", movie.getId());
+            //return "redirect:/admin/movie/update?id="+movie.getId();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/movie/update?id="+movie.getId();
     }
 
     /**
@@ -1131,21 +1360,27 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/mainPlus")
-    public String mainPlus(Model model,
-                              Movie movie) throws Exception {
-        log.info(movie.toString());
-        int result = fileService.delete(movie.getFileId());
-        if(result>0){
-            for (MultipartFile files : movie.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("movie");
-                file.setFkId(movie.getId());
-                fileService.upload(file);
+    public ResponseEntity<?> mainPlus(@RequestBody Movie movie) throws Exception {
+        try {
+            log.info(movie.toString());
+            int result = fileService.delete(movie.getFileId());
+            if(result>0){
+                for (MultipartFile files : movie.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("movie");
+                    file.setFkId(movie.getId());
+                    fileService.upload(file);
+                }
             }
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("id", movie.getId());
+            //return "redirect:/admin/movie/update?id="+movie.getId();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/movie/update?id="+movie.getId();
     }
 
 
@@ -1165,29 +1400,39 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cast/list")
-    public String castList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> castList(
+                    @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
-                      ,@RequestParam(name = "search", required = false) String search) throws Exception {
-        // 데이터 요청
-        PageInfo<Cast> pageInfo = null;
-        if(search == null || search.equals("")){
-            pageInfo = castService.list(page, size);
+            ,@RequestParam(name = "search", required = false) String search) throws Exception {
+        
+        try {
+            // 데이터 요청
+            PageInfo<Cast> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search == null || search.equals("")){
+                pageInfo = castService.list(page, size);
+            }
+            else{
+                pageInfo = castService.list(page, size, search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal( pageInfo.getTotal());
+            
+            // 모델 등록
+            //model.addAttribute("pageInfo", pageInfo);
+            //model.addAttribute("pagination", pagination);
+            //model.addAttribute("search", search);
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            pageInfo = castService.list(page, size, search);
-        }
-        Pagination pagination = new Pagination();
-        pagination.setPage(page);
-        pagination.setSize(size);
-        pagination.setTotal( pageInfo.getTotal());
-
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("search", search);
         // 뷰 페이지 지정
-        return "/admin/cast/list";
+        //return "/admin/cast/list";
     }
 
     /**
@@ -1198,11 +1443,20 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/cast/select")
-    public String castSelect(Model model,@RequestParam("id") String id) throws Exception {
-        Cast cast = castService.select(id);
-        model.addAttribute("cast", cast);
-        return "/admin/cast/select";
+    @GetMapping("/cast/select/{id}")
+    public ResponseEntity<?> castSelect(@PathVariable("id") String id) throws Exception {
+
+        try {
+            // 데이터 요청
+            Cast cast = castService.select(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("cast", cast);
+            response.put("cast", cast);
+            //return "/admin/cast/select";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -1214,23 +1468,33 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cast/insert")
-    public String castInsert(Model model,
+    public ResponseEntity<?> castInsert(
     @RequestParam(name = "search", required = false) String search) throws Exception {
 
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
+        try {
+            // 데이터 요청
+            List<Movie> movieList = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if (search == null || search.isEmpty()) {
+                movieList = movieService.list();
+           }
+           else{
+               movieList = movieService.list(search);
+               //model.addAttribute("search", search);
+               response.put("search", search);
+            }
+            
+            //model.addAttribute("pageInfo", movieList);
+            response.put("pageInfo", movieList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
-        }
-        model.addAttribute("pageInfo", movieList);
-        return "/admin/cast/insert";
+        //return "/admin/cast/insert";
     }
 
     /**
-     * 배너 생성
+     * 캐스터 생성
      * @param model
      * @param userAuth
      * @return
@@ -1238,22 +1502,32 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/cast/insert")
-    public String castInsert(Model model,
-                              Cast cast) throws Exception {
-        int result = castService.insert(cast);
-        if(result>0){
-            for (MultipartFile files : cast.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("cast");
-                file.setFkId(cast.getId());
-    
-                fileService.upload(file);
+    public ResponseEntity<?> castInsert(@RequestBody Cast cast) throws Exception {
+
+        try {
+            // 데이터 요청
+            int result = castService.insert(cast);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(result>0){
+                for (MultipartFile files : cast.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("cast");
+                    file.setFkId(cast.getId());
+        
+                    fileService.upload(file);
+                }
+                //return "redirect:/admin/cast/list";
+                log.info("캐스터 생성 성공!");
+                return new ResponseEntity<>(response, HttpStatus.OK); 
             }
-            return "redirect:/admin/cast/list";
+            //return "redirect:/admin/cast/list&error";
+            log.info("캐스터 생성 실패!");
+            return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/cast/list&error";
     }
 
 
@@ -1266,22 +1540,30 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cast/update")
-    public String castUpdate(Model model,@RequestParam("id") String id,
+    public ResponseEntity<?> castUpdate(@RequestParam("id") String id,
     @RequestParam(name = "search", required = false) String search) throws Exception {
 
-        Cast cast = castService.select(id);
-        model.addAttribute("cast", cast);
-
-        List<Movie> movieList = null;
-        if (search == null || search.isEmpty()) {
-             movieList = movieService.list();
+        try {
+            // 데이터 요청
+            Map<String, Object> response = new HashMap<String, Object>();
+            Cast cast = castService.select(id);
+            //model.addAttribute("cast", cast);
+            response.put("cast", cast);
+            List<Movie> movieList = null;
+            if (search == null || search.isEmpty()) {
+                movieList = movieService.list();
+           }
+           else{
+               movieList = movieService.list(search);
+               response.put("search", search);
+            }
+            //model.addAttribute("pageInfo", movieList);
+            response.put("pageInfo", movieList);
+           //return "/admin/cast/update";
+           return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            movieList = movieService.list(search);
-            model.addAttribute("search", search);
-        }
-        model.addAttribute("pageInfo", movieList);
-        return "/admin/cast/update";
     }
 
 
@@ -1294,25 +1576,40 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/cast/update")
-    public String bannerUpdate(Model model,
-                              Cast cast) throws Exception {
-        Cast pastCast = castService.select(cast.getId());
-        int result = castService.update(cast);
-        //log.info(pastCast.toString());       
+    public ResponseEntity<?> bannerUpdate(@RequestBody Cast cast) throws Exception {
+        
+        try {
+            // 데이터 요청
+            Cast pastCast = castService.select(cast.getId());
+            int result = castService.update(cast);
+            //log.info(pastCast.toString());       
 
-        if(result>0){
-            for (MultipartFile files : cast.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("cast");
-                file.setFkId(cast.getId());
-    
-                fileService.update(file,pastCast.getFiles().getId());
+            Map<String, Object> response = new HashMap<String, Object>();
+            
+            response.put("id", cast.getId());
+            if( result>0 ){
+                for (MultipartFile files : cast.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("cast");
+                    file.setFkId(cast.getId());
+        
+                    fileService.update(file,pastCast.getFiles().getId());
+                }
+                //return "redirect:/admin/cast/select?id="+cast.getId();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            return "redirect:/admin/cast/select?id="+cast.getId();
+            else{
+                response.put("errpr", "error");
+                //return "redirect:/admin/cast/update?id="+cast.getId()+"&error";
+                log.info("상영리스트 생성 실패!");
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/cast/update?id="+cast.getId()+"&error";
+        
     }
 
 
@@ -1326,23 +1623,35 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/cast/delete")
-    public String castDelete(@RequestParam("id") String id) throws Exception {
+    public ResponseEntity<?> castDelete(@RequestParam("id") String id) throws Exception {
 
-        Cast cast = castService.select(id);
 
-        int rs= fileService.delete(cast.getFiles().getId());
-        int rss=0;
-        if(rs>0){
-            rss = castService.delete(id);
-        }
-        else{
-            return "redirect:/admin/cast/update?id="+id+"&error=castDeleteFail";
-        }
+        try {
+            // 데이터 요청
+            Cast cast = castService.select(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("id", id);
 
-        if(rss>0){
-            return "redirect:/admin/cast/list";
-        }
-        return "redirect:/admin/cast/update?id="+id+"&error=castDeleteFail";
+
+            int rs= fileService.delete(cast.getFiles().getId());
+            int rss=0;
+            if(rs>0){
+                rss = castService.delete(id);
+            }
+            else{
+                //return "redirect:/admin/cast/update?id="+id+"&error=castDeleteFail";
+                return new ResponseEntity<>("castDeleteFail",HttpStatus.BAD_REQUEST);
+            }
+
+            if(rss>0){
+                return new ResponseEntity<>(response, HttpStatus.OK);
+                //return "redirect:/admin/cast/list";
+            }
+            //return "redirect:/admin/cast/update?id="+id+"&error=castDeleteFail";
+            return new ResponseEntity<>("castDeleteFail",HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
 
@@ -1351,7 +1660,7 @@ public class AdminController {
     /*-------------------------------------- 공지사항 --------------------------------------------- */
     
     
-        /**
+    /**
      * 출연진 리스트
      * @param model
      * @param page
@@ -1362,19 +1671,35 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/notice/list")
-    public String noticeList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> noticeList(
+                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
                       ,@RequestParam(name = "option", defaultValue = "0") int option
                       ,@RequestParam(name = "search", defaultValue = "") String search) throws Exception {
         // 데이터 요청
-
-        PageInfo<Notice> pageInfo = noticeService.list(page,size,option,search);
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("search", search);
-        // 뷰 페이지 지정
-        return "/admin/notice/list";
+        
+        try {
+            // 데이터 요청
+            PageInfo<Notice> pageInfo = noticeService.list(page,size,option,search);
+	        Map<String, Object> response = new HashMap<String, Object>();
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal(pageInfo.getTotal());
+            
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
+            
+            // 모델 등록
+            //model.addAttribute("pageInfo", pageInfo);
+            //model.addAttribute("search", search);
+            // 뷰 페이지 지정
+            //return "/admin/notice/list";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     
@@ -1386,11 +1711,21 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/notice/select")
-    public String noticeSelect(Model model,@RequestParam("id") String id) throws Exception {
-        Notice notice = noticeService.select(id);
-        model.addAttribute("notice", notice);
-        return "/admin/notice/select";
+    @GetMapping("/notice/select/{id}")
+    public ResponseEntity<?> noticeSelect(@PathVariable("id") String id) throws Exception {
+
+        try {
+            // 데이터 요청
+            Notice notice = noticeService.select(id);
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("notice", notice);
+            response.put("notice", notice);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //return "/admin/notice/select";
     }
     
     
@@ -1401,12 +1736,12 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
-    @GetMapping("/notice/insert")
-    public String noticeInsert(Model model) throws Exception {
+    // @Secured("ROLE_SUPER")
+    // @GetMapping("/notice/insert")
+    // public String noticeInsert(Model model) throws Exception {
 
-        return "/admin/notice/insert";
-    }
+    //     return "/admin/notice/insert";
+    // }
 
     /**
      * 배너 생성
@@ -1417,13 +1752,27 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/notice/insert")
-    public String noticeInsert(Model model,
-                              Notice notice) throws Exception {
-        int result = noticeService.insert(notice);
-        if(result>0){
-            return "redirect:/admin/notice/list";
+    public ResponseEntity<?> noticeInsert(
+        @RequestBody Notice notice) throws Exception {
+        
+        try {
+            // 데이터 요청
+            int result = noticeService.insert(notice);
+
+            if( result>0 ){
+                log.info("공지사항 생성 성공!");
+                //return "redirect:/admin/notice/list";
+                return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+            }
+            else{
+                log.info("공지사항 생성 실패!");
+                //return "redirect:/admin/notice/list&error";
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/notice/list&error";
+        
     }
 
 
@@ -1436,12 +1785,20 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/notice/update")
-    public String castUpdate(Model model,@RequestParam("id") String id) throws Exception {
+    public ResponseEntity<?> castUpdate(@RequestParam("id") String id) throws Exception {
 
-        Notice notice = noticeService.select(id);
-        model.addAttribute("notice", notice);
+        try {
+            // 데이터 요청
+            Notice notice = noticeService.select(id);
 
-        return "/admin/notice/update";
+            Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("notice", notice);
+            response.put("notice", notice);
+            //return "/admin/notice/update";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
 
@@ -1454,14 +1811,28 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/notice/update")
-    public String noticeUpdate(Model model,
-                              Notice notice) throws Exception {
-        int result = noticeService.update(notice);  
+    public ResponseEntity<?> noticeUpdate(
+            @RequestBody Notice notice) throws Exception {
+        try {
+            // 데이터 요청
+            int result = noticeService.update(notice);  
+            Map<String, Object> response = new HashMap<String, Object>();
 
-        if(result>0){
-            return "redirect:/admin/notice/select?id="+notice.getId();
-        }
-        return "redirect:/admin/notice/update?id="+notice.getId()+"&error";
+            response.put("id", notice.getId());
+            if( result>0 ){
+                log.info("공지 업뎃 성공!");
+                //return "redirect:/admin/notice/select?id="+notice.getId();
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("공지 업뎃 실패!");
+                //return "redirect:/admin/notice/update?id="+notice.getId()+"&error";
+                response.put("error", "error");
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
 
@@ -1475,40 +1846,29 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/notice/delete")
-    public String noticeDelete(@RequestParam("id") String id) throws Exception {
+    public ResponseEntity<?> noticeDelete(@RequestParam("id") String id) throws Exception {
 
-        int rs=noticeService.delete(id);
-
-        if(rs>0){
-            return "redirect:/admin/notice/list";
+        try {
+            // 데이터 요청
+            int rs=noticeService.delete(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            
+            response.put("id", id);
+            if( rs>0 ){
+                log.info("공지 식제 성공!");
+                //return "redirect:/admin/notice/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("공지 삭제 실패!");
+                //return "redirect:/admin/notice/update?id="+id+"&error=noticeDeleteFail";
+                response.put("error", "noticeDeleteFail");
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/notice/update?id="+id+"&error=noticeDeleteFail";
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -1527,29 +1887,36 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/list")
-    public String userList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> userList(
+                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "16") Integer size
                       ,@RequestParam(name = "search", required = false) String search) throws Exception {
-        // 데이터 요청
-        PageInfo<Users> pageInfo = null;
-        if(search == null || search.equals("")){
-            pageInfo = userService.list(page, size);
-        }
-        else{
-            pageInfo = userService.list(page, size, search);
-        }
-        Pagination pagination = new Pagination();
-        pagination.setPage(page);
-        pagination.setSize(size);
-        pagination.setTotal( pageInfo.getTotal());
-
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("search", search);
+        
+        
+        try {
+            // 데이터 요청
+            PageInfo<Users> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search == null || search.equals("")){
+                pageInfo = userService.list(page, size);
+            }
+            else{
+                pageInfo = userService.list(page, size, search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal( pageInfo.getTotal());
+            // 모델 등록
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
         // 뷰 페이지 지정
-        return "/admin/userManager/user/list";
+        //return "/admin/userManager/user/list";
     }
 
     /**
@@ -1561,10 +1928,20 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/select")
-    public String userSelect(Model model,@RequestParam("username") String username) throws Exception {
-        Users user = userService.select(username);
-        model.addAttribute("user", user);
-        return "/admin/userManager/user/select";
+    public ResponseEntity<?> userSelect(@RequestParam("username") String username) throws Exception {
+        
+        try {
+            // 데이터 요청
+            Users user = userService.select(username);
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("user", user);
+            response.put("user", user);
+            //return "/admin/userManager/user/select";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }    
     }
 
     /**
@@ -1576,12 +1953,22 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/update")
-    public String userUpdate(Model model,@RequestParam("username") String username) throws Exception {
-        Users user = userService.select(username);
-        List<AuthList> authList = authListService.list();
-        model.addAttribute("user", user);
-        model.addAttribute("authList", authList);
-        return "/admin/userManager/user/update";
+    public ResponseEntity<?> userUpdate(@RequestParam("username") String username) throws Exception {
+        try {
+            // 데이터 요청
+            Users user = userService.select(username);
+            List<AuthList> authList = authListService.list();
+
+            Map<String, Object> response = new HashMap<String, Object>();
+            //model.addAttribute("user", user);
+            //model.addAttribute("authList", authList);
+            response.put("user", user);
+            response.put("authList", authList);
+            //return "/admin/userManager/user/update";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }        
     }
 
     /**
@@ -1593,12 +1980,27 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/userManager/user/update")
-    public String userUpdate(Model model,Users user) throws Exception {
-        int result = userService.update(user);
-        if(result>0){
-            return "redirect:/admin/userManager/user/select?username="+user.getUsername();
+    public ResponseEntity<?> userUpdate(@RequestBody Users user) throws Exception {
+        
+        try {
+            // 데이터 요청
+            int result = userService.update(user);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("username", user.getUsername());
+            if( result>0 ){
+                log.info("유저 정보 업뎃 성공!");
+                // return "redirect:/admin/userManager/user/select?username="+user.getUsername();
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("유저 정보 업뎃 실패!");
+                //return "redirect:/admin/userManager/user/update?username="+user.getUsername()+"&error";
+                response.put("error","error");
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/userManager/user/update?username="+user.getUsername()+"&error";
     }
 
     /**
@@ -1611,14 +2013,28 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/authDelete")
-    public String userAuthDelete(Model model,@RequestParam("username") String username
+    public ResponseEntity<?> userAuthDelete(@RequestParam("username") String username
     ,@RequestParam("no") int no) throws Exception {
-        int result = userService.deleteAuth(no);
-        // log.info(no+" 넘버!!!!!!!!!!!!!!!!!!!");
-        if(result>0){
-            return "redirect:/admin/userManager/user/update?username="+username;
+
+        try {
+            // 데이터 요청
+            int result = userService.deleteAuth(no);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("username", username);
+            if( result>0 ){
+                log.info("유저 권한 삭제 성공!");
+                //return "redirect:/admin/userManager/user/update?username="+username;
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("유저 권한 삭제 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/userManager/user/update?username="+username+"&error";
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/userManager/user/update?username="+username+"&error";
         
     }
 
@@ -1631,13 +2047,29 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/userManager/user/authPlus")
-    public String userAuthPlus(Model model,
-                              UserAuth userAuth) throws Exception {
-        int result = userService.insertAuth(userAuth);
-        if(result>0){
-            return "redirect:/admin/userManager/user/update?username="+userAuth.getUserId();
+    public ResponseEntity<?> userAuthPlus(@RequestBody UserAuth userAuth) throws Exception {
+
+        try {
+            // 데이터 요청
+            int result = userService.insertAuth(userAuth);
+            Map<String, Object> response = new HashMap<String, Object>();
+
+            response.put("username", userAuth.getUserId());
+            if( result>0 ){
+                log.info("유저 권한 추가 성공!");
+                //return "redirect:/admin/userManager/user/update?username="+userAuth.getUserId();
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("유저 권한 추가 실패!");
+                //return "redirect:/admin/userManager/user/update?username="+userAuth.getUserId()+"&error";
+                response.put("error", "error");
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/userManager/user/update?username="+userAuth.getUserId()+"&error";
+        
     }
 
 
@@ -1651,19 +2083,33 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/sleep")
-    public String userSleep(@RequestParam("username") String username) throws Exception {
-        Users user = userService.select(username);
-        if(user.isEnabled()){
-            user.setEnabled(false);
+    public ResponseEntity<?> userSleep(@RequestParam("username") String username) throws Exception {
+
+        try {
+            // 데이터 요청
+            Users user = userService.select(username);
+            if(user.isEnabled()){
+                user.setEnabled(false);
+            }
+            else{
+                user.setEnabled(true);
+            }
+            int result = userService.update(user);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if( result>0 ){
+                log.info("유저 휴먼 전환 성공!");
+                //return "redirect:/admin/userManager/user/list";
+                return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+            }
+            else{
+                log.info("유저 휴먼 전환 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/userManager/user/list?error";
+                return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else{
-            user.setEnabled(true);
-        }
-        int result = userService.update(user);
-        if( result > 0 ) {
-            return "redirect:/admin/userManager/user/list";
-        }
-        return "redirect:/admin/userManager/user/list?error";
     }
 
     /* ------------------------------------- 유저 리스트 끝------------------------------------- */
@@ -1686,41 +2132,52 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/auth/list")
-    public String authList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> authList(
+                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
                       ,@RequestParam(name = "search", required = false) String search) throws Exception {
-        // 데이터 요청
-        PageInfo<AuthList> pageInfo = null;
-        if(search == null || search.equals("")){
-            pageInfo = authListService.list(page, size);
-        }
-        else{
-            pageInfo = authListService.list(page, size, search);
-        }
-        Pagination pagination = new Pagination();
-        pagination.setPage(page);
-        pagination.setSize(size);
-        pagination.setTotal( pageInfo.getTotal());
 
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("search", search);
-        // 뷰 페이지 지정
-        return "/admin/userManager/auth/list";
+        try {
+            // 데이터 요청
+            PageInfo<AuthList> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search == null || search.equals("")){
+                pageInfo = authListService.list(page, size);
+            }
+            else{
+                pageInfo = authListService.list(page, size, search);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal( pageInfo.getTotal());
+            
+            // 모델 등록
+            //model.addAttribute("pageInfo", pageInfo);
+            //model.addAttribute("pagination", pagination);
+            //model.addAttribute("search", search);
+            // 뷰 페이지 지정
+            //return "/admin/userManager/auth/list";
+
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            response.put("search",search);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
      * 권한 생성 진입
      * @return
      */
-    @Secured("ROLE_SUPER")
-    @GetMapping("/userManager/auth/insert")
-    public String authInsert() {
+    // @Secured("ROLE_SUPER")
+    // @GetMapping("/userManager/auth/insert")
+    // public String authInsert() {
 
-        return "/admin/userManager/auth/insert";
-    }
+    //     return "/admin/userManager/auth/insert";
+    // }
 
     /**
      * 권한 생성
@@ -1730,13 +2187,28 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/userManager/auth/insert")
-    public String postMethodName(AuthList authList) throws Exception {
+    public ResponseEntity<?> postMethodName(@RequestBody AuthList authList) throws Exception {
+
         log.info("authList : " + authList);
-        int result = authListService.insert(authList);
-        if( result > 0 ) {
-            return "redirect:/admin/userManager/auth/list";
+
+        try {
+            // 데이터 요청
+            int result = authListService.insert(authList);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if( result>0 ){
+                log.info("상영리스트 생성 성공!");
+                // return "redirect:/admin/userManager/auth/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("상영리스트 생성 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/userManager/auth/list?error";
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/userManager/auth/list?error";
     }
 
     /**
@@ -1747,12 +2219,26 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/userManager/auth/delete")
-    public String authDelete(@RequestParam("no") int no) throws Exception {
-        int result = authListService.delete(no);
-        if( result > 0 ) {
-            return "redirect:/admin/userManager/auth/list";
+    public ResponseEntity<?> authDelete(@RequestParam("no") int no) throws Exception {
+        
+        try {
+            // 데이터 요청
+            int result = authListService.delete(no);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if( result>0 ){
+                log.info("권한 삭제 성공!");
+                //return "redirect:/admin/userManager/auth/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("권한 삭제 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/userManager/auth/list?error";
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/userManager/auth/list?error";
     }
 
 
@@ -1768,43 +2254,76 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/reviewManager/list")
-    public String reviewList(Model model
-                      ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> reviewList(
+                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
                       ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
                       ,@RequestParam(name = "search", required = false) String search) throws Exception {
         
-        PageInfo<ReviewInfo> pageInfo = null;
-        // 데이터 요청
-        if(search != null && !search.equals("")){
-            pageInfo = reviewService.adminReviewList(search, page, size);
-            model.addAttribute("search", search);
-        }
-        else{
-            pageInfo = reviewService.adminReviewList(page, size);
-        }
+        try {
+            // 데이터 요청
+            PageInfo<ReviewInfo> pageInfo = null;
+            Map<String, Object> response = new HashMap<String, Object>();
+            if(search != null && !search.equals("")){
+                pageInfo = reviewService.adminReviewList(search, page, size);
+                response.put("search",search);
+            }
+            else{
+                pageInfo = reviewService.adminReviewList(page, size);
+            }
+            Pagination pagination = new Pagination();
+            pagination.setPage(page);
+            pagination.setSize(size);
+            pagination.setTotal(pageInfo.getTotal());
+            
+            response.put("pageInfo", pageInfo.getList());
+            response.put("pagination", pagination);
+            
+            // 모델 등록
+            //model.addAttribute("pageInfo", pageInfo);
+            
+            // 뷰 페이지 지정
+            //return "/admin/reviewManager/list";
 
-        // 모델 등록
-        model.addAttribute("pageInfo", pageInfo);
-        
-        // 뷰 페이지 지정
-        return "/admin/reviewManager/list";
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * 권한 삭제
+     * 리뷰 삭제
      * @param no
      * @return
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
     @GetMapping("/reviewManager/delete")
-    public String reviewManagerDelete(@RequestParam("id") String id) throws Exception {
-        int result = reviewService.deleteReview(id);
-        reviewService.deleteRating(id);
-        if( result > 0 ) {
-            return "redirect:/admin/reviewManager/list";
+    public ResponseEntity<?> reviewManagerDelete(@RequestParam("id") String id) throws Exception {
+
+        
+        try {
+            // 데이터 요청
+            int result = reviewService.deleteReview(id);
+            reviewService.deleteRating(id);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if( result>0 ){
+                log.info("상영리스트 생성 성공!");
+                //return "redirect:/admin/reviewManager/list";
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else{
+                log.info("상영리스트 생성 실패!");
+                response.put("error", "error");
+                //return "redirect:/admin/reviewManager/list?error";
+                return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/admin/reviewManager/list?error";
+
+        
+        
+        
     }
     
     /* ----------------------------- 리뷰 관련 끝 ----------------------------------------------------- */

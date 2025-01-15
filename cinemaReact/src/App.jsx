@@ -8,6 +8,7 @@ import MyPage from './pages/MyPage'
 import MyPageEdit from './pages/MyPageEdit'
 import MyPageReservationList from './pages/MyPageReservationList'
 import About from './pages/About'
+import Admin from './pages/Admin'
 import LoginContextProvider from './contexts/LoginContextProvider'
 import Layout from './components/Layout/Layout'
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/mypagereservationlist" element={<MyPageReservationList/>}></Route>
             <Route path="/about" element={<About/>}></Route>
           </Route>
+            <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>
     </BrowserRouter>

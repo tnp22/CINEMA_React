@@ -1,36 +1,87 @@
 package com.aloha.movieproject.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aloha.movieproject.domain.Files;
 import com.aloha.movieproject.service.FileService;
 import com.aloha.movieproject.util.MediaUtil;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@Controller
+@RestController
+@RequestMapping("/files")
 public class FileController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired ResourceLoader resourceLoader;
+
+    /**
+     * 썸네일 이미지
+     * @param id
+     * @throws IOException 
+     */
+    @GetMapping("/img/{id}")
+    public void thumbnailImg(
+        @PathVariable("id") String id,
+        HttpServletResponse response
+    ) throws Exception {
+        Files file = fileService.select(id);
+        String filePath = file != null ? file.getUrl() : null;
+
+        File imgFile;
+        // 파일 경로가 null 또는 파일이 존재하지 않는 경우
+        Resource resource = resourceLoader.getResource("classpath:static/img/no-image.png");
+        if( filePath == null || !(imgFile = new File(filePath)).exists() ) {
+            // no-image.png 적용
+            imgFile = resource.getFile();
+            filePath = imgFile.getPath();
+        }
+
+        // 확장자
+        String ext = filePath.substring(filePath.lastIndexOf(".") + 1);
+        String mimeType = MimeTypeUtils.parseMimeType("image/" + ext).toString();
+        MediaType mType = MediaType.valueOf(mimeType);
+
+        if( mType == null ) {
+            // 이미지 타입이 아닌 경우
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            imgFile = resource.getFile();
+        } else {
+            // 이미지 타입인 경우
+            response.setContentType(mType.toString());
+        }
+        FileInputStream fis = new FileInputStream(imgFile);
+        ServletOutputStream sos = response.getOutputStream();
+        FileCopyUtils.copy(fis, sos);
+    }
     
     /**
      * 이미지 썸네일

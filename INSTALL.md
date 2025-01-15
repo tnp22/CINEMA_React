@@ -15,3 +15,4 @@ npm install bootstrap@5
 ### fontAwesome
 npm install --save @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/free-regular-svg-icons @fortawesome/free-brands-svg-icons @fortawesome/fontawesome-svg-core
 
+npm install jquery
