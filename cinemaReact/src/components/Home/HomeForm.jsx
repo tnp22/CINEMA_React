@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {Link} from 'react-router-dom';
 
 const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBannerList }) => {
 
@@ -82,7 +83,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                     {bannerList.map((banner, index) => (
                     <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
                         <a href={`/movie/movieInfo?id=${banner.movie.id}`}>
-                        <img src={`/api/img?id=${banner.files.id}`} alt={banner.files} />
+                        <img src={`/api/files/img?id=${banner.files.id}`} alt={banner.files} />
                         </a>
                     </div>
                     ))}
@@ -105,10 +106,9 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                 >
                     상영 예정작
                 </a>
-                <a href="/movie/movieChart" className="btn all-button d-flex align-items-center" style={{ position: "absolute", right: 0 }}>
-                    <span>전체보기</span>
-                    <i className="bi bi-chevron-right"></i>
-                </a>
+                <Link to="/movie/movieChart" className="btn all-button d-flex align-items-center" style={{ position: "absolute", right: 0 }}>
+                    전체보기<i className="bi bi-chevron-right">
+                </i></Link>
             </div>
             <div className="tab-content">
                 {currentTab === "movie-chart" && (
@@ -125,7 +125,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                             {moviePageInfo && moviePageInfo.list && moviePageInfo.list.length > 0 && moviePageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기
@@ -175,7 +175,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                             {expectPageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기

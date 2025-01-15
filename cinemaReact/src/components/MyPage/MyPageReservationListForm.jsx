@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './MyPageReservationListForm.css';
+import styles from './MyPageReservationListForm.module.css';
 
 function MyPageReservationListForm() {
   const [reservationList, setReservationList] = useState([]);
@@ -58,15 +58,15 @@ function MyPageReservationListForm() {
   };
 
   return (
-    <div className="container" style={{ minHeight: '800px', marginTop: '180px' }}>
-      <h1 className="mb-4">예매 목록</h1>
+    <div className={styles.container}>
+      <h1 className={styles.mb-4}>예매 목록</h1>
       {reservationList.map((reservation) => (
-        <div key={reservation.id} className="movie-card row align-items-center">
+        <div key={reservation.id} className={`${styles.movieCard} row align-items-center`}>
           <div className="col-md-2 text-center">
             <img
               src={`/api/img?id=${reservation.file}`}
               alt="Movie Poster"
-              className="movie-poster"
+              className={styles.moviePoster}
             />
           </div>
           <div className="col-md-7">
@@ -77,7 +77,7 @@ function MyPageReservationListForm() {
           </div>
           <div className="col-md-3 text-end">
             <button
-              className="btn btn-custom mb-2 w-100"
+              className={`${styles.btnCustom} mb-2 w-100`}
               onClick={() => handleDetail(reservation.id)}
             >
               자세히 보기
@@ -93,7 +93,7 @@ function MyPageReservationListForm() {
       ))}
 
       {/* 페이지네이션 (예시로 static 페이지 번호 처리) */}
-      <div className="pagination flex justify-content-center" style={{ margin: '30px 0' }}>
+      <div className={styles.pagination}>
         <ul style={{ display: 'flex', listStyleType: 'none', gap: '10px' }}>
           {/* 페이지 번호들 */}
           <li>

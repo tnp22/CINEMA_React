@@ -9,6 +9,16 @@
             "projectName": "movie_project",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MovieprojectApplication<movieproject>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.aloha.movieproject.MovieprojectApplication",
+            "projectName": "movieproject",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

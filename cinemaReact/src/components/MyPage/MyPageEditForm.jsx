@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import './MyPageEditForm.css';
+import styles from './MyPageEditForm.module.css';
 
 const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
     const [password, setPassword] = useState('');
@@ -41,8 +41,8 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
     };
 
     return (
-        <div className="content">
-            <div className="title">
+        <div className={styles.content}>
+            <div className={styles.title}>
                 <h5 style={{ color: 'white' }}>나의 정보</h5>
             </div>
 
@@ -60,8 +60,8 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
             <form action="/user/mypageImageUpdate" method="post" encType="multipart/form-data">
                 <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
                 <input type="hidden" name="username" value={username} />
-                <div className="logo-and-upload" style={{ marginLeft: '290px' }}>
-                    <div className="logo-container">
+                <div className={styles.logoAndUpload} style={{ marginLeft: '290px' }}>
+                    <div className={styles.logoContainer}>
                         <img
                             id="profileImage"
                             src={orifile ? `/img?id=${orifile.id}` : '/image(id="C:/upload/normal.png")'}
@@ -75,15 +75,15 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                             alt="프로필 이미지"
                         />
                     </div>
-                    <div className="profile-upload-btn" style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', rowGap: '9px' }}>
-                        <label htmlFor="fileInput" className="btn btn-purple">
+                    <div className={styles.profileUploadBtn} style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', rowGap: '9px' }}>
+                        <label htmlFor="fileInput" className={`${styles.btnPurple} btn`}>
                             이미지 변경
                         </label>
-                        <label htmlFor="imageSubmit" className="btn btn-purple">
+                        <label htmlFor="imageSubmit" className={`${styles.btnPurple} btn`}>
                             변경 확인
                         </label>
                         <input type="file" name="file" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
-                        <input type="submit" id="imageSubmit" className="btn btn-purple" style={{ display: 'none' }} />
+                        <input type="submit" id="imageSubmit" className={`${styles.btnPurple} btn`} style={{ display: 'none' }} />
                     </div>
                 </div>
             </form>
@@ -92,16 +92,15 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
             <form id="infoForm" onSubmit={handleSubmit} className="needs-validation" encType="multipart/form-data">
                 <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
 
-                <div className="divider" />
+                <div className={styles.divider} />
 
                 {/* 아이디 */}
                 <div className="mb-4" id="box-id">
-                    <label htmlFor="username" className="form-label">아이디</label>
+                    <label htmlFor="username" className={styles.formLabel}>아이디</label>
                     <div className="d-flex align-items-center">
                         <input
                             type="text"
-                            className="form-control me-2"
-                            style={{ backgroundColor: '#e9ecef', color: '#6c757d' }}
+                            className={`${styles.formControl} me-2`}
                             id="username"
                             name="username"
                             placeholder="현재 아이디"
@@ -113,11 +112,11 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
 
                 {/* 이메일 수정 가능 */}
                 <div className="mb-4" id="box-email">
-                    <label htmlFor="email" className="form-label">이메일</label>
+                    <label htmlFor="email" className={styles.formLabel}>이메일</label>
                     <div className="d-flex align-items-center">
                         <input
                             type="email"
-                            className="form-control me-2"
+                            className={`${styles.formControl} me-2`}
                             id="email"
                             name="email"
                             placeholder="새 이메일을 입력해주세요"
@@ -129,10 +128,10 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
 
                 {/* 비밀번호 수정 */}
                 <div className="mb-2">
-                    <label htmlFor="password" className="form-label">새 비밀번호</label>
+                    <label htmlFor="password" className={styles.formLabel}>새 비밀번호</label>
                     <input
                         type="password"
-                        className="form-control"
+                        className={styles.formControl}
                         id="password"
                         name="password"
                         placeholder="새 비밀번호를 입력해주세요"
@@ -143,22 +142,22 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="passwordCheck" className="form-label">새 비밀번호 확인</label>
+                    <label htmlFor="passwordCheck" className={styles.formLabel}>새 비밀번호 확인</label>
                     <input
                         type="password"
-                        className="form-control"
+                        className={styles.formControl}
                         id="passwordCheck"
                         placeholder="새 비밀번호를 다시 입력해주세요"
                         required
                         value={passwordCheck}
                         onChange={(e) => setPasswordCheck(e.target.value)}
                     />
-                    <p className="alert-text" style={{ color: 'red' }}>{errorMessage}</p>
+                    <p className={styles.alertText}>{errorMessage}</p>
                 </div>
 
                 {/* 변경 사항 저장 버튼 */}
                 <div style={{ marginBottom: '20px' }}>
-                    <button type="submit" className="btn btn-purple" style={{ width: '125px' }}>
+                    <button type="submit" className={`${styles.btnPurple} btn`} style={{ width: '125px' }}>
                         저장
                     </button>
                 </div>
@@ -167,7 +166,7 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
                     <a
                         href="/mypage"
-                        className="btn btn-secondary"
+                        className={`${styles.btnSecondary} btn`}
                         style={{
                             width: '200px',
                             backgroundColor: '#6c757d',

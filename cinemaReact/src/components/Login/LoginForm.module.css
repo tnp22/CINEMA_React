@@ -1,13 +1,15 @@
-.container-sm{
+.loginForm{
+    margin-top: 170px;
+}
+.containerSm{
     border-radius: 20px;
     overflow: hidden;
     width: 500px;
     height: 500px;
     padding: 0;
     border: 1px solid #583BBF;
-    background: white;
 }
-.login-header {
+.loginHeader {
     background-color: #6f42c1;
     padding: 10px;
     text-align: center;
@@ -15,45 +17,42 @@
     width: 100%;
     border-radius: 8px 8px 0 0;
 }
-.login-logo {
+.loginLogo {
     text-align: center;
     margin: 20px 0;
 }
-.login-logo img {
+.loginLogo img {
     max-width: 150px;
 }
-.container-md{
+.containerMd{
     padding: 40px;
 }
-.btn-purple {
+.btnPurple {
     width: 100px;
     height: 50px;
     background-color: #583BBF;
     margin-right: 20px;
     color: white;
 }
-.btn-purple:hover {
+.btnPurple:hover {
     background-color: rgba(79, 31, 255, 0.7);
     color: white;
 }
-.btn-white{
+.btnWhite{
     width: 100px;
     height: 50px;
     border: 1px solid black;
     align-content: center;
 }
-.btn-white:hover{
+.btnWhite:hover{
     background-color: black;
     color: white;
 }
-.input-form{
+.inputForm{
     border: none;
     border-bottom: 1px solid gray;
     width: 80%;
     height: 40px;
     font-size: 16px;
     padding: 20px;
-}
-.login-form{
-    margin-top: 170px;
 }
