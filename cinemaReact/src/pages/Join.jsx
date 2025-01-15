@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '../components/Layout/Header'
 import JoinForm from '../components/join/JoinForm'
 import * as auth from '../apis/auth'
 import * as Swal from '../apis/alert'
@@ -11,12 +10,12 @@ const Join = () => {
 
   // 회원 가입 요청
   const join = async ( form ) => {
-    console.log(form);
-
+    console.dir(form);
+    
     let response
     let data
     try {
-      response = await auth.join(form)
+      response = await auth.join(JSON.stringify(form))
     } catch (error) {
       console.log(error);
       console.error(`회원가입 중 에러가 발생하였습니다.`);

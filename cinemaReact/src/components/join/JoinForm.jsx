@@ -1,39 +1,51 @@
 import React, { useState } from 'react'
 import './JoinForm.css'
+import * as auth from '../../apis/auth'
 
 const JoinForm = ({join}) => {
-  
-  // 가입하기 클릭
-  const onJoin = async (e) => {
-    e.preventDefault()  // submit 기본 동작 방지
-    const form = e.target
-    const username = form.username.value
-    const password = form.password.value
-    const name = form.name.value
-    const email = form.email.value
 
-    console.log(username, password, name, email);
-
-    const isIdAvailable = await checkId(false);
-
-    if (!isIdAvailable) return;
-
-    if (!validatePasswords()) {
-      alert("비밀번호를 다시 확인해주세요.");
-      return;
-    }
-
-    join({username, password, name, email})
-  }
-  
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [validationState, setValidationState] = useState("mb-4");
+  
+  // 가입하기 클릭
+  const onJoin = async (e) => {
+    e.preventDefault()  // submit 기본 동작 방지
+    console.log('시이작')
+
+    console.log(username, password, name, email);
+    const formData = {
+      "username" : username,
+      "password" : password,
+      "name" : name,
+      "email" : email
+    }
+
+    const isIdAvailable = await check(username);
+
+    if (!isIdAvailable){
+      alert("아이디가 중복되었습니다.");
+      return;
+    } 
+
+    if (!validatePasswords()) {
+      alert("비밀번호를 다시 확인해주세요.");
+      return;
+    }
+    console.dir(formData)
+    join(formData)
+  }
+  
+  
+
 
   const validatePasswords = () => {
+    console.log(password)
+    console.log(passwordCheck)
     if (password !== passwordCheck) {
       setErrorMessage("비밀번호가 다릅니다. 확인해주세요.");
       return false;
@@ -42,44 +54,35 @@ const JoinForm = ({join}) => {
     return true;
   };
 
-  const checkId = async (alertEnabled = true) => {
-    if (!username) {
-      alert("아이디를 입력해주세요");
-      return false;
-    }
+  // 중복 확인
+  const check = async ( username ) => {
+    console.log(username);
 
+    let response
+    let data
     try {
-      const response = await fetch(`/check/${username}`, {
-        method: "GET",
-        headers: {
-          "X-CSRF-TOKEN": "your-csrf-token", // 적절히 설정
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.text();
-        if (result === "true") {
-          if (alertEnabled) alert("사용 가능한 아이디입니다.");
-          setIsUsernameValid(true);
-          return true;
-        } else {
-          alert("중복된 아이디입니다.");
-          setIsUsernameValid(false);
-          return false;
-        }
-      } else {
-        alert("아이디 중복 확인 중 오류가 발생했습니다.");
-        return false;
-      }
+      response = await auth.check(username)
     } catch (error) {
-      console.error("Error:", error);
-      alert("아이디 중복 확인 중 오류가 발생했습니다.");
+      console.log(error);
+      console.error(`중복확인 중 에러가 발생하였습니다.`);
+      return
+    }
+    
+    data = response.data
+    const status = response.status
+    console.log(`data : ${data}`);
+    console.log(`status : ${status}`);
+    if(data === true){
+      setValidationState('was-validated mb-4');  // 'was-validated' 클래스를 적용
+      return true;
+    }else{
+      setValidationState('is-invalid'); 
       return false;
     }
-  };
+  }
 
   return (
-    <form id="form" className="needs-validation" onSubmit={() => onJoin(e)}>
+    <form id="form" className="join-form" onSubmit={(e) => onJoin(e)}>
       <div className="title">
         <h5 style={{ color: "white" }}>회원가입</h5>
       </div>
@@ -102,7 +105,7 @@ const JoinForm = ({join}) => {
             required
           />
         </div>
-        <div className="mb-4" id="box-id">
+        <div className={`${validationState}`} id="box-id">
           <label htmlFor="username" className="form-label">
             아이디
           </label>
@@ -122,12 +125,18 @@ const JoinForm = ({join}) => {
               type="button"
               className="btn btn-secondary"
               style={{ flex: "0 0 20%" }}
-              onClick={() => checkId(true)}
+              onClick={() => check(username)}
             >
               중복확인
             </button>
           </div>
+          
         </div>
+        <div className="invalid-feedback mb-4">
+          <p className="alert-text" style={{ color: "red" }}>
+            중복된 아이디입니다.
+          </p>
+          </div>
         <div className="mb-2">
           <label htmlFor="password" className="form-label">
             비밀번호

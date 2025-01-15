@@ -54,9 +54,13 @@ const LoginContextProvider = ({ children }) => {
 
       // 로그인 성공 ✅
       if( status == 200 ) {
+          
+        if (localStorage.getItem("rememberMe") === "true") {
+          Cookies.set("jwt", jwt, { expires: 5 }) // 영구 쿠키
+        } else {
+          Cookies.set("jwt", jwt) // 세션 쿠키 (브라우저 종료 시 삭제)
+        }
 
-        // 💍 JWT 를 쿠키에 등록
-        Cookies.set("jwt", jwt, { expires: 5 })  // 5일후 만료
 
         // 로그인 세팅 -  loginSetting(🎫💍, 👩‍💼)
         loginSetting(authorization, data)
@@ -136,10 +140,12 @@ const LoginContextProvider = ({ children }) => {
   const autoLogin = async () => {
     // 쿠키에서 jwt 가져오기
     const jwt = Cookies.get("jwt")
+    const rememberMe = localStorage.getItem("rememberMe") === "true"
+    
 
-    // 💍 in 🍪 ❌
-    if( !jwt ) {
-      // TODO: 로그아웃 세팅
+    if (!rememberMe || !jwt ) {
+      console.log("자동 로그인을 건너뜁니다.")
+      logoutSetting()
       return
     }
 
@@ -205,14 +211,17 @@ const LoginContextProvider = ({ children }) => {
   }
 
   useEffect( () => {
-
-    const savedIsLogin = localStorage.getItem("isLogin")
-    if( !savedIsLogin || savedIsLogin == false ) {
-      autoLogin().then(() => {
-        console.log(`로딩 완료`);
-        // 로딩 완료
-        setIsLoading(false)
-      })
+    setIsLogin(false)
+    const savedIsLogin = localStorage.getItem('rememberMe')
+    
+    if( (savedIsLogin || savedIsLogin == true) ) {
+          console.log('자동 로그인인가?');
+          
+          autoLogin().then(() => {
+            console.log(`로딩 완료`);
+            // 로딩 완료
+            setIsLoading(false)
+          })
     }
     else {
       // 로딩 완료
