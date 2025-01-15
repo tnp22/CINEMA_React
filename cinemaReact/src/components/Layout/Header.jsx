@@ -10,7 +10,9 @@ const Header = () => {
   // LoginContext 가져오기
   // isLogin 변수
   // logout 함수
-  const {isLogin, logout} = useContext(LoginContext)
+  const {logout} = useContext(LoginContext)
+
+  const isLogin = sessionStorage.getItem('isLogin')
 
   // localStorage에서 roles 가져오기
   const rolesString = localStorage.getItem("roles");
@@ -33,9 +35,10 @@ const Header = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // 기본 동작 방지
-    if (onSearch) {
-      onSearch(searchText); // 검색 텍스트를 부모 컴포넌트로 전달
-    } else {
+    console.log(`검색어는 ${searchText}`);
+    
+    if (searchText!==null && searchText!=="") {
+      console.log('검색 시작');
       window.location.href = `/movie/search?search=${encodeURIComponent(searchText)}`; // 기본 폼 제출
     }
   };
