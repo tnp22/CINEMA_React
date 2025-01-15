@@ -11,6 +11,7 @@ import About from './pages/About'
 import Admin from './pages/Admin'
 import LoginContextProvider from './contexts/LoginContextProvider'
 import Layout from './components/Layout/Layout'
+import Ticket from './pages/Ticket'
 function App() {
 
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/mypagereservationlist" element={<MyPageReservationList/>}></Route>
             <Route path="/about" element={<About/>}></Route>
           </Route>
+            <Route path="/Ticket/*" element={<Ticket />}></Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>

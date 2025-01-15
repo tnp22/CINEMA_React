@@ -1,29 +1,33 @@
-import React, { useRef } from 'react';
-import './AddMapFrom.css';
+import React, { useRef, useState } from 'react';
+import styles from'./AddMapFrom.module.css';
+import * as addmap from '../../../../apis/addmap'
 
 const AddMapFrom = () => {
 
   const automapingRef = useRef(null);
 
   const create = () =>{
-
+    
     var x = document.getElementsByName('width_length')[0]?.value || null;
     var y = document.getElementsByName('height_length')[0]?.value || null;
-
+    
     var btn = document.getElementById('btn');
     if(btn.innerHTML.trim() !== ""){
       // btn 자식데이터 삭제
       btn.innerHTML = "";
     }
-
+    
     let ascii = 65; // 정수 = 'A'
-
+    
+    console.log('생성 작동여부');
+    console.log(x);
+    console.log(y);
     for(var n = 0; n < y; n++){
       var count = 0;
 
       // 행 시작 문자를 표시 생성
       var mapStart = document.createElement('p');
-      mapStart.className = "mapStart";
+      mapStart.className = styles.mapStart;
       mapStart.textContent = String.fromCharCode(ascii)+"열";
       btn.appendChild(mapStart);
 
@@ -31,7 +35,7 @@ const AddMapFrom = () => {
         count++;
         // 좌석 수정 버튼 생성
         var map = document.createElement("button");
-        map.className = "mapButton";
+        map.className = styles.mapButton;
 
         addSeat(map)
 
@@ -48,7 +52,7 @@ const AddMapFrom = () => {
         
         // x 버튼 생성
         var closeButton = document.createElement("span");
-        closeButton.className = "closeButton";
+        closeButton.className = styles.closeButton;
         closeButton.id = "closeButton_" + ascii2 + count;
         closeButton.textContent = "X";
 
@@ -75,15 +79,15 @@ const AddMapFrom = () => {
 
   const addSeat = (map) =>{
     // 이미 좌석생성 버튼 여부 확인
-    if(!map.querySelector(".button-container")){
+    if(!map.querySelector(".buttonContainer")){
       // 좌석생성 버튼이 없으면 새로 생성
       var buttonContainer = document.createElement("div");
-      buttonContainer.className = "button-container";
+      buttonContainer.className = styles.buttonContainer;
 
       // + 버튼 생성
       var seatPlus = document.createElement("button");
       seatPlus.textContent = "+";
-      seatPlus.className = "seatButton plus"; // 클래스 추가
+      seatPlus.className = `${styles.seatButtonPlus} plus`; // 클래스 추가
       seatPlus.addEventListener('click', function(event) {
           event.stopPropagation(); // 부모이벤트 전파 중지
           Plus(map.id);
@@ -92,7 +96,7 @@ const AddMapFrom = () => {
       // 통로 버튼 생성
       var seatPass = document.createElement("button");
       seatPass.textContent = "통로";
-      seatPass.className = "seatButton minus";
+      seatPass.className = `${styles.seatButton} minus`;
       seatPass.addEventListener('click', function(event){
         event.stopPropagation();
         Pass(map.id);
@@ -254,9 +258,12 @@ const AddMapFrom = () => {
   }
 
   /** 저장하기 */
-  const addButton = () => {
+  const addButton = async () => {
+
+    
     // let name = document.getElementById('name').value;
     // let cinemaId = document.getElementById('cinemaId')
+    let cinemaId = 'cfbec3ad-3730-4ae1-96aa-54863c44bf1b'
     // console.log(name);
 
     var x = document.getElementsByName('width_length')[0]?.value || null;
@@ -283,20 +290,58 @@ const AddMapFrom = () => {
       ascii++;
     }
 
-    console.log(YMap);
+    // console.log(YMap); //나옴
+    // console.log(x);
+    // console.log(y);
+    // console.log(cinemaId); // 테스트때는 임시데이터
+
+    let data = {
+      'x' : x,
+      'y' : y,
+      'mapData' : YMap,
+      'id' : '1234',
+      'name' : 'name',
+      'cinemaId' : cinemaId
+    }
+    const headers = {
+      'Content-Type' : 'multupart/form-data'
+    }
+    // id(UUID), name(이건 먼지모르겠) 암튼 컨트롤러에서 수정해야함
+    let request = new XMLHttpRequest()
+    const response = await addmap.addmap(data, headers)
+    const d = response.data
+    console.log(d);
+    alert('맵제작 완료?')
+    
+    
+    
+    
     // PSOT 데이터 controller 수정
     
     
   }
+
+  const [formValues, setFormValues] = useState({
+    width_length : 8,
+    height_lenght : 4,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues( (pervValues) => ({
+      ...pervValues,
+      [name]:value, //입력 필드 이름에 따라 상태 업데이트
+    }));
+  };
   
   return (
-    <div className='container_fluid'>
+    <div className='containerFluid'>
       <br/>
       {/* 관리자 정보? */}
 
       {/* 맵 제작 */}
       <div className="row">
-      <div className="col_md_2">
+      <div className="colMd2">
         <div>
           <ul>
             <li><a href="">상영관</a></li>
@@ -305,41 +350,41 @@ const AddMapFrom = () => {
         </div>
       </div>
 
-      <div className="col_md_8">
+      <div className="colMd8">
         <br/>
         <h1>상영관 생성</h1>
         <br/>
         <div>
             {/* CSRF TOKEN 부분 및 상영관 이름 작성 theater/insert/ 상영관생성 아래 from 태그 */}
         </div>
-        <div className='create_container'>
+        <div className={styles.createContainer}>
           <h4>좌석 배치</h4>
-          <div className="create_btn">
-            <input type="number" name='width_length' value={8} />
-            <input type="number" name='height_length' value={4} />
+          <div className={styles.createBtn}>
+            <input type="number" name='width_length' value={formValues.width_length} onChange={handleChange}/>
+            <input type="number" name='height_length' value={formValues.height_lenght} onChange={handleChange}/>
             <button type='button' onClick={create}>생성</button>
           </div>
 
-          <div className='map-box'>
-            <div className="screen">
+          <div className={styles.mapBox}>
+            <div className={styles.screen}>
               <h1>SCREEN</h1>
           </div>
 
-          <div className="map">
-              <div id='btn' ref={automapingRef} className='btn-map'></div>
+          <div className={styles.map}>
+              <div id='btn' ref={automapingRef} className={styles.btnMap}></div>
             </div>
           </div>
           <button id='readButton' onClick={automap}>일괄 번호생성</button>
         </div>
         <br/>
-        <div className='ExitCreate'>
+        <div className={styles.ExitCreate}>
           {/* 취소 링크 달아야함 */}
             <a href="">취소</a>
             <button id="addButton" onClick={addButton}>생성</button>
         </div>
       </div>
 
-      <div className="col_md_2"></div>
+      <div className={styles.colMd2}></div>
       {/* ? */}
     </div>
     </div>
