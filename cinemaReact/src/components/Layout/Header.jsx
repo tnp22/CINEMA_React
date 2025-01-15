@@ -11,6 +11,19 @@ const Header = () => {
   // logout 함수
   const {isLogin, logout} = useContext(LoginContext)
 
+  // localStorage에서 roles 가져오기
+  const rolesString = localStorage.getItem("roles");
+  let isAdmin = false;
+  if (rolesString) {
+      // JSON 문자열을 객체로 변환
+      const roles = JSON.parse(rolesString);
+
+      // isAdmin 값만 변수로 추출
+      isAdmin = roles.isAdmin;
+  } else {
+  console.log("roles가 없습니다.");
+  }
+
   return (
 <header>
       <nav className="navbar bg-white">
@@ -22,14 +35,14 @@ const Header = () => {
           {
             isLogin ?
               <>
-                <li className="nav-item mx-2">
-                <Link to="/admin" className='nav-link'>관리자</Link>
-                </li>
-                <form action="/logout" method="post">
+                {isAdmin && (
                   <li className="nav-item mx-2">
-                    <button className='link' onClick={() => logout()}>로그아웃</button>
+                    <Link to="/admin" className="nav-link">관리자</Link>
                   </li>
-                </form>
+                )}
+                <li className="nav-item mx-2">
+                  <a className='nav-link' onClick={() => logout()}>로그아웃</a>
+                </li>
                 <li className="nav-item mx-2">
                     <Link to="/mypage" className='nav-link'>마이페이지</Link>
                 </li>

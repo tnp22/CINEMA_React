@@ -4,19 +4,36 @@ import { LoginContext } from '../../contexts/LoginContextProvider'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import {Link} from 'react-router-dom'
 
 
 const LoginForm = () => {
   const { login } = useContext(LoginContext)  // 📦 LoginContext 의 🌞 login 함수
 
-  const [username, setUsername] = useState("");  // username 상태
+  const [username, setUsername] = useState(localStorage.getItem("username"));  // username 상태
   const [password, setPassword] = useState("");  // password 상태
-  const [rememberId, setRememberId] = useState(false);  // 아이디 저장 상태
-  const [rememberMe, setRememberMe] = useState(false);  // 자동 로그인 상태
+  const [rememberId, setRememberId] = useState(localStorage.getItem("rememberId") === "true" || false);  // 아이디 저장 상태
+  const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe") === "true" || false);
   const [error, setError] = useState(false);  // 에러 상태
-
+  console.log(`username의 현재 값은 ${localStorage.getItem("username")}`)
 
   const onLogin = (e) => {
+    console.log(`rememberId는 ${rememberId}`)
+    console.log(`rememberMe는 ${rememberMe}`)
+    console.log(`username은 ${username}`)
+    if(rememberId == true){
+      console.log('아이디 저장 성공');
+      localStorage.setItem("username",username)
+      localStorage.setItem("rememberId",true)
+    }else{
+      localStorage.removeItem("username")
+      localStorage.setItem("rememberId",false)
+    }
+    if(rememberMe == true){
+      localStorage.setItem("rememberMe",true)
+    }else{
+      localStorage.setItem("rememberMe",false)
+    }
     e.preventDefault() 
     login( username, password ) 
   }
@@ -90,9 +107,9 @@ const LoginForm = () => {
             <button type="submit" className="btn btn-purple">
               로그인
             </button>
-            <a href="/join" className="btn btn-white">
+            <Link to="/join" className="btn btn-white">
               회원가입
-            </a>
+            </Link>
           </div>
         </div>
       </section>

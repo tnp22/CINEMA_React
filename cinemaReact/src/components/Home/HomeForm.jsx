@@ -5,8 +5,12 @@ import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBannerList, isAuthenticated }) => {
+const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBannerList }) => {
+
+    console.log(moviePageInfo)
+
     const scrollToTopBtnRef = useRef(null);
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -27,6 +31,7 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
         return () => {
         window.removeEventListener("scroll", handleScroll);
         };
+        
     }, []);
 
     const scrollToTop = () => {
@@ -62,22 +67,6 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
         <section className="banner">
             <div id="movie-slide" className="carousel slide" data-bs-ride="carousel">
                 <div className="carousel-indicators">
-                    <button type="button" data-bs-target="#movie-slide" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#movie-slide" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#movie-slide" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <div className="carousel-inner">
-                    <div className="carousel-item active">
-                        <img src="/upload/banner1.png" alt="Banner 1" />
-                    </div>
-                    <div className="carousel-item">
-                        <img src="/upload/banner2.png" alt="Banner 1" />
-                    </div>
-                    <div className="carousel-item">
-                        <img src="/upload/banner3.png" alt="Banner 1" />
-                    </div>
-                </div>
-                {/* <div className="carousel-indicators">
                     {bannerList.map((banner, index) => (
                     <button
                         key={index}
@@ -93,11 +82,11 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                     {bannerList.map((banner, index) => (
                     <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
                         <a href={`/movie/movieInfo?id=${banner.movie.id}`}>
-                        <img src={`/img?id=${banner.files.id}`} alt={banner.files} />
+                        <img src={`/api/img?id=${banner.files.id}`} alt={banner.files} />
                         </a>
                     </div>
                     ))}
-                </div> */}
+                </div>
             </div>
         </section>
         {/* Tab Section */}
@@ -132,154 +121,11 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                     </button>
                     <div className="slider-wrapper">
                             <div className="row movie-chart slider" style={{ transform: `translateX(-${sliderStates["movie-slider"] * 100}%)` }}>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_bbo.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                            {/* {moviePageInfo.map((movie, index) => (
+                                
+                            {moviePageInfo && moviePageInfo.list && moviePageInfo.list.length > 0 && moviePageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기
@@ -302,15 +148,17 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                                 </div>
                                 <p className="text-center mt-2">{movie.title}</p>
                                 </div>
-                            ))} */}
+                            ))}
                             </div>
                     </div>
-                    <button
-                        className={`slider-btn next-btn ${sliderStates["movie-slider"] >= Math.ceil(moviePageInfo.list.length / 6) - 1 ? "hidden" : ""}`}
-                        onClick={() => handleSlide("movie-slider", "next")}
-                    >
-                        <FontAwesomeIcon icon={faArrowRight} size="2x" />
-                    </button>
+                    {moviePageInfo && moviePageInfo.list && moviePageInfo.list.length > 0 &&
+                        <button
+                            className={`slider-btn next-btn ${sliderStates["movie-slider"] >= Math.ceil(moviePageInfo.list.length / 6) - 1 ? "hidden" : ""}`}
+                            onClick={() => handleSlide("movie-slider", "next")}
+                        >
+                            <FontAwesomeIcon icon={faArrowRight} size="2x" />
+                        </button>
+                    }
                     </div>
                 )}
                 {/* Upcoming Chart */}
@@ -324,154 +172,10 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                     </button>
                     <div className="slider-wrapper">
                         <div className="row movie-chart slider" style={{ transform: `translateX(-${sliderStates["upcome-slider"] * 100}%)` }}>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_snow.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                                <div className="col">
-                                    <div className="image-container">
-                                        <img src="/upload/movie_hero.png" alt="Banner 1" />
-                                        <div className="image-overlay">
-                                            <a className="info-btn">상세보기</a>
-                                            <br/>
-                                            <br/>
-                                            <button className="reserve-btn">예매하기</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center mt-2" th:text="${movie.title}"></p>
-                                </div>
-                            {/* {expectPageInfo.list.map((movie, index) => (
+                            {expectPageInfo.list.map((movie, index) => (
                                 <div key={index} className="col">
                                 <div className="image-container">
-                                    <img src={`/img?id=${movie.files.id}`} alt={movie.title} />
+                                    <img src={`/api/img?id=${movie.files.id}`} alt={movie.title} />
                                     <div className="image-overlay">
                                     <a href={`/movie/movieInfo?id=${movie.id}`} className="info-btn">
                                         상세보기
@@ -494,7 +198,7 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                                 </div>
                                 <p className="text-center mt-2">{movie.title}</p>
                                 </div>
-                            ))} */}
+                            ))}
                         </div>
                     </div>
                     <button
@@ -567,14 +271,14 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                     <a href="/notice/list">더보기</a>
                     </div>
                     <ul className="list-unstyled">
-                    {/* {notices.map((notice) => (
+                    {noticeList.map((notice) => (
                         <li key={notice.id}>
-                        <a href={`/notice/select?id=${notice.id}`}>{notice.title}</a>
+                        <a href={`/notice/select?id=${notice.id}`} className='notice-title'>{notice.title}</a>
                         <span className="date">
                             {new Date(notice.regDate).toLocaleDateString("ko-KR")}
                         </span>
                         </li>
-                    ))} */}
+                    ))}
                     </ul>
                     <hr />
                     <h5>고객센터</h5>
@@ -586,11 +290,6 @@ const HomeForm = ({ bannerList, moviePageInfo, expectPageInfo, noticeList, subBa
                 </div>
                 <div className="col-md-4 image-box">
                     <img src="/upload/ad.png" alt="ad" style={{ width: '525px', height: '266px', overflow: 'hidden' }}/>
-                    {/* <img
-                    src={`/img?id=${banners[0].id}`}
-                    alt={banners[0].alt}
-                    style={{ width: "525px", height: "266px", overflow: "hidden" }}
-                    /> */}
                 </div>
             </div>
         </section>
