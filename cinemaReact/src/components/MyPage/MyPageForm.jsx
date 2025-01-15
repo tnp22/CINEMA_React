@@ -46,8 +46,8 @@ const MyPageForm = () => {
               id="profileImage"
               src={
                 userInfo.orifile
-                  ? `/api/img?id=${userInfo.orifile.id}`
-                  : "/api/image?id=C:/upload/normal.png"
+                  ? `/api/files/img?id=${userInfo.orifile.id}`
+                  : "/api/files/image?id=C:/upload/normal.png"
               }
               style={{
                 width: "124px",
@@ -102,8 +102,8 @@ const MyPageForm = () => {
                     id="profileImage"
                     src={
                         userInfo.orifile
-                        ? `/api/img?id=${userInfo.orifile.id}`
-                        : "/api/image?id=C:/upload/normal.png"
+                        ? `/api/files/img?id=${userInfo.orifile.id}`
+                        : "/api/files/image?id=C:/upload/normal.png"
                     }
                     alt="프로필 이미지"
                     style={{
