@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react'
-import './LoginForm.css'
 import { LoginContext } from '../../contexts/LoginContextProvider'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import {Link} from 'react-router-dom'
+import styles from './LoginForm.module.css'
+
 
 
 const LoginForm = () => {
@@ -39,21 +40,21 @@ const LoginForm = () => {
   }
 
   return (
-    <div className="login-form">
-      <form onSubmit={(e) => onLogin(e)} className="login-form">
-      <section className="container-sm mt-5 mb-5">
-        <div className="login-header">
+    <div className={styles.loginForm}>
+      <form onSubmit={(e) => onLogin(e)} className={styles.loginForm}>
+      <section className={`${styles.containerSm} container mt-5 mb-5`}>
+        <div className={styles.loginHeader}>
           <h5>로그인</h5>
         </div>
         <div className="container-md">
-          <div className="login-logo">
+          <div className={styles.loginLogo}>
             <img src="/upload/vora_purple_black.png" alt="Vora Logo" style={{ width: "105px", height: "40px" }} />
           </div>
           <div className="mb-3 text-center">
             <FontAwesomeIcon icon={faUser} />
             <input
               type="text"
-              className="input-form"
+              className={styles.inputForm}
               id="username"
               name="username"
               placeholder="아이디"
@@ -65,7 +66,7 @@ const LoginForm = () => {
             <FontAwesomeIcon icon={faLock} />
             <input
               type="password"
-              className="input-form"
+              className={styles.inputForm}
               id="password"
               name="password"
               placeholder="비밀번호"
@@ -104,10 +105,10 @@ const LoginForm = () => {
           {/* 로그인 에러 메시지 */}
           {error && <p className="text-center text-danger">아이디 또는 비밀번호를 잘못 입력했습니다.</p>}
           <div className="text-center">
-            <button type="submit" className="btn btn-purple">
+            <button type="submit" className={`btn ${styles.btnPurple}`}>
               로그인
             </button>
-            <Link to="/join" className="btn btn-white">
+            <Link to="/join" className={`btn ${styles.btnWhite}`}>
               회원가입
             </Link>
           </div>
