@@ -1,14 +1,19 @@
 package com.aloha.movieproject.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aloha.movieproject.domain.Cast;
 import com.aloha.movieproject.domain.Files;
@@ -24,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/movie")
 public class MovieController {
     @Autowired
@@ -37,37 +42,54 @@ public class MovieController {
     private ReviewService reviewService; 
 
     @GetMapping("/movieChart")
-    public String movieChart(Model model
-    ,@RequestParam(name = "moviePage", required = false, defaultValue = "1") Integer moviePage
-    ,@RequestParam(name = "expectPage", required = false, defaultValue = "1") Integer expectPage
+    public ResponseEntity<?> movieChart(
+     @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    ,@RequestParam(name = "otherPage", required = false, defaultValue = "1") Integer otherPage
     ,@RequestParam(name = "size", required = false, defaultValue = "8") Integer size
-    ,@RequestParam(name = "tab", required = false, defaultValue = "movie") String tab) {
+    ,@RequestParam(name = "type", required = false, defaultValue = "movie") String type) {
+        PageInfo<Movie> moviePageInfo;
+        PageInfo<Movie> expectPageInfo;
+        int moviePage = 1;
+        int expectPage = 1;
+        if(type.equals("movie")){
+            moviePageInfo = movieService.movieList(page, size);
+            expectPageInfo = movieService.expectList(otherPage, size);
+            moviePage=page;
+            expectPage=otherPage;
+        }else{
+            moviePageInfo = movieService.movieList(otherPage, size);
+            expectPageInfo = movieService.expectList(page, size);
+            moviePage=otherPage;
+            expectPage=page;
+        }
 
-        PageInfo<Movie> moviePageInfo = movieService.movieList(moviePage, size);
-        PageInfo<Movie> expectPageInfo = movieService.expectList(expectPage, size);
-        model.addAttribute("moviePageInfo", moviePageInfo);
-        model.addAttribute("expectPageInfo", expectPageInfo);
-        model.addAttribute("tab", tab);
-        model.addAttribute("moviePage", moviePage);
-        model.addAttribute("expectPage", expectPage);
+        Map<String, Object> response = new HashMap<>();
+        response.put("moviePageInfo", moviePageInfo);
+        response.put("expectPageInfo", expectPageInfo);
+        response.put("type", type);
+        response.put("moviePage", moviePage);
+        response.put("expectPage", expectPage);
 
-        return "/movie/movieChart";
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     @GetMapping("/search")
-    public String search(Model model
-    ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
+    public ResponseEntity<?> search(
+    @RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "8") Integer size
     ,@RequestParam(name = "search", required = false) String search) throws Exception {
 
         PageInfo<Movie> moviePageInfo = movieService.list(page, size, search);
-        model.addAttribute("moviePageInfo", moviePageInfo);
-        model.addAttribute("search", search);
-        return "/movie/search";
+        Map<String, Object> response = new HashMap<>();
+        response.put("moviePageInfo", moviePageInfo);
+        response.put("search", search);
+
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/movieInfo")
-    public String movieInfo(Model model,@RequestParam("id") String id
+    public ResponseEntity<?> movieInfo(@RequestParam("id") String id
     ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "8") Integer size
     ,@RequestParam(name = "tab", required = false, defaultValue = "content") String tab) throws Exception {
@@ -95,7 +117,6 @@ public class MovieController {
             }
             history.add(newsubHistory);
         }
-        model.addAttribute("history", history);
 
         List<Files> stilList = movieService.stilList(id);
         PageInfo<ReviewInfo> reviewList = reviewService.reviewList(id, page, size,0);
@@ -106,13 +127,17 @@ public class MovieController {
         }
         result = result / list.size();
         double average = (Math.round(result*10)/10.0);
-        model.addAttribute("movie", movie);
-        model.addAttribute("castList", castList);
-        model.addAttribute("stilList", stilList);
-        model.addAttribute("tab", tab);
-        model.addAttribute("average", average);
-        model.addAttribute("page", page);
-        return "/movie/movieInfo";
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("history", history);
+        response.put("movie", movie);
+        response.put("castList", castList);
+        response.put("stilList", stilList);
+        response.put("tab", tab);
+        response.put("average", average);
+        response.put("page", page);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
 }

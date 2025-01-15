@@ -1,7 +1,8 @@
-.body-content{
+.bodyContent {
     margin-top: 124px;
+    min-height: 550px;
 }
-header{
+.headerForm {
     width: 100%;
     top: 0;
     position: fixed;
@@ -11,62 +12,62 @@ header{
 .navbar {
     border-bottom: 2px solid #583BBF; 
 }
-.navbar-brand {
+.navbarBrand {
     font-weight: bold;
     font-size: 1.5rem;
     color: #583BBF;
 }
-.navbar-brand span {
+.navbarBrand span {
     color: black; 
 }
-.nav-item input{
+.navItem input {
     font-weight: 500;
     color: black;
     background-color: white; 
     border: none;
     font-size: 1.0rem;
 }
-.nav-item input:hover{
+.navItem input:hover {
     color: #583BBF;
 }
-.navbar-nav .nav-link {
+.navLink {
     font-weight: 500;
     color: black;
     font-size: 1.0rem;
 }
-.navbar-nav .nav-link:hover {
+.navLink:hover {
     color: #583BBF;
 }
-.search-icon {
+.searchIcon {
     font-size: 1.5rem;
     color: black;
     cursor: pointer;
 }
-.sub-nav {
+.subNav {
     border-top: 1px solid #ddd;
     padding: 10px 0;
 }
-.sub-nav .nav-link {
+.subNav .nav-link {
     color: black;
     font-size: 1.1rem;
     font-weight: 500;
 }
-.sub-nav .nav-link:hover {
+.subNav .nav-link:hover {
     color: #583BBF;
 }
-.search-bar {
+.searchBar {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-.search-input {
+.searchInput {
     max-width: 300px;
 }
-.btn-search{
+.btnSearch {
     border: none;
     background-color: white;
 }
-footer {
+.footerForm {
     position: relative;
     bottom: 0;
     background-color: #583BBF; 
@@ -77,17 +78,16 @@ footer {
     flex-direction: column;
     justify-content: space-between; 
     padding: 20px 0;
-    margin-top: auto;
 }
-.footer-links{
+.footerLink {
     display: flex;
 }
-.footer-links p {
+.footerLink p {
     color: white;
     text-decoration: none;
     margin-right: 15px;
     font-weight: 500;
 }
-.footer-info p{
+.footerInfo p {
     margin-bottom: 1px;
 }
