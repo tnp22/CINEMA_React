@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+
+.mainLi{
+    width: 110px;
+}
+
+
+.subLi li{
+    text-align: right;
+    margin-right: 10px;
+}
+.subLi li a{
+    font-size: 16px;
+}
+
+.movieLi li{
+    text-align: right;
+    margin-right: 10px;
+}
+.movieLi li a{
+    font-size: 16px;
+}

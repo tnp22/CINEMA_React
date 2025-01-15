@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Join from './pages/Join'
 import User from './pages/User'
 import About from './pages/About'
+import Admin from './pages/Admin'
 import LoginContextProvider from './contexts/LoginContextProvider'
 import Layout from './components/Layout/Layout'
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/user" element={<User/>}></Route>
             <Route path="/about" element={<About/>}></Route>
           </Route>
+            <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>
     </BrowserRouter>
