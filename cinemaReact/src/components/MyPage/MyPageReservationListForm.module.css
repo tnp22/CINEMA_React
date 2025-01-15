@@ -1,0 +1,57 @@
+/* MyPageReservationListForm.module.css */
+.container {
+  min-height: 800px;
+  margin-top: 180px;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.movieCard {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.moviePoster {
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.btnCustom {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+}
+
+.btnCustom:hover {
+  background-color: #574feb;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.pagination a {
+  padding: 8px 16px;
+  border-radius: 5px;
+  color: #6c63ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.pagination a:hover {
+  background-color: #574feb;
+  color: white;
+}
+
+.pagination .active {
+  background-color: #6c63ff;
+  color: white;
+}

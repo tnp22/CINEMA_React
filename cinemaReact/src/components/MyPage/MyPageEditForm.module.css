@@ -1,4 +1,4 @@
-body {
+.body {
     font-family: 'Noto Sans KR', sans-serif;
     background-color: #f8f9fa;
 }
@@ -12,13 +12,13 @@ body {
     margin-bottom: 40px;
 }
 
-.form-label {
+.formLabel {
     font-weight: bold;
     margin-bottom: 0.5rem;
     display: inline-block;
 }
 
-.form-control {
+.formControl {
     border: 1px solid #583BBF;
     padding: 0.5rem;
     max-width: 290px;
@@ -27,13 +27,13 @@ body {
     text-align: left;
 }
 
-.form-control:focus {
+.formControl:focus {
     border-color: #583BBF;
     outline: none;
     box-shadow: 0 0 0 0.25rem rgba(88, 59, 191, 0.25);
 }
 
-.btn-purple {
+.btnPurple {
     background-color: #583BBF;
     color: white;
     padding: 0.5rem 1rem;
@@ -43,22 +43,22 @@ body {
     text-align: left;
 }
 
-.btn-purple:hover {
-    background-color: #4a31a0; /* 호버 시 색상 변경 */
+.btnPurple:hover {
+    background-color: #4a31a0;
 }
 
-.alert-text {
+.alertText {
     color: red;
     font-size: 0.875rem;
     margin-left: 290px;
 }
 
-.mb-4,
-.mb-2 {
+.mb4,
+.mb2 {
     margin-bottom: 1rem;
 }
 
-label {
+.label {
     display: block;
     margin-left: 290px;
 }
@@ -68,7 +68,7 @@ input {
     display: block;
 }
 
-.logo-and-upload {
+.logoAndUpload {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -76,17 +76,17 @@ input {
     max-width: 400px;
 }
 
-.logo-container {
+.logoContainer {
     flex-shrink: 0;
 }
 
-.logo-container img {
+.logoContainer img {
     display: block;
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.profile-upload-btn label {
+.profileUploadBtn label {
     background-color: #583BBF;
     color: white;
     padding: 0.5rem 1rem;
@@ -94,14 +94,14 @@ input {
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease;
-    margin-left: 0; /* margin-left 제거 */
+    margin-left: 0;
 }
 
-.profile-upload-btn label:hover {
-    background-color: #4a31a0; /* 호버 시 색상 변경 */
+.profileUploadBtn label:hover {
+    background-color: #4a31a0;
 }
 
-.btn-secondary {
+.btnSecondary {
     width: 200px;
     background-color: #6c757d;
     color: white;
@@ -114,7 +114,7 @@ input {
     transition: background-color 0.3s ease;
 }
 
-.btn-secondary:hover {
+.btnSecondary:hover {
     background-color: #5a6268;
 }
 
