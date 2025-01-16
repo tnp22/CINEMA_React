@@ -167,31 +167,31 @@ const MovieList = () => {
                   &&
                   (
                     <div className="pagination">
-                      <Link to={`/admin/movie/list?page=${pagination.first}`} className={ResetCs.btnPPage}>
+                      <Link to={`/admin/movie/list?page=${pagination.first}&search=${search || ''}&size=${pagination.size}`} className={ResetCs.btnPPage}>
                         <KeyboardDoubleArrowLeftIcon />
                       </Link>
                       {
                         ( pagination.page <= pagination.first )
                         ||
-                        <Link to={`/admin/movie/list?page=${pagination.prev}`} className={ResetCs.btnPPage}>
+                        <Link to={`/admin/movie/list?page=${pagination.prev}&search=${search || ''}&size=${pagination.size}`} className={ResetCs.btnPPage}>
                           <KeyboardArrowLeftIcon />        
                         </Link>
                       }
                       {
                         pageList.map( page => (
                           <div key={page}>
-                            <Link className={`${ResetCs.btnPPage} ${page === pagination.page ? ResetCs.activI : ''}`}  to={`/admin/movie/list?page=${page}`} >{page}</Link>
+                            <Link className={`${ResetCs.btnPPage} ${page === pagination.page ? ResetCs.activI : ''}`}  to={`/admin/movie/list?page=${page}&search=${search || ''}&size=${pagination.size}`} >{page}</Link>
                           </div>
                         ))
                       }
                       {
                         (pagination.page >= pagination.last)
                         ||
-                        <Link to={`/admin/movie/list?page=${pagination.next}`} className={ResetCs.btnPPage}>
+                        <Link to={`/admin/movie/list?page=${pagination.next}&search=${search || ''}&size=${pagination.size}`} className={ResetCs.btnPPage}>
                           <KeyboardArrowRightIcon />
                         </Link>
                       }
-                      <Link to={`/admin/movie/list?page=${pagination.last}`} className={ResetCs.btnPPage}>
+                      <Link to={`/admin/movie/list?page=${pagination.last}&search=${search || ''}&size=${pagination.size}`} className={ResetCs.btnPPage}>
                         <KeyboardDoubleArrowRightIcon />
                       </Link>
                     </div>
