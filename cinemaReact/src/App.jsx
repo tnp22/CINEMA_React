@@ -40,7 +40,6 @@ function App() {
             <Route path="/movie/movieInfo" element={<MovieInfo/>}></Route>
             <Route path="/notice/list" element={<NoticeList/>}></Route>
             <Route path="/notice/select" element={<NoticeSelect/>}></Route>
-          </Route>
             <Route path="/Ticket/*" element={<Ticket />}></Route>
           </Route>
             <Route path="/admin/*" element={<Admin />} />
