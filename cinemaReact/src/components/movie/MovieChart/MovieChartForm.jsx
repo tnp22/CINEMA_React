@@ -9,10 +9,7 @@ const MovieChartForm = ({ moviePageInfo, expectPageInfo, moviePage, expectPage }
     setCurrentTab(tab);
   };
 
-  useEffect(() => {
-    // 페이지 로드 시 필요한 데이터 로딩
-    // 예: API 요청, 페이지 처리 등
-  }, [moviePage, expectPage]);
+
 
   const renderMovies = () => {
     if (moviePageInfo && moviePageInfo.list && moviePageInfo.list.length > 0) {
