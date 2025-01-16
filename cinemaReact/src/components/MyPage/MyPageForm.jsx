@@ -46,8 +46,9 @@ const MyPageForm = () => {
               id="mypage-profileImage"
               src={
                 userInfo.orifile
-                  ? `/api/img?id=${userInfo.orifile.id}`
-                  : "/api/image?id=C:/upload/normal.png"
+                  ? `/api/files/img?id=${userInfo.orifile.id}`
+                  : "/api/files/image?id=C:/upload/normal.png"
+
               }
               style={{
                 width: "124px",
@@ -88,6 +89,7 @@ const MyPageForm = () => {
               </li>
             </ul>
           </div>
+
 
           {/* Content */}
           <div className="mypage-content">
