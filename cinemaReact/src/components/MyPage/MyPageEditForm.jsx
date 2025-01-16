@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import './MyPageEditForm.css';
+import * as my from '../../apis/my';
 
 const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
+    const [userInfo, setUserInfo] = useState({ username: '', email: '', orifile: null });
     const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [file, setFile] = useState(null);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await my.getUserInfo();
+                setUserInfo(response.data);
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     const validatePasswords = () => {
         if (password !== passwordCheck) {
@@ -29,14 +43,30 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (validatePasswords()) {
-            // 실제 폼 제출 로직 (예: API 호출)
-            Swal.fire({
-                title: '변경 사항이 저장되었습니다.',
-                icon: 'success',
-            });
+            const formData = new FormData();
+            formData.append('username', userInfo.username);
+            formData.append('email', userInfo.email);
+            formData.append('password', password);
+            if (file) {
+                formData.append('file', file);
+            }
+
+            try {
+                const response = await my.updateMyPageInfo(formData);
+                Swal.fire({
+                    title: '변경 사항이 저장되었습니다.',
+                    icon: 'success',
+                });
+            } catch (error) {
+                console.error('Error updating user info:', error);
+                Swal.fire({
+                    title: '저장 중 오류가 발생했습니다.',
+                    icon: 'error',
+                });
+            }
         }
     };
 
@@ -46,25 +76,22 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                 <h5 style={{ color: 'white' }}>나의 정보</h5>
             </div>
 
-            {/* 유저 아이디 표시 */}
             <div style={{ marginLeft: '290px', marginTop: '10px' }}>
                 <h5 style={{ color: '#6c757d', fontSize: '24px', display: 'inline' }}>
-                    {username}
+                    {userInfo.username}
                 </h5>
                 <span style={{ color: '#6c757d', fontSize: '16px' }}>님</span>
             </div>
 
             <hr style={{ margin: '20px 290px', border: '1px solid #ddd' }} />
 
-            {/* 프로필 이미지 변경 폼 */}
-            <form action="/user/mypageImageUpdate" method="post" encType="multipart/form-data">
-                <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
-                <input type="hidden" name="username" value={username} />
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+                <input type="hidden" name="username" value={userInfo.username} />
                 <div className="mypageedit-logo-and-upload" style={{ marginLeft: '290px' }}>
                     <div className="mypageedit-logo-container">
                         <img
                             id="profileImage"
-                            src={orifile ? `/img?id=${orifile.id}` : '/image(id="C:/upload/normal.png")'}
+                            src={userInfo.orifile ? `/img?id=${userInfo.orifile.id}` : '/image?id="C:/upload/normal.png"'}
                             style={{
                                 width: '124px',
                                 height: '124px',
@@ -79,22 +106,14 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                         <label htmlFor="fileInput" className="mypageedit-btn btn-purple">
                             이미지 변경
                         </label>
-                        <label htmlFor="imageSubmit" className="mypageedit-btn btn-purple">
-                            변경 확인
-                        </label>
                         <input type="file" name="file" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
-                        <input type="submit" id="imageSubmit" className="mypageedit-btn btn-purple" style={{ display: 'none' }} />
                     </div>
                 </div>
             </form>
 
-            {/* 마이페이지 기본 정보 수정 폼 */}
             <form id="infoForm" onSubmit={handleSubmit} className="mypageedit-needs-validation" encType="multipart/form-data">
-                <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
-
                 <div className="mypageedit-divider" />
 
-                {/* 아이디 */}
                 <div className="mypageedit-mb-4" id="box-id">
                     <label htmlFor="username" className="mypageedit-form-label">아이디</label>
                     <div className="mypageedit-d-flex align-items-center">
@@ -105,13 +124,12 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                             id="username"
                             name="username"
                             placeholder="현재 아이디"
-                            value={username}
+                            value={userInfo.username}
                             readOnly
                         />
                     </div>
                 </div>
 
-                {/* 이메일 수정 가능 */}
                 <div className="mypageedit-mb-4" id="box-email">
                     <label htmlFor="email" className="mypageedit-form-label">이메일</label>
                     <div className="mypageedit-d-flex align-items-center">
@@ -121,13 +139,13 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                             id="email"
                             name="email"
                             placeholder="새 이메일을 입력해주세요"
-                            value={email}
+                            value={userInfo.email}
                             required
+                            onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
                         />
                     </div>
                 </div>
 
-                {/* 비밀번호 수정 */}
                 <div className="mypageedit-mb-2">
                     <label htmlFor="password" className="mypageedit-form-label">새 비밀번호</label>
                     <div className="mypageedit-d-flex align-items-center">
@@ -160,37 +178,33 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                     <p className="mypageedit-alert-text" style={{ color: 'red' }}>{errorMessage}</p>
                 </div>
 
-                {/* 변경 사항 저장 버튼 */}
                 <div className="mypageedit-btn-container" style={{ marginBottom: '20px' }}>
                     <button type="submit" className="mypageedit-btn-purple" style={{ width: '125px' }}>
                         저장
                     </button>
                 </div>
-
-
-                {/* 마이페이지 메인으로 돌아가기 버튼 */}
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <a
-                        href="/mypage"
-                        className="mypageedit-btn btn-secondary"
-                        style={{
-                            width: '200px',
-                            backgroundColor: '#6c757d',
-                            color: 'white',
-                            textDecoration: 'none',
-                            padding: '10px',
-                            display: 'inline-block',
-                            textAlign: 'center',
-                            borderRadius: '5px',
-                        }}
-                    >
-                        마이페이지 메인으로
-                    </a>
-                </div>
-
-                {/* 아래 간격 추가 */}
-                <div style={{ marginBottom: '30px' }} />
             </form>
+
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <a
+                    href="/mypage"
+                    className="mypageedit-btn btn-secondary"
+                    style={{
+                        width: '200px',
+                        backgroundColor: '#6c757d',
+                        color: 'white',
+                        textDecoration: 'none',
+                        padding: '10px',
+                        display: 'inline-block',
+                        textAlign: 'center',
+                        borderRadius: '5px',
+                    }}
+                >
+                    마이페이지 메인으로
+                </a>
+            </div>
+
+            <div style={{ marginBottom: '30px' }} />
         </div>
     );
 };

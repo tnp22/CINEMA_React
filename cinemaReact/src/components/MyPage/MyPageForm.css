@@ -230,3 +230,33 @@ html, body {
   width: 124px;
   height: 124px;
 }
+
+/* 오류 메시지 컨테이너 */
+.mypage-error-message-container {
+  position: relative;
+  height: 20px; /* 고정된 공간 */
+  width: 100%;  /* 부모 컨테이너와 동일한 너비 */
+  display: flex;
+  justify-content: center;  /* 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  margin-top: 10px; /* 위쪽 여백을 추가하여 버튼들과 겹치지 않게 함 */
+}
+
+/* 오류 메시지 */
+.mypage-error-message {
+  position: absolute;  /* 절대 위치 지정 */
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  width: 100%; /* 가로 전체 크기 */
+  display: none;  /* 기본적으로 보이지 않도록 설정 */
+  top: 20px; /* 오류 메시지를 아래로 40px 내려서 위치 지정 */
+}
+
+/* 오류 메시지 활성화 시 가로로 보이도록 설정 */
+.mypage-error-message.active {
+  display: block;  /* 오류 메시지 활성화 시 보이도록 설정 */
+}
+
+
+
