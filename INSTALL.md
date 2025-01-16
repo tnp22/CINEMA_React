@@ -24,3 +24,4 @@ npm config set registry https://registry.npmjs.org/
 
 npm install @mui/icons-material
 npm install @emotion/react @emotion/styled
+npm install react-bootstrap bootstrap

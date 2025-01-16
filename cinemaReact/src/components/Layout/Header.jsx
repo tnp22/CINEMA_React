@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { useContext } from 'react'
 import { LoginContext } from '../../contexts/LoginContextProvider'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -13,7 +13,7 @@ const Header = () => {
   const {logout} = useContext(LoginContext)
 
   const isLogin = sessionStorage.getItem('isLogin')
-
+  const navigate = useNavigate();
   // localStorage에서 roles 가져오기
   const rolesString = localStorage.getItem("roles");
   let isAdmin = false;
@@ -37,9 +37,9 @@ const Header = () => {
     event.preventDefault(); // 기본 동작 방지
     console.log(`검색어는 ${searchText}`);
     
-    if (searchText!==null && searchText!=="") {
+    if (searchText!==null) {
       console.log('검색 시작');
-      window.location.href = `/movie/search?search=${encodeURIComponent(searchText)}`; // 기본 폼 제출
+      navigate(`/movie/search?search=${searchText}&page=1`);
     }
   };
 
@@ -97,7 +97,6 @@ const Header = () => {
                 className={`form-control ${styles.searchInput} me-2`}
                 name="search"
                 placeholder="검색어를 입력하세요"
-                value={searchText}
                 onChange={handleInputChange}
               />
               <button type="submit" className={`btn ${styles.btnSearch}`}>

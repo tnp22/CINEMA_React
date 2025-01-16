@@ -21,19 +21,19 @@ const MovieChartForm = ({ moviePageInfo, expectPageInfo, moviePage, expectPage }
                 No. {(moviePageInfo.pageNum - 1) * 8 + 1 + index}
               </p>
             </div>
-            <a href={`/movie/movieInfo?id=${movie.id}`}>
+            <Link to={`/movie/movieInfo?id=${movie.id}`}>
               <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} />
-            </a>
+            </Link>
             <div className="card-body">
-              <a href={`/movie/movieInfo?id=${movie.id}`}>
+              <Link to={`/movie/movieInfo?id=${movie.id}`} className="link-black">
                 <h5 className="card-title">{movie.title}</h5>
-              </a>
+              </Link>
               <p className="card-text">
                 개봉일 {new Date(movie.releaseDate).toLocaleDateString('ko-KR')}
               </p>
-              <a href={`/m/t?id=${movie.id}`} className="btn btn-purple">
+              <Link to={`/m/t?id=${movie.id}`} className="btn chart-btn-purple">
                 예매하기
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -53,19 +53,19 @@ const MovieChartForm = ({ moviePageInfo, expectPageInfo, moviePage, expectPage }
               No. {(expectPageInfo.pageNum - 1) * 8 + 1 + index}
             </p>
           </div>
-          <a href={`/movie/movieInfo?id=${expect.id}`}>
+          <Link to={`/movie/movieInfo?id=${expect.id}`} className="link-black">
             <img src={`/api/files/img?id=${expect.files.id}`} alt={expect.title} />
-          </a>
+          </Link>
           <div className="card-body">
-            <a href={`/movie/movieInfo?id=${expect.id}`}>
+            <Link to={`/movie/movieInfo?id=${expect.id}`} className="link-black">
               <h5 className="card-title">{expect.title}</h5>
-            </a>
+            </Link>
             <p className="card-text">
               개봉일 {new Date(expect.releaseDate).toLocaleDateString('ko-KR')}
             </p>
-            <a href={`/m/t?id=${expect.id}`} className="btn btn-purple">
+            <Link to={`/m/t?id=${expect.id}`} className="btn chart-btn-purple">
               예매하기
-            </a>
+            </Link>
           </div>
         </div>
       </div>
