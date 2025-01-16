@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+
 
 import com.aloha.movieproject.domain.AuthList;
 import com.aloha.movieproject.domain.Banner;
@@ -1097,7 +1100,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/movie/list")
     public ResponseEntity<?> movieList(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(name = "size", required = false, defaultValue = "6") Integer size,
@@ -1141,7 +1144,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/movie/select")
     public ResponseEntity<?> movieSelect(@RequestParam("id") String id) throws Exception {
         try {
@@ -1181,9 +1184,9 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
-    @PostMapping("/movie/insert")
-    public ResponseEntity<?> movieInsert(@RequestBody Movie movie) throws Exception {
+    //@Secured("ROLE_SUPER")
+    @PostMapping(value = "/movie/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> movieInsert(Movie movie) throws Exception {
 
         try {
             // 데이터 요청
