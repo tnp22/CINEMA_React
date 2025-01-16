@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 1. JWT 추출
         String authorization = request.getHeader(SecurityConstants.TOKEN_HEADER);//Authorization
-        log.info("authorization : " + authorization);
+        //log.info("authorization : " + authorization);
 
         // "Bearer {jwt}" 체크
         if(authorization == null || authorization.length() == 0 || !authorization.startsWith(SecurityConstants.TOKEN_PREFIX)){
