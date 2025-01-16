@@ -43,9 +43,10 @@ public class ReviewController {
     ReviewService reviewService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> list(Model model,@RequestParam("id") String id ,@RequestParam("username") String username
+    public ResponseEntity<?> list(@RequestParam("id") String id ,@RequestParam("username") String username
     ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "6") Integer size) throws Exception {
+        Map<String, Object> response = new HashMap<>();
         ReviewInfo myReview = reviewService.select(id,username);
         int count = 0;
         if(myReview!=null){
@@ -53,15 +54,11 @@ public class ReviewController {
         }
         if(page == 1 && myReview!=null){
             size = 5;
-            model.addAttribute("myReview", myReview);
+            response.put("myReview", myReview);
         }
         PageInfo<ReviewInfo> reviewList = reviewService.reviewList(id, page, size, count);
         log.info("리뷰 리스트 생성");
-        model.addAttribute("reviewList", reviewList);
-        model.addAttribute("movieId", id);
-        model.addAttribute("count", count);
 
-        Map<String, Object> response = new HashMap<>();
         response.put("reviewList", reviewList);
         response.put("movieId", id);
         response.put("count", count);
@@ -97,8 +94,8 @@ public class ReviewController {
     }
 
 
-    @DeleteMapping("/delete/{id}/{movieId}")
-    public ResponseEntity<?> getMethodName(@PathVariable("id") String id, @PathVariable("movieId") String movieId) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> getMethodName(@PathVariable("id") String id) {
         log.info("리뷰 삭제 시도중");
         int result = reviewService.deleteReview(id);
         reviewService.deleteRating(id);

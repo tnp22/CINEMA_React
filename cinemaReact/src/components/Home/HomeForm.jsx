@@ -274,7 +274,7 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
             <div className="box">
                 <div className="d-flex justify-content-between">
                 <h5 className="mb-3">공지사항</h5>
-                <Link to="/notice/list">더보기</Link>
+                <Link to="/notice/list" className='link-black'>더보기</Link>
                 </div>
                 <ul className="list-unstyled">
                 {noticeList.map((notice) => (

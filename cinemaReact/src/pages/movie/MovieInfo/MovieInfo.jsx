@@ -25,21 +25,25 @@ const MovieInfo = () => {
             setTab(data.tab);
             setAverage(data.average);
             setPage(data.page);
-            console.dir(data.movie)
-            console.dir(data.stilList)
         } catch (error) {
             console.error('영화 차트를 가져오는 중 오류 발생:', error);
         }
     };
 
     useEffect(() => {
+        // location.search에서 id를 추출
         const query = new URLSearchParams(location.search);
         const newId = query.get('id') ?? '';
 
-        setId(newId);
+        setId(newId); // id를 상태에 설정
 
-        getMovieInfo(id);
-    }, [id]);
+    }, [location.search]); // location.search가 변경될 때마다 실행
+
+    useEffect(() => {
+        if (id) {
+            getMovieInfo(id); // id가 존재하면 API 호출
+        }
+    }, [id]); // id가 변경될 때마다 API 호출
   return (
     <>
         <MovieInfoForm history={history}

@@ -232,7 +232,11 @@
   opacity: 0.9; /* 호버 시 약간 투명해지도록 설정 */
 }
 
-a{ color: black;}
+.link-black {
+    color: black;
+    text-decoration: none; /* 밑줄 제거 */
+}
+
 .notice-title{
     color: black;
 }
