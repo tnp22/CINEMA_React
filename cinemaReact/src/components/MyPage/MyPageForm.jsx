@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { LoginContext } from '../../contexts/LoginContextProvider';
 import { useNavigate } from 'react-router-dom'; // React Router 사용
-import styles from './MyPageForm.module.css'; // CSS Module을 import
+import './MyPageForm.css';
 import * as auth from "../../apis/auth";
 import * as Swal from "../../apis/alert";
 
@@ -37,13 +37,13 @@ const MyPageForm = () => {
   const handleCancel = () => setPassword("");
 
   return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.mypageContainer}>
+    <div className="mypage-page-wrapper">
+      <div className="mypage-container">
         {/* Header Section */}
-        <div className={styles.mypageHeader}>
-          <div className={styles.profileImageContainer}>
+        <div className="mypage-header">
+          <div className="mypage-profile-image-container">
             <img
-              id="profileImage"
+              id="mypage-profileImage"
               src={
                 userInfo.orifile
                   ? `/api/files/img?id=${userInfo.orifile.id}`
@@ -60,10 +60,10 @@ const MyPageForm = () => {
               alt="프로필 이미지"
             />
           </div>
-          <div className={styles.textSection}>
+          <div className="mypage-text-section">
             <h2>{`${userInfo.username}님, 반갑습니다.`}</h2>
           </div>
-          <div className={styles.userStats}>
+          <div className="mypage-user-stats">
             <span>
               시청한 영화: <strong>{userInfo.movieCount || 0}</strong>
             </span>
@@ -74,9 +74,9 @@ const MyPageForm = () => {
         </div>
 
         {/* Main Section */}
-        <div className={styles.mypageMain}>
+        <div className="mypage-main">
           {/* Sidebar */}
-          <div className={styles.mypageSidebar}>
+          <div className="mypage-sidebar">
             <ul>
               <li>
                 <a href="/mypageedit">나의 정보</a>
@@ -92,27 +92,39 @@ const MyPageForm = () => {
 
 
           {/* Content */}
-          <div className={styles.mypageContent}>
-            <div className={styles.profileSection}>
+          <div className="mypage-content">
+            <div className="mypage-profile-section">
               {/* 프로필 이미지 */}
-              <div className={styles.logoContainer}>
-                <img
-                  id="profileImage"
-                  src={
-                    userInfo.orifile
-                      ? `/api/files/img?id=${userInfo.orifile.id}`
-                      : "/api/image?id=C:/upload/normal.png"
-                  }
-                  alt="프로필 이미지"
-                  className={styles.profileImage}
-                />
+              <div className="mypage-logo-and-upload">
+                <div
+                  className="mypage-logo-container"
+                  style={{ marginRight: "auto", display: "flex", justifyContent: "center" }}
+                >
+                  <img
+                    id="mypage-profileImage"
+                    src={
+                      userInfo.orifile
+                        ? `/api/img?id=${userInfo.orifile.id}`
+                        : "/api/image?id=C:/upload/normal.png"
+                    }
+                    alt="프로필 이미지"
+                    style={{
+                      width: "124px",
+                      height: "124px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                    }}
+                  />
+                </div>
               </div>
+              {/* 텍스트와 입력 필드 */}
               <p>회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.</p>
-              <form id="passwordForm" onSubmit={handleSubmit}>
-                <div className={styles.formGroup}>
+              <form id="mypage-passwordForm" onSubmit={handleSubmit}>
+                <div className="mypage-form-group">
                   <input
                     type="password"
-                    id="password"
+                    id="mypage-password"
                     name="password"
                     placeholder="비밀번호 입력"
                     value={password}
@@ -120,15 +132,15 @@ const MyPageForm = () => {
                     required
                   />
                 </div>
-                <div className={styles.formButtons}>
+                <div className="mypage-form-buttons">
                   <button
                     type="button"
-                    className={styles.btnCancel}
+                    className="mypage-btn-cancel"
                     onClick={handleCancel}
                   >
                     취소
                   </button>
-                  <button type="submit" className={styles.btnConfirm}>
+                  <button type="submit" className="mypage-btn-confirm">
                     확인
                   </button>
                 </div>
