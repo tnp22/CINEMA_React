@@ -1,14 +1,32 @@
-import axios from 'axios';
+import api from './api';
 // 기본 URL 설정
-axios.defaults.baseURL = "/api"
+api.defaults.baseURL = "/api"
 
-export const movieList = (page, size) => axios.get(`/admin/movie/list?page=${page}&size=${size}`)
-export const movieListSearch = (page, size,search) => axios.get(`/admin/movie/list?page=${page}&size=${size}&search=${search}`)
-export const movieInsert = (formData, headers) => axios.post("/boards", formData, headers )
-// 조회
-export const movieSelect = (id) => axios.get(`/admin/movie/select?id=${id}`)
 
-export const movieUpdate = (formData, headers) => axios.put("/boards", formData, headers )
+// 영화
+export const movieList = (page, size) => api.get(`/admin/movie/list?page=${page}&size=${size}`)
+export const movieListSearch = (page, size,search) => api.get(`/admin/movie/list?page=${page}&size=${size}&search=${search}`)
+export const movieInsert = (formData, headers) => {
+    return api.post('/admin/movie/insert', formData, { headers: headers });
+  }
+export const movieSelect = (id) => api.get(`/admin/movie/select?id=${id}`)
 
-// 삭제
-export const movieRemove = (id) => axios.delete(`/boards/${id}`)
+export const movieUpdate = (formData, headers) => 
+    api.post("/admin/movie/update", formData, { headers: headers } )
+
+export const movieStilcutDelete = (stid,id) => api.get(`/admin/movie/stilcutDelete?stilcutId=${stid}&id=${id}`)
+
+export const movieStilcutPlus = (formData, headers) => {
+    return api.post('/admin/movie/stilcutPlus', formData, { headers: headers });
+  }
+export const movieMainPlus = (formData, headers) => {
+    return api.post('admin/movie/mainPlus', formData, { headers: headers });
+}
+
+// 유저
+export const userList = (page, size) => api.get(`/admin/userManager/user/list?page=${page}&size=${size}`)
+export const userListSearch = (page, size,search) => api.get(`/admin/userManager/user/list?page=${page}&size=${size}&search=${search}`)
+
+export const userSleep = (username) => api.get(`/admin/userManager/user/sleep?username=${username}`)
+
+

@@ -13,7 +13,7 @@
 
 .butten{
   background-color: #583BBF;
-  color: #ffffff;
+  color: #ffffff  !important;
   border: none; 
   width: 80px;
   height: 40px;
@@ -65,6 +65,8 @@
   background-color: #A88EFF;
   color: #ffffff !important;
 }
+
+
 
 .li_butten{
   width: 70px;

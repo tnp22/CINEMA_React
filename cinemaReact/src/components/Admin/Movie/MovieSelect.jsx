@@ -3,6 +3,7 @@ import $ from 'jquery';
 import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
 import { Link, useLocation, useParams } from 'react-router-dom';
+import * as format from '../../../utils/format'
 import LeftSideBar1 from '../LeftSideBar1'
 import AdminHeader from '../AdminHeader';
 import * as admins from '../../../apis/admins'
@@ -112,19 +113,19 @@ const MovieSelect = () => {
               <tr>
                 <th style={{ padding: '12px 0', width: '20%', textAlign: 'center' }}>개봉일</th>
                 <td>
-                  <li>{movie?.releaseDate}</li>
+                  <li>{format.formatDate(movie?.releaseDate)}</li>
                 </td>
               </tr>
               <tr>
                 <th style={{ padding: '12px 0', width: '20%', textAlign: 'center' }}>생성 일자</th>
                 <td>
-                  <li>{movie?.regDate}</li>
+                  <li>{format.formatDate(movie?.regDate)}</li>
                 </td>
               </tr>
               <tr>
                 <th style={{ padding: '12px 0', width: '20%', textAlign: 'center' }}>수정 일자</th>
                 <td>
-                  <li>{movie?.updDate}</li>
+                  <li>{format.formatDate(movie?.updDate)}</li>
                 </td>
               </tr>
               </tbody>
