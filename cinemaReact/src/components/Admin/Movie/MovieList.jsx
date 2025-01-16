@@ -18,6 +18,7 @@ const MovieList = () => {
     const [pagination, setPagination] = useState({})
     const [page, setPage] = useState(1)
     const [size, setSize] = useState(6)
+    const [search, setSearch] = useState()
 
     // ?파라미터=값 가져오는 방법
     const location = useLocation()
@@ -26,15 +27,24 @@ const MovieList = () => {
       const query = new URLSearchParams(location.search)
       const newPage = query.get("page") ?? 1
       const newSize = query.get("size") ?? 6
+      const newsearch = query.get("search")
       console.log(`newPage : ${newPage}`);
       console.log(`newSize : ${newSize}`);
+      console.log(`newsearch : ${newsearch}`);
       setPage(newPage)
       setSize(newSize)
+      setSearch(newsearch)
     }
 
   // 🎁 게시글 목록 데이터
   const getList = async () => {
-    const response = await admins.movieList(page, size)
+    let response = null
+    if(search != null){
+      response = await admins.movieListSearch(page,size,search)
+    }
+    else{
+      response = await admins.movieList(page, size)
+    }
     const data = await response.data
     const list = data.pageInfo
     const pagination = data.pagination
@@ -67,7 +77,7 @@ const MovieList = () => {
   // ❓ 
   useEffect( () => {
     getList()
-  }, [page, size])
+  }, [page, size,search])
 
   useEffect( () => {
     updatePage()

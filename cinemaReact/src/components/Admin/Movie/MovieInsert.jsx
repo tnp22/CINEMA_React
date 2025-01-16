@@ -8,6 +8,13 @@ import AdminHeader from '../AdminHeader';
 
 const MovieInsert = () => {
 
+  // 🧊 state 선언
+  const [title, setTitle] = useState('')
+  const [writer, setWriter] = useState('')
+  const [content, setContent] = useState('')
+  const [mainFile, setMainFile] = useState(null)    // ✅ mainFile state 추가
+  const [files, setFiles] = useState(null)          // ✅ files state 추가
+
   useEffect(() => {
     document.title = "ADMINISTRATOR";
 
