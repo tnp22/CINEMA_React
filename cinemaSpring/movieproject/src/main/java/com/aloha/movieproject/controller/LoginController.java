@@ -51,44 +51,44 @@ public class LoginController {
      * @param authReq
      * @return
      */
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authReq) {
-        // 아이디 비밀번호
-        String username = authReq.getUsername();
-        String password = authReq.getPassword();
-        log.info("username : " + username);
-        log.info("password : " + password);
+    // @PostMapping("/login")
+    // public ResponseEntity<?> login(@RequestBody AuthenticationRequest authReq) {
+    //     // 아이디 비밀번호
+    //     String username = authReq.getUsername();
+    //     String password = authReq.getPassword();
+    //     log.info("username : " + username);
+    //     log.info("password : " + password);
 
-        // 사용자 권한 정보 세팅
-        List<String> roles = new ArrayList<String>();
-        roles.add("ROLE_USER");
-        roles.add("ROLE_ADMIN");
+    //     // 사용자 권한 정보 세팅
+    //     List<String> roles = new ArrayList<String>();
+    //     roles.add("ROLE_USER");
+    //     roles.add("ROLE_ADMIN");
 
-        // 서명에 사용할 키 생성
-        String secretKey = jwtProps.getSecretKey();
-        byte[] signingKey = secretKey.getBytes();
+    //     // 서명에 사용할 키 생성
+    //     String secretKey = jwtProps.getSecretKey();
+    //     byte[] signingKey = secretKey.getBytes();
 
-        log.info("secretKey : " + secretKey);
+    //     log.info("secretKey : " + secretKey);
 
-        // 💍 JWT 토큰 생성
-        // 만료시간 : ms 단위
-        //  - 5일 : 1000 * 60 * 60 * 24 * 5
-        int day5 = 1000 * 60 * 60 * 24 * 5;
-        String jwt = 
-            Jwts.builder()
-                .signWith(Keys.hmacShaKeyFor(signingKey), Jwts.SIG.HS512 )  // 알고리즘 설정
-                .header()                                                   // 헤더 설정
-                    .add("typ", SecurityConstants.TOKEN_TYPE)           // typ : "jwt"
-                .and()                                                      // 페이로드 설정
-                .claim("uid", username)                                // 사용자 아이디
-                .claim("rol", roles)                                   // 권한 정보 
-                .expiration( new Date(System.currentTimeMillis() + day5) )  // 만료시간
-                .compact();                                                 // 토큰 생성
-        log.info("jwt : " + jwt);
+    //     // 💍 JWT 토큰 생성
+    //     // 만료시간 : ms 단위
+    //     //  - 5일 : 1000 * 60 * 60 * 24 * 5
+    //     int day5 = 1000 * 60 * 60 * 24 * 5;
+    //     String jwt = 
+    //         Jwts.builder()
+    //             .signWith(Keys.hmacShaKeyFor(signingKey), Jwts.SIG.HS512 )  // 알고리즘 설정
+    //             .header()                                                   // 헤더 설정
+    //                 .add("typ", SecurityConstants.TOKEN_TYPE)           // typ : "jwt"
+    //             .and()                                                      // 페이로드 설정
+    //             .claim("uid", username)                                // 사용자 아이디
+    //             .claim("rol", roles)                                   // 권한 정보 
+    //             .expiration( new Date(System.currentTimeMillis() + day5) )  // 만료시간
+    //             .compact();                                                 // 토큰 생성
+    //     log.info("jwt : " + jwt);
         
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
+    //     return new ResponseEntity<>(jwt, HttpStatus.OK);
 
-    }
+    // }
 
     /**
      * JWT 토큰 해석
