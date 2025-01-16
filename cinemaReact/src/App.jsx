@@ -13,6 +13,7 @@ import LoginContextProvider from './contexts/LoginContextProvider'
 import Layout from './components/Layout/Layout'
 import MovieChart from './pages/movie/movieChart/MovieChart'
 import MovieSearch from './pages/movie/Search/MovieSearch'
+import MovieInfo from './pages/movie/MovieInfo/MovieInfo'
 function App() {
 
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/about" element={<About/>}></Route>
             <Route path="/movie/movieChart" element={<MovieChart/>}></Route>
             <Route path="/movie/search" element={<MovieSearch/>}></Route>
+            <Route path="/movie/movieInfo" element={<MovieInfo/>}></Route>
           </Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
