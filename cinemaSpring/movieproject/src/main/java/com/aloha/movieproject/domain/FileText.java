@@ -3,10 +3,12 @@ package com.aloha.movieproject.domain;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class FileText {
 
@@ -17,7 +19,7 @@ public class FileText {
         String retStr = "";
 
         try {
-            br = new BufferedReader(new FileReader(file));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
             String line;
             while ((line = br.readLine()) != null) {
                 // System.out.println("line: " + line);
