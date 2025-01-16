@@ -36,8 +36,11 @@ public class NoticeController {
     ,@RequestParam(name = "keyword", defaultValue = "") String keyword) {
         PageInfo<Notice> noticeList = noticeService.list(page,size,option,keyword);
         Map<String, Object> response = new HashMap<>();
+        log.info("=============옵션은 " + option);
+        log.info("=============키워드는 " + keyword);
         response.put("noticeList", noticeList);
         response.put("option", option);
+        response.put("keyword", keyword);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     

@@ -87,6 +87,10 @@ const LoginContextProvider = ({ children }) => {
       logoutSetting()
       // 페이지 이동 ➡ "/" (메인)
       navigate("/")
+      // 경로가 "/"라면 새로고침
+      if (window.location.pathname === "/") {
+        window.location.reload();
+      }
       // 로딩끝
       setIsLoading(false)
       return
@@ -95,11 +99,15 @@ const LoginContextProvider = ({ children }) => {
     Swal.confirm("로그아웃하시겠습니까?", "로그아웃을 진행합니다", "warning",
       (result) => {
         if( result.isConfirmed ) {
-          Swal.alert("로그아웃 성공", "로그아웃 되었습니다.", 'success')
           // 로그아웃 세팅
           logoutSetting()
           // 페이지 이동 ➡ "/" (메인)
           navigate("/")
+          // 경로가 "/"라면 새로고침
+        if (window.location.pathname === "/") {
+          window.location.reload();
+        }
+          Swal.alert("로그아웃 성공", "로그아웃 되었습니다.", 'success')
           return
         }
       }
@@ -126,6 +134,8 @@ const LoginContextProvider = ({ children }) => {
 
     // 🍪❌ 쿠키 제거
     Cookies.remove("jwt")
+
+    localStorage.removeItem("rememberMe")
   }
 
   // 초기화 세팅

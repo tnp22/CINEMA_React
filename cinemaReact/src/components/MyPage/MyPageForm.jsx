@@ -6,25 +6,25 @@ import * as auth from "../../apis/auth";
 import * as Swal from "../../apis/alert";
 
 const MyPageForm = () => {
-  const { userInfo, logout } = useContext(LoginContext);
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // useNavigate 훅 사용
-
+  const [password, setPassword] = useState(""); // 비밀번호 상태
+  const navigate = useNavigate(); // 라우팅
+  const { userInfo } = useContext(LoginContext); // 사용자 정보
+  
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!password) {
       Swal.alert("비밀번호 입력", "비밀번호를 입력해주세요.", "warning");
       return;
     }
 
     try {
-      const response = await auth.verifyPassword(password);
+      const response = await auth.verifyPassword(password); // 비밀번호 검증
       if (response.status === 200) {
         Swal.alert("인증 성공", "회원 정보를 수정할 수 있습니다.", "success");
-        // 비밀번호가 올바르면 /user 경로로 이동
-        navigate("/user");
+        navigate("/mypageedit"); // 인증 성공 시 이동
       } else {
         Swal.alert("인증 실패", "비밀번호가 올바르지 않습니다.", "error");
       }
@@ -34,7 +34,7 @@ const MyPageForm = () => {
     }
   };
 
-  const handleCancel = () => setPassword("");
+  const handleCancel = () => setPassword(""); // 입력 초기화
 
   return (
     <div className="mypage-page-wrapper">
@@ -104,8 +104,8 @@ const MyPageForm = () => {
                     id="mypage-profileImage"
                     src={
                       userInfo.orifile
-                        ? `/api/img?id=${userInfo.orifile.id}`
-                        : "/api/image?id=C:/upload/normal.png"
+                        ? `/api/files/img?id=${userInfo.orifile.id}`
+                        : "/api/files/image?id=C:/upload/normal.png"
                     }
                     alt="프로필 이미지"
                     style={{
