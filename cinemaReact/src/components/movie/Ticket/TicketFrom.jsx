@@ -1,51 +1,52 @@
-import React, { useEffect } from 'react'
-import styles from './TicketFrom.module.css'
+import React, { useContext, useEffect, useState } from 'react';
+import styles from './TicketFrom.module.css';
 
-const TicketFrom = () => {
-  // 예시 데이터
-  const ticketList = [
-    {
-      area: "경기",
-      areaSub: "부평",
-      time: "Sat Dec 07 12:14:41 KST 2024",
-      title: "모아나2",
-      theaterName: "1관",
-      id: "test",
-      mapUrl: "C:\\upload\\map1.text",
-      movieId: "6e937900-b05b-11ef-b8e4-4ccc6ad7549d",
-      theaterId: "test",
-      cinemaId: "2a21298e-ad43-4a7f-bac2-84714de3a175",
-      seat: 5
-    },
-    {
-      area: "경기",
-      areaSub: "부평",
-      time: "Mon Dec 09 12:14:41 KST 2024",
-      title: "모아나2",
-      theaterName: "2관",
-      id: "test2",
-      mapUrl: "da2511eb-c95e-40c9-a610-ee76c5e9934d",
-      movieId: "6e937900-b05b-11ef-b8e4-4ccc6ad7549d",
-      theaterId: "da2511eb-c95e-40c9-a610-ee76c5e9934d",
-      cinemaId: "2a21298e-ad43-4a7f-bac2-84714de3a175",
-      seat:"10"
-    }
-  ];
-
+const TicketFrom = ({movie,ticketList1,movieTitle}) => {
+  console.log(movie);
+  // const title = movieTitle
+  const [ticketList, setTicketList] = useState([]);
+  
+  // setMovie(data.movie)
+  // console.log(movie);
   let Region = [];
   let Theaters = [];
   let Dates = [];
+  
+
+
+  // 예시 데이터
+  // const ticketList = [
+  //   {
+  //     area: "경기",
+  //     areaSub: "부평",
+  //     time: "Sat Dec 07 12:14:41 KST 2024",
+  //     title: "모아나2",
+  //     theaterName: "1관",
+  //     id: "test",
+  //     mapUrl: "C:\\upload\\map1.text",
+  //     movieId: "6e937900-b05b-11ef-b8e4-4ccc6ad7549d",
+  //     theaterId: "test",
+  //     cinemaId: "2a21298e-ad43-4a7f-bac2-84714de3a175",
+  //     seat: 5
+  //   },
+  //   {
+  //     area: "경기",
+  //     areaSub: "부평",
+  //     time: "Mon Dec 09 12:14:41 KST 2024",
+  //     title: "모아나2",
+  //     theaterName: "2관",
+  //     id: "test2",
+  //     mapUrl: "da2511eb-c95e-40c9-a610-ee76c5e9934d",
+  //     movieId: "6e937900-b05b-11ef-b8e4-4ccc6ad7549d",
+  //     theaterId: "da2511eb-c95e-40c9-a610-ee76c5e9934d",
+  //     cinemaId: "2a21298e-ad43-4a7f-bac2-84714de3a175",
+  //     seat:"10"
+  //   }
+  // ];
+
 
   
-  // 지역 데이터 저장
-  for(var list of ticketList){
-    Region.push(list.area);
-  }
-
-  // 중복제거 오름차순 정렬
-  Region = [...new Set(Region)].sort((a, b) => a.localeCompare(b));
-  console.log(Region);
-
+  
   // 지역 출력
   const area = () =>{
     const region = document.getElementById("region-list")
@@ -61,9 +62,22 @@ const TicketFrom = () => {
     }
   };
 
-  // ticketList 정렬 (areaSub -> time 순서로 정렬)
-  ticketList.sort((a, b) => {
-    if (a.areaSub === b.areaSub) {
+  const [regionTheaterData, setRegionTheaterData] = useState([]);
+  // const [theaterDateData,setTheaterDateData] = useState([]);
+  const [theaterDateData] = useState([]); 
+  const endExport = (ticketList) => {
+    
+    console.log("티켓",ticketList);
+    // 지역 데이터 저장
+    for(var list of ticketList){
+      Region.push(list.area);
+    }
+    // 중복제거 오름차순 정렬
+    Region = [...new Set(Region)].sort((a, b) => a.localeCompare(b));
+    console.log("지역",Region);
+    // ticketList 정렬 (areaSub -> time 순서로 정렬)
+    ticketList.sort((a, b) => {
+      if (a.areaSub === b.areaSub) {
         return new Date(a.time) - new Date(b.time); // 시간 순 정렬
     }
     return a.areaSub.localeCompare(b.areaSub); // areaSub 기준 정렬
@@ -84,29 +98,29 @@ const TicketFrom = () => {
         // console.log(datePart);
         
         if (!regionDate[list.areaSub]) {
-              regionDate[list.areaSub] = []; // 초기화는 딱 한 번만 수행
+          regionDate[list.areaSub] = []; // 초기화는 딱 한 번만 수행
           }
           if (!regionDate[list.areaSub].includes(datePart)) {
-              regionDate[list.areaSub].push(datePart); // 중복 방지
+            regionDate[list.areaSub].push(datePart); // 중복 방지
           }
-        // console.log(regionDate[list.areaSub])
-        // console.log(list.areaSub);
-        // console.log(datePart);
-        
-        
-        // 날짜 기준 시간 분리 (시:분) + seat 분리
-        const timePart = dateObj.toTimeString().slice(0, 5); // "15:40"
-        // console.log(index + " " +list.seat)
-        // console.log(timePart);
+          // console.log(regionDate[list.areaSub])
+          // console.log(list.areaSub);
+          // console.log(datePart);
+          
+          
+          // 날짜 기준 시간 분리 (시:분) + seat 분리
+          const timePart = dateObj.toTimeString().slice(0, 5); // "15:40"
+          // console.log(index + " " +list.seat)
+          // console.log(timePart);
+        }
       }
+      Theaters.push(Theater);
+      Dates.push(regionDate); // 이제 Dates에는 areaSub 기준으로 나눈 객체가 저장됨
     }
-    Theaters.push(Theater);
-    Dates.push(regionDate); // 이제 Dates에는 areaSub 기준으로 나눈 객체가 저장됨
-  }
-  console.log(Dates)
-
-  const regionTheaterData = {};
-    // regionTheaterData[Region[0]] = Theaters[0]; // JSON 형식으로 저장
+    // console.log(Dates)
+    
+    
+    regionTheaterData[Region[0]] = Theaters[0]; // JSON 형식으로 저장
     Region.forEach((region, index) => {
       if (regionTheaterData[region]) {
         // 중복 제거 및 정렬
@@ -117,9 +131,26 @@ const TicketFrom = () => {
         regionTheaterData[region] = [...new Set(Theaters[index])].sort((a, b) => a.localeCompare(b));
       }
     });
-    console.log(regionTheaterData);
+    // Region.forEach( (region, index) => {
+    //   setRegionTheaterData(pervData => {
+    //     const newRegionTheaterData = { ...pervData}; // 기존 데이터 복사
 
-    let theaterDateData = {}; // 코드 실행 전에 정의
+    //     if ( newRegionTheaterData[region]){
+    //       // 중복 제거 및 정렬
+    //       const mergedTheaters = [ ...new Set([ ...newRegionTheaterData[region], ...Theaters[index]])]
+    //       .sort((a,b) => a.localeCompare(b)); newRegionTheaterData[region] = mergedTheaters;
+    //     } else {
+    //       // 초기 데이터 설정 및 중복 제거 및 정렬 적용
+    //       newRegionTheaterData[region] = [...new Set(Theaters[index])].sort((a, b) => a.localeCompare(b));
+
+    //     }
+
+    //     return newRegionTheaterData;
+    //   })
+    // })
+    console.log(Region);
+    console.log(regionTheaterData);
+    
     for (let i = 0; i < Dates.length; i++) {
       const regionTheaters = Dates[i]; // Dates에서 각 지역별 데이터 가져오기
       for (let areaSub in regionTheaters) { 
@@ -127,20 +158,21 @@ const TicketFrom = () => {
         if (!theaterDateData[areaSub]) {
           theaterDateData[areaSub] = [];
         }
-
+        
         // 중복 제거 후 날짜 병합
         const uniqueDates = [...new Set([...theaterDateData[areaSub], ...regionTheaters[areaSub]])];
-
+        
         theaterDateData[areaSub] = uniqueDates;
       }
     }
-    console.log(theaterDateData);
-
-
-  const dateTimeData = {};
-  // 시간 및 관 JSON 형식 저장 코드 
-  // ticketList를 순회하며 dateTimeData를 구성
-  for (let list of ticketList) {
+    // console.log(theaterDateData);
+    
+  } // endExport 끝
+    
+    const dateTimeData = {};
+    // 시간 및 관 JSON 형식 저장 코드 
+    // ticketList를 순회하며 dateTimeData를 구성
+    for (let list of ticketList) {
     const { areaSub, time, seat, theaterName } = list;
     
     const timeString = time.replace("KST", "+09:00")
@@ -255,13 +287,15 @@ const TicketFrom = () => {
     
     // 극장 리스트 업데이트
     theaterList.innerHTML = "";
-    regionTheaterData[region].forEach(theater => {
-      const li = document.createElement("li");
-      li.className = styles.list_group_item;
-      li.textContent = theater;
-      li.setAttribute("data-theater", theater);
-      theaterList.appendChild(li);
-    });
+    // console.log(region);
+    
+      regionTheaterData[region].forEach(theater => {
+        const li = document.createElement("li");
+        li.className = styles.list_group_item;
+        li.textContent = theater;
+        li.setAttribute("data-theater", theater);
+        theaterList.appendChild(li);
+      });
 
     // 초기화
     dateList.innerHTML = "";
@@ -333,7 +367,7 @@ const TicketFrom = () => {
       timeInfo.textContent = "";
       dateInfo.textContent = formatDate2(date);
 
-      // 하단 데이터 초기화 및 새 시간 리스트 업데이트
+      // 하단 데이터 초기화 및 새 시간 리스트 업데이트 (있다면)
       const timeContainer = document.querySelector("#time-container");
       timeContainer.innerHTML = "";
       
@@ -371,13 +405,16 @@ const TicketFrom = () => {
   }
 
   const timeContainerClick = (e, timeInfo) =>{
+    
+    console.log(e.target.getAttribute("data-movieId"));
     if (e.target && e.target.classList.contains("btn-time")) {
       const button = e.target;
       const time = button.textContent;
       const theater = button.getAttribute("data-theater"); // 상영관 정보 가져오기
-      // var movieId = e.target.getAttribute("data-movieId"); // 상영시간 무비ID 가져오기
+      var movieId = e.target.getAttribute("data-movieId"); // 상영시간 무비ID 가져오기
+      
       // 임시 번호
-      var movieId = 12341234;
+      // var movieId = 12341234;
       var seatInfo = document.querySelector("#seat-info"); // 시트 정보
       // console.log("아이디 : ",movieId)
       timeInfo.textContent = theater+' 상영실, '+time
@@ -468,10 +505,19 @@ const TicketFrom = () => {
     student.textContent = person;
 
   }
+  useEffect( () => {
+    if(ticketList1 && ticketList1.length > 0){
+      setTicketList(ticketList1);
+      console.log("티켓리스트 : ",ticketList1);
+      endExport(ticketList1);
+      area(); // area 함수 호출
+    }
+  }, [ticketList1]);
 
-    useEffect( () => {
-        area(); // area 함수 호출
 
+  
+  
+  useEffect( () => {
         const regionList = document.getElementById("region-list");
         const theaterList = document.getElementById("theater-list");
         const dateList = document.getElementById("date-list");
@@ -497,8 +543,9 @@ const TicketFrom = () => {
         timeContainer.addEventListener('click', function(e){
           timeContainerClick(e, timeInfo);
         });
-
-    }, []);
+        
+      }, [ticketList]);
+      
   return (
     <div>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"></link>
@@ -512,7 +559,7 @@ const TicketFrom = () => {
               <div className={styles.header}><h5>지역</h5></div>
               {/* 지역 스크롤 바 */}
               <div className={styles.content+" p-0"}>
-                <div className="scroll h-100 w-100 mt-3 mb-3">
+                <div className={styles.scroll+" h-100 w-100 mt-3 mb-3"}>
                   <ul className={styles.list_group} id='region-list'>
                     {/* 비동기 생성 */}
                   </ul>
@@ -556,17 +603,17 @@ const TicketFrom = () => {
 
           </div>
         </div>
-        <div className={styles.heater+" flex-fill"}></div>
+        <div className={styles.header+" flex-fill"}></div>
       </div>
 
       {/** 하단 바  **/}
-      <div className={'container-fluid '+ styles.b-top}>
+      <div className={'container-fluid '+ styles.b_top}>
         <div className="container d-flex justify-content-between p-0" style={{height:"200px"}}>
           <div className="align-content-center">
             <div className={"d-flex "+styles.reserve_img}>
-              <img src="" alt="" />
+              <img src={`/api/files/img?id=${movie}`} alt="" />
               <div className="align-content-center ms-5">
-                <h3>movie.title</h3>
+                <h3>{movieTitle}</h3>
               </div>
               <div className='align-content-center ms-5'>
               <p className="m-1">극장 &nbsp; &nbsp; &nbsp; <span id="theater-info"></span></p>

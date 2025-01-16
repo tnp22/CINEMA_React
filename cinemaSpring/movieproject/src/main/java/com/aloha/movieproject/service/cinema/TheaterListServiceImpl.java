@@ -12,7 +12,10 @@ import com.aloha.movieproject.mapper.TheaterListMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TheaterListServiceImpl implements TheaterListService {
 
     @Autowired
@@ -67,7 +70,6 @@ public class TheaterListServiceImpl implements TheaterListService {
     @Override
     public List<TheaterList> timeSearch(String id) throws Exception {
         // ⭐ PageHelper.startPage(현재 페이지, 페이지당 게시글 수);
-
 
         List<TheaterList> list = theaterListMapper.timeSearch(id);
 

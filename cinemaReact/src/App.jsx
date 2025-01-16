@@ -14,6 +14,7 @@ import Layout from './components/Layout/Layout'
 import MovieChart from './pages/movie/movieChart/MovieChart'
 import MovieSearch from './pages/movie/Search/MovieSearch'
 import MovieInfo from './pages/movie/MovieInfo/MovieInfo'
+import Ticket from './pages/Ticket'
 function App() {
 
   return (
@@ -32,8 +33,8 @@ function App() {
             <Route path="/movie/movieChart" element={<MovieChart/>}></Route>
             <Route path="/movie/search" element={<MovieSearch/>}></Route>
             <Route path="/movie/movieInfo" element={<MovieInfo/>}></Route>
-          </Route>
             <Route path="/Ticket/*" element={<Ticket />}></Route>
+          </Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>

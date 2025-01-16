@@ -1,8 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SeatSelectionFrom.module.css';
 import { useLocation } from 'react-router-dom';
+import * as ticket from '../../../apis/ticket'
 
 const SeatSelectionFrom = () => {
+
+    const [mapData,setMapData] = useState([]);
+    const [count, setCount] = useState(0);
+
+    useEffect( () => {
+        console.log("mapData updated: ", mapData);
+        if(mapData.length > 0){
+            endExport(mapData)
+            setCount(1);
+        }
+    }, [mapData]);
+
+    const getdata = async() => {
+      // 주소에서 불러오자
+      const searchParams = new URLSearchParams(location.search);
+      const theaterListId = searchParams.get("theaterListId");
+      const person = searchParams.get("person")
+      // console.log("상영영화ID",theaterListId);
+      
+      const headers = {
+        'Content-Type' : 'multupart/form-data'
+      }
+  
+      const response = await ticket.seatSelection(theaterListId,person,headers)
+      const data = response.data;
+      setMapData(data.mapData);
+    }
+    useEffect( () =>{
+        getdata();
+    }, []);
+
+
+
+    const [boidcount,setBoidcount] = useState(0);
+    const [ascii,setAscii] = useState(65);
+    const [x,setX] = useState(); 
+    const [y,setY] = useState();
+    
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
@@ -25,33 +64,34 @@ const SeatSelectionFrom = () => {
     // var orderId = "IMP"+uuida
     // let potName = "[[${authUser.name}]]"
     // let potEmail = "[[${authUser.email}]]"
-    const mapData = [
-        ["A1_통로", "A2_통로", "A3", "A4", "A5", "A6", "A7", "A8"],
-        ["B1_통로", "B2_통로", "B3", "B4", "B5", "B6", "B7", "B8"],
-        ["C1_통로", "C2_통로", "C3", "C4", "C5", "C6", "C7", "C8"],
-        ["D1_통로", "D2_통로", "D3", "D4", "D5", "D6", "D7", "D8"]
-    ]
+    // const mapData = [
+    //     ["A1_통로", "A2_통로", "A3", "A4", "A5", "A6", "A7", "A8"],
+    //     ["B1_통로", "B2_통로", "B3", "B4", "B5", "B6", "B7", "B8"],
+    //     ["C1_통로", "C2_통로", "C3", "C4", "C5", "C6", "C7", "C8"],
+    //     ["D1_통로", "D2_통로", "D3", "D4", "D5", "D6", "D7", "D8"]
+    // ]
 
-    console.log(mapData);
-    
-    
     // console.log(reservationSeat);
-    let boidcount = 0;
-    var x = mapData[0].length; 
-    var y = mapData.length;
-    let ascii = 65; // 정수 = 'A'
-    // console.log("Y = " + y)
-    // console.log("X = " + x)
-    
-    var mapdiv = document.getElementById("map")
-    const addMap = (mapdiv) => {
+    const endExport = (mapData) => { 
+        
+        setX(mapData[0].length); 
+        setY(mapData.length);
 
-        if(y > 9){
-            mapdiv.classList.add((styles.scroll));
-            mapdiv.style.overflowX = "hidden";
-      
-        }
-    for(var n = 0; n < y; n++){
+        console.log(boidcount,ascii,mapData[0].length,mapData.length);
+        
+    }
+        // console.log("Y = " + y)
+        // console.log("X = " + x)
+        
+        
+        const addMap = (mapdiv) => {
+            
+            if(y > 9){
+                mapdiv.classList.add((styles.scroll));
+                mapdiv.style.overflowX = "hidden";
+                
+            }
+            for(var n = 0; n < y; n++){
         let boidcountCheck=0
         // console.log(mapData[n])
         // console.log(mapData[n][0]);
@@ -86,59 +126,60 @@ const SeatSelectionFrom = () => {
             }
         }
         if(boidcount<boidcountCheck){
-            boidcount = boidcountCheck
+            setBoidcount(boidcountCheck)
         }
 
-
-      // 좌석 통로 구분
-      count = 1;
-      for(var [index, mapdate] of mapData[n].entries()){
-        // console.log(ascii2 + " : " + index); // index 번호 0~끝까지 찍는 예제
-        var seatId = ascii2 + count; count++;
-        var seat = document.getElementById(seatId);
-        if(mapdate == "통로" || mapdate == (seatId+"_통로")){
-            // var seat1 = document.createElement("div")
-            // seat1.className = "seat";
-            // map.appendChild(seat1)
-            // seat.style.marginRight = "50px"
-        }
-        else if(mapdate == "null"){
-            seat.textContent = "";
-            // seat.className = "";
+        
+        // 좌석 통로 구분
+        count = 1;
+        for(var [index, mapdate] of mapData[n].entries()){
+            // console.log(ascii2 + " : " + index); // index 번호 0~끝까지 찍는 예제
+            var seatId = ascii2 + count; count++;
+            var seat = document.getElementById(seatId);
+            if(mapdate == "통로" || mapdate == (seatId+"_통로")){
+                // var seat1 = document.createElement("div")
+                // seat1.className = "seat";
+                // map.appendChild(seat1)
+                // seat.style.marginRight = "50px"
+            }
+            else if(mapdate == "null"){
+                seat.textContent = "";
+                // seat.className = "";
+            }
+            
+            if(mapdate == "null" || mapdate == "통로"){
+                seat.className = styles.seat;
+                seat.textContent = "";
+                seat.style.backgroundColor = "";
+            }
+            else{
+                seat.classList.add("select");
+            }
         }
         
-        if(mapdate == "null" || mapdate == "통로"){
-            seat.className = styles.seat;
-            seat.textContent = "";
-            seat.style.backgroundColor = "";
-        }
-        else{
-            seat.classList.add("select");
-        }
-    }
-    
-    // 좌석 빨간색 X 처리
-    count = 1;
-    // for(var mapdate of mapData[n]){
+        // 좌석 빨간색 X 처리
+        count = 1;
+        // for(var mapdate of mapData[n]){
     //     var seatId = ascii2+count;count++;
         
     //     for(var seat of reservationSeat){
     //         if(seatId == seat){
-    //             console.log(seat);
-    //             var noneSeat = document.getElementById(seatId);
-    //             noneSeat.classList.remove("select") 
-    //             noneSeat.style.backgroundColor = "Red";
-    //             noneSeat.style.color = "white";
-    //             noneSeat.textContent = "";
-    //             noneSeat.classList.add("close");
+        //             console.log(seat);
+        //             var noneSeat = document.getElementById(seatId);
+        //             noneSeat.classList.remove("select") 
+        //             noneSeat.style.backgroundColor = "Red";
+        //             noneSeat.style.color = "white";
+        //             noneSeat.textContent = "";
+        //             noneSeat.classList.add("close");
     //             noneSeat.classList.add("close2");
     //         }
     //     }
     // }
     
-    ascii++;
+    setAscii(ascii+1);
+    // ascii++;
 }
-}
+} //끝
 
 let sjfql = document.getElementsByClassName("mapBACHI2")
 for (let i = 0; i < sjfql.length; i++) {
@@ -262,14 +303,12 @@ for (let i = 0; i < sjfql.length; i++) {
     }
     
     useEffect(() => {
-
-        
         var mapdiv = document.getElementById("map")
         addMap(mapdiv)
         let seats = document.querySelectorAll(".select");
         seatsClick(seats)
         console.dir(seats);
-    }, [])
+    }, [count])
     
 
 
