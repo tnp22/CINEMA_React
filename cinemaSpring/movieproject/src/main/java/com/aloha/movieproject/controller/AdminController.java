@@ -1864,7 +1864,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    //@Secured("ROLE_SUPER")
+    @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/list")
     public ResponseEntity<?> userList(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,

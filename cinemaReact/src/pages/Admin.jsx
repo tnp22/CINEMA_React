@@ -97,8 +97,8 @@ const admin = () => {
           <Route path="/auth/insert" element={<AuthInsert/>}></Route>
 
           <Route path="/user/list" element={<UserList/>}></Route>
-          <Route path="/user/insert" element={<UserSelect/>}></Route>
-          <Route path="/user/select" element={<UserUpdate/>}></Route>
+          <Route path="/user/select/:id" element={<UserSelect/>}></Route>
+          <Route path="/user/select/:id" element={<UserUpdate/>}></Route>
 
 
       </Routes>
