@@ -324,4 +324,11 @@ ul, li {
 .custom-dropdown-btn.myReview:hover{
     background-color: #d6cef7;
 }
-
+.review-modal .modal-dialog {
+    width: 600px;               /* 너비 설정 */
+    margin: 0 auto;             /* 수평 중앙 정렬 */
+    display: flex;              /* Flexbox 활성화 */
+    justify-content: center;    /* 수평 중앙 정렬 */
+    align-items: center;        /* 수직 중앙 정렬 */
+    min-height: 100vh;          /* 화면의 최소 높이를 100%로 설정하여 화면의 높이에 맞게 조정 */
+}

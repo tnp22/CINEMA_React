@@ -87,6 +87,10 @@ const LoginContextProvider = ({ children }) => {
       logoutSetting()
       // 페이지 이동 ➡ "/" (메인)
       navigate("/")
+      // 경로가 "/"라면 새로고침
+      if (window.location.pathname === "/") {
+        window.location.reload();
+      }
       // 로딩끝
       setIsLoading(false)
       return
@@ -95,11 +99,15 @@ const LoginContextProvider = ({ children }) => {
     Swal.confirm("로그아웃하시겠습니까?", "로그아웃을 진행합니다", "warning",
       (result) => {
         if( result.isConfirmed ) {
-          Swal.alert("로그아웃 성공", "로그아웃 되었습니다.", 'success')
           // 로그아웃 세팅
           logoutSetting()
           // 페이지 이동 ➡ "/" (메인)
           navigate("/")
+          // 경로가 "/"라면 새로고침
+        if (window.location.pathname === "/") {
+          window.location.reload();
+        }
+          Swal.alert("로그아웃 성공", "로그아웃 되었습니다.", 'success')
           return
         }
       }
@@ -126,6 +134,26 @@ const LoginContextProvider = ({ children }) => {
 
     // 🍪❌ 쿠키 제거
     Cookies.remove("jwt")
+
+    localStorage.removeItem("rememberMe")
+  }
+
+  // 초기화 세팅
+  const chgiSetting = () => {
+
+    // 🎫 Authorization 헤더 초기화
+    api.defaults.headers.common.Authorization = undefined
+
+    // 🔐❌ 로그인 여부 : false
+    sessionStorage.removeItem('isLogin')
+
+    // 👩‍💼❌ 유저 정보 초기화
+    setUserInfo(null)
+    localStorage.removeItem("userInfo")
+
+    // 👮‍♀️❌ 권한 정보 초기화
+    setRoles( {isUser: false, isAdmin: false} )
+    localStorage.removeItem("roles")
   }
 
   // 자동 로그인
@@ -136,13 +164,7 @@ const LoginContextProvider = ({ children }) => {
   const autoLogin = async () => {
     // 쿠키에서 jwt 가져오기
     const jwt = Cookies.get("jwt")
-    
-
-    if (!jwt ) {
-      console.log("자동 로그인을 건너뜁니다.")
-      logoutSetting()
-      return
-    }
+    console.log("자동 로그인 진입.")
 
     // 💍 in 🍪 ⭕
     console.log(`jwt : ${jwt}`);
@@ -150,6 +172,7 @@ const LoginContextProvider = ({ children }) => {
 
     // 💍 JWT 를 Authorizaion 헤더에 등록
     api.defaults.headers.common.Authorization = authorization
+    console.log('api auto : '+api.defaults.headers.common.Authorization)
 
     // 👩‍💼 사용자 정보 요청
     let response
@@ -189,6 +212,7 @@ const LoginContextProvider = ({ children }) => {
   const loginSetting = (authorization, data) => {
     // 💍 JWT 를 Authorizaion 헤더에 등록
     api.defaults.headers.common.Authorization = authorization
+    console.log("세팅:" +api.defaults.headers.common.Authorization)
     // 로그인 여부 
     sessionStorage.setItem('isLogin', true)              // ⭐ localStorage 등록
     // 사용자 정보
@@ -205,12 +229,25 @@ const LoginContextProvider = ({ children }) => {
   }
 
   useEffect( () => {
-    
     const savedIsLogin = localStorage.getItem('rememberMe')
+    if(sessionStorage.getItem('isLogin')){
+      const jwt = Cookies.get("jwt")
+      console.log("자동 로그인 진입.")
+  
+      // 💍 in 🍪 ⭕
+      console.log(`jwt : ${jwt}`);
+      const authorization = `Bearer ${jwt}`
+  
+      // 💍 JWT 를 Authorizaion 헤더에 등록
+      api.defaults.headers.common.Authorization = authorization
+    }
+    console.log('api : '+api.defaults.headers.common.Authorization)
     if(!sessionStorage.getItem('isLogin')){
-      if( (savedIsLogin || savedIsLogin == true) ) {
+      console.log("데이터 초기화.")
+      chgiSetting()
+      console.log(savedIsLogin)
+      if( savedIsLogin === "true" ) {
             console.log('자동 로그인인가?');
-            
             autoLogin().then(() => {
               console.log(`로딩 완료`);
               // 로딩 완료

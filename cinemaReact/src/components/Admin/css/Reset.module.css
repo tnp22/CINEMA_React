@@ -1,19 +1,19 @@
 @charset "utf-8";
 
-*{margin: 0; padding: 0; list-style: none; box-sizing: border-box;}
-*{list-style: none;}
+/* *{margin: 0; padding: 0; list-style: none; box-sizing: border-box;} */
+.adminLEE *{list-style: none;}
 
-a{
+.adminLEE a{
     text-decoration: none;
     color: inherit;
 }
-a:hover {
+.adminLEE a:hover {
   color: #A88EFF;
 }
 
 .butten{
   background-color: #583BBF;
-  color: #ffffff;
+  color: #ffffff  !important;
   border: none; 
   width: 80px;
   height: 40px;
@@ -49,7 +49,7 @@ a:hover {
 }
 .sub_butten:hover{
   background-color: #A88EFF;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 .a_butten{
   width: 80px;
@@ -58,13 +58,15 @@ a:hover {
   line-height: 40px;
   border: none;
   background-color: #583BBF;
-  color: white;
+  color: white !important;
   border-radius: 12px;
 }
 .a_butten:hover{
   background-color: #A88EFF;
-  color: #ffffff;
+  color: #ffffff !important;
 }
+
+
 
 .li_butten{
   width: 70px;
@@ -107,4 +109,30 @@ a:hover {
 .delete_butten:hover {
   background-color: #A88EFF;
   color: #ffffff;
+}
+
+
+.btnPPage {
+  width: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 8px;
+  background-color: #583BBF;
+  border-radius: 8px;
+  color: #f1f1f1 !important;
+  margin: 0px 2px;
+}
+.activI{
+  /* display: inline-block; */
+  font-weight: bold !important;
+  background-color: #A88EFF !important;
+}
+.btnPPage:hover {
+  text-decoration: none !important;
+  color: #f1f1f1 !important;
+  background-color: #A88EFF;
+}
+.btnPPage a:hover {
+  color: #f1f1f1 !important;
 }

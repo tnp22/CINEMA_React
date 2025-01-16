@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import styles from './MyPageEditForm.module.css';
+import './MyPageEditForm.css';
+import * as my from '../../apis/my';
 
 const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
+    const [userInfo, setUserInfo] = useState({ username: '', email: '', orifile: null });
     const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [file, setFile] = useState(null);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await my.getUserInfo();
+                setUserInfo(response.data);
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     const validatePasswords = () => {
         if (password !== passwordCheck) {
@@ -29,42 +43,55 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (validatePasswords()) {
-            // 실제 폼 제출 로직 (예: API 호출)
-            Swal.fire({
-                title: '변경 사항이 저장되었습니다.',
-                icon: 'success',
-            });
+            const formData = new FormData();
+            formData.append('username', userInfo.username);
+            formData.append('email', userInfo.email);
+            formData.append('password', password);
+            if (file) {
+                formData.append('file', file);
+            }
+
+            try {
+                const response = await my.updateMyPageInfo(formData);
+                Swal.fire({
+                    title: '변경 사항이 저장되었습니다.',
+                    icon: 'success',
+                });
+            } catch (error) {
+                console.error('Error updating user info:', error);
+                Swal.fire({
+                    title: '저장 중 오류가 발생했습니다.',
+                    icon: 'error',
+                });
+            }
         }
     };
 
     return (
-        <div className={styles.content}>
-            <div className={styles.title}>
+        <div className="mypageedit-content">
+            <div className="mypageedit-title">
                 <h5 style={{ color: 'white' }}>나의 정보</h5>
             </div>
 
-            {/* 유저 아이디 표시 */}
             <div style={{ marginLeft: '290px', marginTop: '10px' }}>
                 <h5 style={{ color: '#6c757d', fontSize: '24px', display: 'inline' }}>
-                    {username}
+                    {userInfo.username}
                 </h5>
                 <span style={{ color: '#6c757d', fontSize: '16px' }}>님</span>
             </div>
 
             <hr style={{ margin: '20px 290px', border: '1px solid #ddd' }} />
 
-            {/* 프로필 이미지 변경 폼 */}
-            <form action="/user/mypageImageUpdate" method="post" encType="multipart/form-data">
-                <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
-                <input type="hidden" name="username" value={username} />
-                <div className={styles.logoAndUpload} style={{ marginLeft: '290px' }}>
-                    <div className={styles.logoContainer}>
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+                <input type="hidden" name="username" value={userInfo.username} />
+                <div className="mypageedit-logo-and-upload" style={{ marginLeft: '290px' }}>
+                    <div className="mypageedit-logo-container">
                         <img
                             id="profileImage"
-                            src={orifile ? `/img?id=${orifile.id}` : '/image(id="C:/upload/normal.png")'}
+                            src={userInfo.orifile ? `/img?id=${userInfo.orifile.id}` : '/image?id="C:/upload/normal.png"'}
                             style={{
                                 width: '124px',
                                 height: '124px',
@@ -75,116 +102,109 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                             alt="프로필 이미지"
                         />
                     </div>
-                    <div className={styles.profileUploadBtn} style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', rowGap: '9px' }}>
-                        <label htmlFor="fileInput" className={`${styles.btnPurple} btn`}>
+                    <div className="mypageedit-profile-upload-btn" style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', rowGap: '9px' }}>
+                        <label htmlFor="fileInput" className="mypageedit-btn btn-purple">
                             이미지 변경
                         </label>
-                        <label htmlFor="imageSubmit" className={`${styles.btnPurple} btn`}>
-                            변경 확인
-                        </label>
                         <input type="file" name="file" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
-                        <input type="submit" id="imageSubmit" className={`${styles.btnPurple} btn`} style={{ display: 'none' }} />
                     </div>
                 </div>
             </form>
 
-            {/* 마이페이지 기본 정보 수정 폼 */}
-            <form id="infoForm" onSubmit={handleSubmit} className="needs-validation" encType="multipart/form-data">
-                <input type="hidden" name="_csrf" value={window.CSRF_TOKEN} />
+            <form id="infoForm" onSubmit={handleSubmit} className="mypageedit-needs-validation" encType="multipart/form-data">
+                <div className="mypageedit-divider" />
 
-                <div className={styles.divider} />
-
-                {/* 아이디 */}
-                <div className="mb-4" id="box-id">
-                    <label htmlFor="username" className={styles.formLabel}>아이디</label>
-                    <div className="d-flex align-items-center">
+                <div className="mypageedit-mb-4" id="box-id">
+                    <label htmlFor="username" className="mypageedit-form-label">아이디</label>
+                    <div className="mypageedit-d-flex align-items-center">
                         <input
                             type="text"
-                            className={`${styles.formControl} me-2`}
+                            className="mypageedit-form-control me-2"
+                            style={{ backgroundColor: '#e9ecef', color: '#6c757d' }}
                             id="username"
                             name="username"
                             placeholder="현재 아이디"
-                            value={username}
+                            value={userInfo.username}
                             readOnly
                         />
                     </div>
                 </div>
 
-                {/* 이메일 수정 가능 */}
-                <div className="mb-4" id="box-email">
-                    <label htmlFor="email" className={styles.formLabel}>이메일</label>
-                    <div className="d-flex align-items-center">
+                <div className="mypageedit-mb-4" id="box-email">
+                    <label htmlFor="email" className="mypageedit-form-label">이메일</label>
+                    <div className="mypageedit-d-flex align-items-center">
                         <input
                             type="email"
-                            className={`${styles.formControl} me-2`}
+                            className="mypageedit-form-control me-2"
                             id="email"
                             name="email"
                             placeholder="새 이메일을 입력해주세요"
-                            value={email}
+                            value={userInfo.email}
                             required
+                            onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
                         />
                     </div>
                 </div>
 
-                {/* 비밀번호 수정 */}
-                <div className="mb-2">
-                    <label htmlFor="password" className={styles.formLabel}>새 비밀번호</label>
-                    <input
-                        type="password"
-                        className={styles.formControl}
-                        id="password"
-                        name="password"
-                        placeholder="새 비밀번호를 입력해주세요"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                <div className="mypageedit-mb-2">
+                    <label htmlFor="password" className="mypageedit-form-label">새 비밀번호</label>
+                    <div className="mypageedit-d-flex align-items-center">
+                        <input
+                           type="password"
+                           className="mypageedit-form-control"
+                           id="password"
+                           name="password"
+                           placeholder="새 비밀번호를 입력해주세요"
+                           required
+                           value={password}
+                           onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="passwordCheck" className={styles.formLabel}>새 비밀번호 확인</label>
-                    <input
-                        type="password"
-                        className={styles.formControl}
-                        id="passwordCheck"
-                        placeholder="새 비밀번호를 다시 입력해주세요"
-                        required
-                        value={passwordCheck}
-                        onChange={(e) => setPasswordCheck(e.target.value)}
-                    />
-                    <p className={styles.alertText}>{errorMessage}</p>
+                <div className="mypageedit-mb-4">
+                    <label htmlFor="passwordCheck" className="mypageedit-form-label">새 비밀번호 확인</label>
+                    <div className="mypageedit-d-flex align-items-center">
+                        <input
+                           type="password"
+                           className="mypageedit-form-control"
+                           id="passwordCheck"
+                           placeholder="새 비밀번호를 다시 입력해주세요"
+                           required
+                           value={passwordCheck}
+                           onChange={(e) => setPasswordCheck(e.target.value)}
+                        />
+                    </div>
+                    <p className="mypageedit-alert-text" style={{ color: 'red' }}>{errorMessage}</p>
                 </div>
 
-                {/* 변경 사항 저장 버튼 */}
-                <div style={{ marginBottom: '20px' }}>
-                    <button type="submit" className={`${styles.btnPurple} btn`} style={{ width: '125px' }}>
+                <div className="mypageedit-btn-container" style={{ marginBottom: '20px' }}>
+                    <button type="submit" className="mypageedit-btn-purple" style={{ width: '125px' }}>
                         저장
                     </button>
                 </div>
-
-                {/* 마이페이지 메인으로 돌아가기 버튼 */}
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <a
-                        href="/mypage"
-                        className={`${styles.btnSecondary} btn`}
-                        style={{
-                            width: '200px',
-                            backgroundColor: '#6c757d',
-                            color: 'white',
-                            textDecoration: 'none',
-                            padding: '10px',
-                            display: 'inline-block',
-                            textAlign: 'center',
-                            borderRadius: '5px',
-                        }}
-                    >
-                        마이페이지 메인으로
-                    </a>
-                </div>
-
-                {/* 아래 간격 추가 */}
-                <div style={{ marginBottom: '30px' }} />
             </form>
+
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <a
+                    href="/mypage"
+                    className="mypageedit-btn btn-secondary"
+                    style={{
+                        width: '200px',
+                        backgroundColor: '#6c757d',
+                        color: 'white',
+                        textDecoration: 'none',
+                        padding: '10px',
+                        display: 'inline-block',
+                        textAlign: 'center',
+                        borderRadius: '5px',
+                    }}
+                >
+                    마이페이지 메인으로
+                </a>
+            </div>
+
+            <div style={{ marginBottom: '30px' }} />
         </div>
     );
 };

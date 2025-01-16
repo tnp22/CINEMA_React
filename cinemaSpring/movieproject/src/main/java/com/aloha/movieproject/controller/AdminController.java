@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,15 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+
 
 import com.aloha.movieproject.domain.AuthList;
 import com.aloha.movieproject.domain.Banner;
@@ -45,6 +49,9 @@ import com.aloha.movieproject.service.cinema.CinemaService;
 import com.aloha.movieproject.service.cinema.TheaterListService;
 import com.aloha.movieproject.service.cinema.TheaterService;
 import com.github.pagehelper.PageInfo;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,6 +107,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
+    
     @GetMapping({ "", "/", "/cinema/list", "/cinema", "/cinema/" })
     public ResponseEntity<?> index(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -1182,32 +1190,35 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/movie/insert")
-    public ResponseEntity<?> movieInsert(@RequestBody Movie movie) throws Exception {
+    @PostMapping(value = "/movie/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> movieInsert(@ModelAttribute Movie movie,
+    @RequestParam("mainFiles") MultipartFile[] mainFiles,
+    @RequestParam(name ="stilcuts" ,required = false) MultipartFile[] stilcuts) throws Exception {
 
         try {
             // 데이터 요청
             int result = movieService.insert(movie);
 
-            for (MultipartFile files : movie.getMainFiles()) {
-                Files file = new Files();
-                file.setFile(files);
-                file.setDivision("main");
-                file.setFkTable("movie");
-                file.setFkId(movie.getId());
-
-                fileService.upload(file);
-            }
-
-            for (MultipartFile stilcut : movie.getStilcuts()) {
-                Files stilfile = new Files();
-                stilfile.setFile(stilcut);
-                stilfile.setDivision("stilcut");
-                stilfile.setFkTable("movie");
-                stilfile.setFkId(movie.getId());
-                fileService.upload(stilfile);
-            }
             if (result > 0) {
+                for (MultipartFile files : movie.getMainFiles()) {
+                    Files file = new Files();
+                    file.setFile(files);
+                    file.setDivision("main");
+                    file.setFkTable("movie");
+                    file.setFkId(movie.getId());
+    
+                    fileService.upload(file);
+                }
+                if(stilcuts != null){
+                    for (MultipartFile stilcut : movie.getStilcuts()) {
+                        Files stilfile = new Files();
+                        stilfile.setFile(stilcut);
+                        stilfile.setDivision("stilcut");
+                        stilfile.setFkTable("movie");
+                        stilfile.setFkId(movie.getId());
+                        fileService.upload(stilfile);
+                    }
+                }
                 log.info("영화 생성 성공!");
                 return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
                 // return "redirect:/admin/movie/list";
@@ -1220,32 +1231,7 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /**
-     * 업데이트 화면 진입
-     * 
-     * @param model
-     * @param movie
-     * @return
-     * @throws Exception
-     */
-    @Secured("ROLE_SUPER")
-    @GetMapping("/movie/update")
-    public ResponseEntity<?> movieUpdate(@RequestParam("id") String id) throws Exception {
-
-        try {
-            // 데이터 요청
-            Movie movie = movieService.select(id);
-
-            Map<String, Object> response = new HashMap<String, Object>();
-            response.put("movie", movie);
-            // model.addAttribute("movie", movie);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-            // return "/admin/movie/update";
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    
 
     /**
      * 업데이트 post
@@ -1256,8 +1242,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/movie/update")
-    public ResponseEntity<?> movieUpdate(Movie movie) throws Exception {
+    @PostMapping(value ="/movie/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> movieUpdate(@ModelAttribute Movie movie) throws Exception {
 
         try {
             // 데이터 요청
@@ -1323,7 +1309,9 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/stilcutPlus")
-    public ResponseEntity<?> stilcutPlus(@RequestBody Movie movie) throws Exception {
+    public ResponseEntity<?> stilcutPlus(@ModelAttribute Movie movie,
+    @RequestParam("stilcuts") MultipartFile[] stilcuts
+        ) throws Exception {
 
         try {
             Map<String, Object> response = new HashMap<String, Object>();
@@ -1354,7 +1342,9 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/mainPlus")
-    public ResponseEntity<?> mainPlus(@RequestBody Movie movie) throws Exception {
+    public ResponseEntity<?> mainPlus(@ModelAttribute Movie movie,
+    @RequestParam("mainFiles") MultipartFile[] mainFiles
+    ) throws Exception {
         try {
             log.info(movie.toString());
             int result = fileService.delete(movie.getFileId());
@@ -1874,7 +1864,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/list")
     public ResponseEntity<?> userList(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -2072,7 +2062,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @Secured("ROLE_SUPER")
+    //@Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/sleep")
     public ResponseEntity<?> userSleep(@RequestParam("username") String username) throws Exception {
 

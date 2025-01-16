@@ -57,7 +57,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // 2. 인증 시도
         Authentication authentication = jwtProvider.getAuthenticationToken(jwt);
 
-        if(authentication.isAuthenticated()){
+        if (authentication != null && authentication.isAuthenticated()) {
             log.info("JWT 를 통한 인증 완료");
         }
 

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import $ from 'jquery';
-import './css/Reset.css';  // 상대 경로로 CSS 파일 포함
+import ResetCs from './css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import './css/Admin.css';  // 상대 경로로 CSS 파일 포함
 import { Link } from 'react-router-dom';
 import LeftSideBar1 from './LeftSideBar1'
+import AdminHeader from './AdminHeader'
 
 
 const AdminMainForm = () => {
@@ -12,16 +13,11 @@ const AdminMainForm = () => {
       document.title = "ADMINISTRATOR";
 
       $(".mainLi").on("mouseover",function(){
+        $(this).find(".subLi").stop().slideDown();
         $(this).find(".movieLi").stop().slideDown();
       })
       $(".mainLi").on("mouseout",function(){
           $(this).find(".movieLi").stop().slideUp();
-      })
-
-      $(".mainLi").on("mouseover",function(){
-        $(this).find(".subLi").stop().slideDown();
-      })
-      $(".mainLi").on("mouseout",function(){
           $(this).find(".subLi").stop().slideUp();
       })
 
@@ -32,7 +28,7 @@ const AdminMainForm = () => {
     }, []);
 
   return (
-    <div className="container-fluid" style={{ height: '98vh' }}>
+    <div className={`container-fluid  ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <style>
         {`
           .movieLi {
@@ -44,19 +40,7 @@ const AdminMainForm = () => {
         `}
       </style>
       <br />
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
-          <Link style={{ marginRight: '30px' }} to={`/`}>
-            <img src="/path-to-logo.png" alt="Logo" style={{ width: '105px', height: '40px' }} />
-          </Link>
-          <h1>
-            <Link to={`/admin`}>
-              ADMINISTRATOR : <span className="adminTitle">AdminName</span>
-            </Link>
-          </h1>
-        </div>
-        <hr className="ms-0" style={{ width: '700px' }} />
-      </div>
+        <AdminHeader/>
 
       <div className="row" style={{ height: '90%' }}>
         {/* Left Navigation */}

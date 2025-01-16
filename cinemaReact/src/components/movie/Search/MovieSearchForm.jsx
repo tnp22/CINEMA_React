@@ -1,5 +1,6 @@
 import React from 'react'
 import '../MovieChart/MovieChartForm.css'
+import { Link } from 'react-router-dom';
 const MovieSearchForm = ({moviePageInfo, search}) => {
 
   
@@ -24,15 +25,15 @@ const MovieSearchForm = ({moviePageInfo, search}) => {
                     No. {(moviePageInfo.pageNum - 1) * 8 + 1 + index}
                   </p>
                 </div>
-                <a href={`/movie/movieInfo?id=${movie.id}`}>
+                <Link to={`/movie/movieInfo?id=${movie.id}`} className="link-black">
                   <img src={`/api/files/img?id=${movie.files.id}`} alt={movie.title} className="card-img-top" />
-                </a>
+                </Link>
                 <div className="card-body">
-                  <a href={`/movie/movieInfo?id=${movie.id}`}>
+                  <Link to={`/movie/movieInfo?id=${movie.id}`} className="link-black">
                     <h5 className="card-title">{movie.title}</h5>
-                  </a>
+                  </Link>
                   <p className="card-text">개봉일 {formatDate(movie.releaseDate)}</p>
-                  <a href={`/m/t?id=${movie.id}`} className="btn btn-purple">예매하기</a>
+                  <Link to={`/m/t?id=${movie.id}`} className="btn chart-btn-purple">예매하기</Link>
                 </div>
               </div>
             </div>
@@ -45,36 +46,52 @@ const MovieSearchForm = ({moviePageInfo, search}) => {
             <ul style={{ display: 'flex', listStyleType: 'none', gap: '10px' }}>
               {moviePageInfo.pageNum > 1 && (
                 <li>
-                  <a href={`/movie/movieInfo?moviePage=1&search=${search}`}>&laquo;</a>
+                  <Link to={`/movie/search?page=1&search=${search}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16" transform="scale(-1, 1)">
+                      <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z" />
+                    </svg>
+                  </Link>
                 </li>
               )}
               {moviePageInfo.hasPreviousPage && (
                 <li>
-                  <a href={`/movie/search?moviePage=${moviePageInfo.prePage}&search=${search}`}>&lsaquo;</a>
+                  <Link to={`/movie/search?page=${moviePageInfo.prePage}&search=${search}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16">
+                      <path d="M34.52 239l194.34-194.34c9.37-9.37 24.57-9.37 33.94 0l22.34 22.34c9.37 9.37 9.37 24.57 0 33.94L128.97 256l156.17 156.17c9.37 9.37 9.37 24.57 0 33.94l-22.34 22.34c-9.37 9.37-24.57 9.37-33.94 0L34.52 273c-9.37-9.37-9.37-24.57 0-33.94z" />
+                    </svg>
+                  </Link>
                 </li>
               )}
               {Array.from({ length: moviePageInfo.navigateLastPage - moviePageInfo.navigateFirstPage + 1 }, (_, i) => {
                 const pageNum = moviePageInfo.navigateFirstPage + i;
                 return (
                   <li key={pageNum}>
-                    <a
-                      href={`/movie/search?moviePage=${pageNum}&search=${search}`}
-                      className={`page ${moviePageInfo.pageNum === pageNum ? 'active' : ''}`}
-                    >
-                      {pageNum}
-                    </a>
-                  </li>
+                  <Link
+                    to={`/movie/search?page=${pageNum}&search=${search}`}
+                    className={`page ${moviePageInfo.pageNum === pageNum ? 'active' : ''}`}
+                  >
+                    {pageNum}
+                  </Link>
+                </li>
                 );
               })}
               {moviePageInfo.hasNextPage && (
                 <li>
-                  <a href={`/movie/search?moviePage=${moviePageInfo.nextPage}&search=${search}`}>&rsaquo;</a>
-                </li>
+                <Link to={`/movie/search?page=${moviePageInfo.nextPage}&search=${search}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="16" height="16">
+                    <path d="M285.48 273l-194.34 194.34c-9.37 9.37-24.57 9.37-33.94 0l-22.34-22.34c-9.37-9.37-9.37-24.57 0-33.94L191.03 256 34.86 99.83c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L285.48 239c9.37 9.37 9.37 24.57 0 33.94z" />
+                  </svg>
+                </Link>
+              </li>
               )}
               {moviePageInfo.pageNum < moviePageInfo.pages && (
                 <li>
-                  <a href={`/movie/search?moviePage=${moviePageInfo.pages}&search=${search}`}>&raquo;</a>
-                </li>
+                <Link to={`/movie/search?page=${moviePageInfo.pages}&search=${search}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16" height="16">
+                    <path d="M224 239L29.66 44.66c-9.37-9.37-24.57-9.37-33.94 0L-26.34 67c-9.37 9.37-9.37 24.57 0 33.94L128.97 256-26.34 410.05c-9.37 9.37-9.37 24.57 0 33.94l22.34 22.34c9.37 9.37 24.57 9.37 33.94 0L224 273c9.37-9.37 9.37-24.57 0-33.94zM448 273L253.66 467.34c-9.37 9.37-24.57 9.37-33.94 0L197.34 445c-9.37-9.37-9.37-24.57 0-33.94L352.97 256 197.34 100.95c-9.37-9.37-9.37-24.57 0-33.94l22.34-22.34c9.37-9.37 24.57-9.37 33.94 0L448 239c9.37 9.37 9.37 24.57 0 33.94z" />
+                  </svg>
+                </Link>
+              </li>
               )}
             </ul>
           </div>
