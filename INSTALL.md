@@ -24,3 +24,7 @@ npm config set registry https://registry.npmjs.org/
 
 npm install @mui/icons-material
 npm install @emotion/react @emotion/styled
+
+## 날짜 폼 순서대로 해야됨
+npm install date-fns 
+npm date-fns/locale
