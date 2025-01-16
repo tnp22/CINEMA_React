@@ -1,8 +1,9 @@
 import React from 'react'
+import AddMapFrom from '../../../components/admin/theater/AddMapFrom/AddMapFrom'
 
 const AddMap = () => {
   return (
-    <div>AddMap</div>
+    <AddMapFrom/>
   )
 }
 

@@ -31,65 +31,65 @@
     text-align: left;
   }
   
-  .b-top {
+  .b_top {
     border-top: 2px solid #C3B2FD;
   }
   
-  .b-right{
+  .b_right{
     border-right: 2px solid #C3B2FD;
   }
-  .reserve-img img{
+  .reserve_img img{
     width: 140px; 
     height: 180px; 
     object-fit: cover;
   }
-  .reserve-btn{
+  .reserve_btn{
     border-radius: 10%;
     background-color: #583BBF;
     color: white;
     width: 130px;
     height: 130px;
   }
-  .reserve-btn:hover{
+  .reserve_btn:hover{
     opacity: 90%;
     background-color: #583BBF;
     color: white;
   }
-  .list-group{
+  .list_group{
     border-radius: 0;
   }
-  .list-group-item{
+  .list_group_item{
       text-align: center;
     border: none;
   }
-  .list-group-item:hover{
+  .list_group_item:hover{
     background-color: #C3B2FD;
     color: #583BBF;
     font-size: 18px;
   }
-  .list-group-item.active {
+  .list_group_item.active {
     background-color: #C3B2FD;
     color: #583BBF;
     font-weight:600;
     font-size: 18px;
   }
   
-  .btn-time{
+  .btn_time{
       background-color: white;
       border: 1px solid #C3B2FD;
       margin-right: 5px;
   }
   
-  .btn-time:hover{
+  .btn_time:hover{
       background-color: #583BBF;
       color: white;
   }
   
-  .btn-time.active{
+  .btn_time.active{
       background-color: #583BBF;
       color: white;
   }
-  .btn-mazin{
+  .btn_mazin{
       background-color: white;
       border: 1px solid #C3B2FD;
       margin-right: 5px;
@@ -97,7 +97,7 @@
   span{
       font-weight: normal;
   }
-  .time-box{
+  .time_box{
       width: 120px;
   }
 

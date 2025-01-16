@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {Link} from 'react-router-dom';
 
 const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBannerList }) => {
 
@@ -105,10 +106,9 @@ const HomeForm = ({ moviePageInfo, expectPageInfo, noticeList, bannerList, subBa
                 >
                     상영 예정작
                 </a>
-                <a href="/movie/movieChart" className="btn all-button d-flex align-items-center" style={{ position: "absolute", right: 0 }}>
-                    <span>전체보기</span>
-                    <i className="bi bi-chevron-right"></i>
-                </a>
+                <Link to="/movie/movieChart" className="btn all-button d-flex align-items-center" style={{ position: "absolute", right: 0 }}>
+                    전체보기<i className="bi bi-chevron-right">
+                </i></Link>
             </div>
             <div className="tab-content">
                 {currentTab === "movie-chart" && (

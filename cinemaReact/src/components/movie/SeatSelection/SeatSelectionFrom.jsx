@@ -1,7 +1,20 @@
-import React, { useEffect } from 'react'
-import './SeatSelectionFrom.css'
+import React, { useEffect } from 'react';
+import styles from './SeatSelectionFrom.module.css';
+import { useLocation } from 'react-router-dom';
 
 const SeatSelectionFrom = () => {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+    const theaterListId = searchParams.get("theaterListId");
+    const data = searchParams.get("person").split("_");
+    const person = data[0];
+    const money = data[1];
+
+    console.log(theaterListId)
+    console.log(person)
+    console.log(money)
+
 
     // 2️⃣  객체 초기화 하기
     // var IMP = window.IMP; 
@@ -14,9 +27,9 @@ const SeatSelectionFrom = () => {
     // let potEmail = "[[${authUser.email}]]"
     const mapData = [
         ["A1_통로", "A2_통로", "A3", "A4", "A5", "A6", "A7", "A8"],
-        ["B1_통로", "통로", "B3", "B4", "B5", "B6", "B7", "B8"],
-        ["C1", "C2_통로", "C3", "C4", "C5", "C6", "C7", "C8"],
-        ["D1", "D2_통로", "D3", "D4", "D5", "D6", "D7", "D8"]
+        ["B1_통로", "B2_통로", "B3", "B4", "B5", "B6", "B7", "B8"],
+        ["C1_통로", "C2_통로", "C3", "C4", "C5", "C6", "C7", "C8"],
+        ["D1_통로", "D2_통로", "D3", "D4", "D5", "D6", "D7", "D8"]
     ]
 
     console.log(mapData);
@@ -34,7 +47,7 @@ const SeatSelectionFrom = () => {
     const addMap = (mapdiv) => {
 
         if(y > 9){
-            mapdiv.classList.add(("scroll"));
+            mapdiv.classList.add((styles.scroll));
             mapdiv.style.overflowX = "hidden";
       
         }
@@ -45,7 +58,7 @@ const SeatSelectionFrom = () => {
         var map = document.createElement("div")
         let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환
         map.id = ascii2;
-        map.className="mapBACHI"
+        map.className=styles.mapBACHI;
         
         
         // map.textContent = mapData[n][0];
@@ -56,7 +69,7 @@ const SeatSelectionFrom = () => {
         for(var mapdate of mapData[n]){
             // console.log(map)
             var seat = document.createElement("div");
-            seat.className = "seat available";
+            seat.className = `${styles.seat} ${styles.available}`;
             var seatId = ascii2+count;count++;
             seat.setAttribute("seat", mapdate);
             seat.setAttribute("seatNumber", seatId);
@@ -66,7 +79,7 @@ const SeatSelectionFrom = () => {
             if(mapdate == "통로" || mapdate == (seatId+"_통로")){
                 boidcountCheck++
                 var seat1 = document.createElement("div")
-                seat1.className = "seat";
+                seat1.className = styles.seat;
                 map.appendChild(seat1)
                 // seat.style.marginRight = "50px"
                 // console.log(mapdate)
@@ -95,7 +108,7 @@ const SeatSelectionFrom = () => {
         }
         
         if(mapdate == "null" || mapdate == "통로"){
-            seat.className = "seat";
+            seat.className = styles.seat;
             seat.textContent = "";
             seat.style.backgroundColor = "";
         }
@@ -139,44 +152,49 @@ for (let i = 0; i < sjfql.length; i++) {
     }
 
     let selectedSeats = []; // 선택된 요소를 저장할 배열
-    let seats = document.querySelectorAll(".select");
+    // let seats = document.querySelectorAll(".select");
+    // console.dir(seats);
     
-    
-    // 각 요소 클릭 이벤트 추가
-    seats.forEach(function(seat) {
-      seat.addEventListener("click", function(e) {
-        let person = document.getElementById("person"); // 선택 가능한 인원 수
-        let personCount = parseInt(person.getAttribute("person"))
-        let seatNumber = seat.getAttribute("seatNumber");
+    const seatsClick =(seats) => {
 
-        // 클릭 이벤트에서 이미 선택 상태인지 확인
-        if (selectedSeats.includes(seat)) {
-          // 클릭한 요소가 이미 선택 상태라면 초기 상태로 되돌림
-          seat.style.backgroundColor = "";
-          selectedSeats = selectedSeats.filter(s => s !== seat); // 선택 배열에서 제거
-        } else {
-          // 최대 인원 제한 확인
-          if (selectedSeats.length >= personCount) {
-            // 가장 오래 선택된 요소부터 초기 상태로 되돌림
-            let removedSeat = selectedSeats.shift();
-            removedSeat.style.backgroundColor = "";
-          }
-
-          // 선택한 요소 배경색 변경
-          seat.style.backgroundColor = "#b0b0b0";
-          selectedSeats.push(seat); // 선택 요소 배열에 추가
-        }
-
-        // 상태를 화면에 표시
-        document.getElementById("seat").textContent = `${selectedSeats.map(seat => seat.getAttribute("seatNumber")).sort().join(", ")}`;
-        document.getElementById("seat").setAttribute("seat",`${selectedSeats.map(seat => seat.getAttribute("seatNumber")).sort().join(",")}`);
-      });
+        // 각 요소 클릭 이벤트 추가
+        seats.forEach(function(seat) {
+        seat.addEventListener("click", function(e) {
+          let person = document.getElementById("person"); // 선택 가능한 인원 수
+          let personCount = parseInt(person.getAttribute("person"))
+          let seatNumber = seat.getAttribute("seatNumber");
+          
+          // 클릭 이벤트에서 이미 선택 상태인지 확인
+          if (selectedSeats.includes(seat)) {
+              // 클릭한 요소가 이미 선택 상태라면 초기 상태로 되돌림
+              seat.style.backgroundColor = "";
+              selectedSeats = selectedSeats.filter(s => s !== seat); // 선택 배열에서 제거
+            } else {
+                // 최대 인원 제한 확인
+                if (selectedSeats.length >= personCount) {
+                    // 가장 오래 선택된 요소부터 초기 상태로 되돌림
+                    let removedSeat = selectedSeats.shift();
+                    removedSeat.style.backgroundColor = "";
+                }
+                
+                // 선택한 요소 배경색 변경
+                seat.style.backgroundColor = "#b0b0b0";
+                selectedSeats.push(seat); // 선택 요소 배열에 추가
+            }
+            
+            // 상태를 화면에 표시
+            document.getElementById("seat").textContent = `${selectedSeats.map(seat => seat.getAttribute("seatNumber")).sort().join(", ")}`;
+            document.getElementById("seat").setAttribute("seat",`${selectedSeats.map(seat => seat.getAttribute("seatNumber")).sort().join(",")}`);
+        });
     });
-    // 예매하기 버튼
-    function reservation(){
-      var person = "[[${person}]]";
-      console.log(selectedSeats)
-      var setnum = selectedSeats.length;
+}
+// 예매하기 버튼
+    const reservation = () =>{
+    //   var person = "[[${person}]]";
+    console.log('selectedSeats');
+    console.log(selectedSeats)
+    console.log('setnum');
+    var setnum = selectedSeats.length;
       console.log(setnum);
       if(person != setnum){
         alert("예약인원수만큼 좌석을 선택하시오")
@@ -245,8 +263,12 @@ for (let i = 0; i < sjfql.length; i++) {
     
     useEffect(() => {
 
+        
         var mapdiv = document.getElementById("map")
         addMap(mapdiv)
+        let seats = document.querySelectorAll(".select");
+        seatsClick(seats)
+        console.dir(seats);
     }, [])
     
 
@@ -254,19 +276,22 @@ for (let i = 0; i < sjfql.length; i++) {
   return (
     <>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"></link>
+    <style>
+        {`.select {cursor: pointer;}`}
+    </style>
     <div className="container-fluid p-0 d-flex">
-        <div className="header flex-fill"></div>
+        <div className="header flex-fill" ></div>
         <div className="container p-0">
             {/* 본문 */}
             <div className="row m-0 p-0 w-100 col-3 text-center">
                 <div className="col p-0">
                     {/* 좌석 */}
-                    <div className="header"><h5>좌석 선택</h5></div>
-                    <div className="content p-0">
-                        <div className="content1">
-                            <div className='mapBACHI2' id='map'>
-                                <div className='content2'>
-                                    <h1 className='content3'>SCREEN</h1>
+                    <div className={styles.header}><h5>좌석 선택</h5></div>
+                    <div className={styles.content + " p-0"}>
+                        <div className={styles.content1}>
+                            <div className={styles.mapBACHI2} id='map'>
+                                <div className={styles.content2}>
+                                    <h1 className={styles.content3}>SCREEN</h1>
                                 </div>
                                 {/* 비동기 생성 */}
                             </div>
@@ -275,27 +300,27 @@ for (let i = 0; i < sjfql.length; i++) {
                 </div>
             </div>
         </div>
-        <div className="header flex-fill"></div>
+        <div className={styles.header + " flex-fill"}></div>
     </div>
 
     {/* 하단바 */}
-    <div className="container-fluid b-top">
-        <div className='container1 container d-flex justify-content-between p-0'>
+    <div className={"container-fluid " + styles.bTop}>
+        <div className={styles.container1 +' container d-flex justify-content-between p-0'}>
             <div className="align-content-center">
-                <div className='d-flex reserve-img'>
+                <div className={'d-flex ' + styles.reserveImg}>
                     <img src="" alt="" />
                     <div className="align-content-center ms-5">
                         <h3 id="theater-info">movie.title</h3>
                     </div>
                     <div className="align-content-center ms-5">
-                    <p className="m-1">명수 &nbsp; &nbsp; &nbsp; <span type="number" id="person" th:text="${person}" th:person="${person}">person</span></p>
+                    <p className="m-1">명수 &nbsp; &nbsp; &nbsp; <span type="number" id="person"  person={person}>{person}</span></p>
                     <p className="m-1">좌석 &nbsp; &nbsp; &nbsp; <span id="seat"></span></p>
                     </div>
                 </div>
             </div>
 
             <div className="align-content-center">
-                <button className='btn reserve-btn' id='reservatio' ><i className="fa-solid fa-angle-right fa-3x"></i><p>예매하기</p></button>
+                <button className={'btn ' +styles.reserveBtn} id='reservatio' onClick={reservation} ><i className="fa-solid fa-angle-right fa-3x"></i><p>예매하기</p></button>
             </div>
         </div>
     </div>

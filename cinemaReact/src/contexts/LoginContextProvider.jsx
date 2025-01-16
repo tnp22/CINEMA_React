@@ -13,10 +13,7 @@ const LoginContextProvider = ({ children }) => {
   // 🔄 로딩중
   const [isLoading, setIsLoading] = useState(true)
   // 🔐 로그인 여부
-  const [isLogin, setIsLogin] = useState( () => {
-    const savedIsLogin = localStorage.getItem("isLogin")
-    return savedIsLogin ?? false
-  } )
+
   // 👩‍💼 사용자 정보 
   const [userInfo, setUserInfo] = useState( () => {
     const savedUserInfo = localStorage.getItem("userInfo")
@@ -117,8 +114,7 @@ const LoginContextProvider = ({ children }) => {
     api.defaults.headers.common.Authorization = undefined
 
     // 🔐❌ 로그인 여부 : false
-    setIsLogin(false)
-    localStorage.removeItem("isLogin")
+    sessionStorage.removeItem('isLogin')
 
     // 👩‍💼❌ 유저 정보 초기화
     setUserInfo(null)
@@ -140,10 +136,9 @@ const LoginContextProvider = ({ children }) => {
   const autoLogin = async () => {
     // 쿠키에서 jwt 가져오기
     const jwt = Cookies.get("jwt")
-    const rememberMe = localStorage.getItem("rememberMe") === "true"
     
 
-    if (!rememberMe || !jwt ) {
+    if (!jwt ) {
       console.log("자동 로그인을 건너뜁니다.")
       logoutSetting()
       return
@@ -195,8 +190,7 @@ const LoginContextProvider = ({ children }) => {
     // 💍 JWT 를 Authorizaion 헤더에 등록
     api.defaults.headers.common.Authorization = authorization
     // 로그인 여부 
-    setIsLogin(true)
-    localStorage.setItem("isLogin", "true")                 // ⭐ localStorage 등록
+    sessionStorage.setItem('isLogin', true)              // ⭐ localStorage 등록
     // 사용자 정보
     setUserInfo(data)
     localStorage.setItem("userInfo", JSON.stringify(data) ) // ⭐ localStorage 등록
@@ -211,21 +205,22 @@ const LoginContextProvider = ({ children }) => {
   }
 
   useEffect( () => {
-    setIsLogin(false)
-    const savedIsLogin = localStorage.getItem('rememberMe')
     
-    if( (savedIsLogin || savedIsLogin == true) ) {
-          console.log('자동 로그인인가?');
-          
-          autoLogin().then(() => {
-            console.log(`로딩 완료`);
-            // 로딩 완료
-            setIsLoading(false)
-          })
-    }
-    else {
-      // 로딩 완료
-      setIsLoading(false)
+    const savedIsLogin = localStorage.getItem('rememberMe')
+    if(!sessionStorage.getItem('isLogin')){
+      if( (savedIsLogin || savedIsLogin == true) ) {
+            console.log('자동 로그인인가?');
+            
+            autoLogin().then(() => {
+              console.log(`로딩 완료`);
+              // 로딩 완료
+              setIsLoading(false)
+            })
+      }
+      else {
+        // 로딩 완료
+        setIsLoading(false)
+      }
     }
     
   }, [])
@@ -233,7 +228,7 @@ const LoginContextProvider = ({ children }) => {
 
   return (
     // 컨텍스트 값 지정 ➡ value={ ?, ? }
-    <LoginContext.Provider value={ { isLoading, isLogin, logout, login, userInfo, roles } }>
+    <LoginContext.Provider value={ { isLoading, logout, login, userInfo, roles } }>
       {children}
     </LoginContext.Provider>
   )
