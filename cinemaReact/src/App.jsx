@@ -19,6 +19,7 @@ import ReviewList from './components/movie/MovieInfo/ReviewList'
 import NoticeList from './pages/notice/NoticeList'
 import NoticeSelect from './pages/notice/NoticeSelect'
 
+
 function App() {
 
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="/notice/select" element={<NoticeSelect/>}></Route>
           </Route>
             <Route path="/Ticket/*" element={<Ticket />}></Route>
+          </Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </LoginContextProvider>

@@ -4,15 +4,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
-@RequestMapping("/m")
+@RequestMapping("/movie")
+@CrossOrigin("*")
 public class ticketController {
 
     FileText ft = new FileText();
@@ -54,115 +58,149 @@ public class ticketController {
     @Autowired
     private ReserveService reserveService;
 
-    @GetMapping("/t")
-    public String ticketMain(@RequestParam("id") String id, Model model) throws Exception {
+    /**
+     * 극장 날짜 선택
+     * 
+     * @param movieId
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/dateSelection")
+    public ResponseEntity<?> ticketMain(@RequestParam("id") String movieId) throws Exception {
         // log.info("id : {}", id); // 올바른 SLF4J 방식
-        Movie movie_ = movieService.movieInfo(id);
-        model.addAttribute("movie", movie_);
+        log.info("dateSelection 진입");
+        log.info("무비 아이디 : " + movieId);
 
-        // id = "6e937900-b05b-11ef-b8e4-4ccc6ad7549d"; // 무비 ID
-        List<TheaterList> list = theaterListService.timeSearch(id);
-        List<TicketList> ticketLists = new ArrayList<>();
+        try {
+            Map<String, Object> response = new HashMap<String, Object>();
+            Movie movie_ = movieService.movieInfo(movieId);
+            // model.addAttribute("movie", movie_); // ? 썸넬인가?
 
-        for (TheaterList t : list) {
-            // 전체 좌석 - 예약된 좌석
-            List<Reserve> reserve = reserveService.selectSeat(t.getId());
-            int MaxPerson = 0;
-            for (Reserve r : reserve) {
-                // System.out.println(r.getSeat());
-                String[] re = r.getSeat().split(",");
-                MaxPerson += re.length;
+            // id = "6e937900-b05b-11ef-b8e4-4ccc6ad7549d"; // 무비 ID
+            List<TheaterList> list = theaterListService.timeSearch(movieId);
+            List<TicketList> ticketLists = new ArrayList<>();
+
+            for (TheaterList t : list) {
+                // 전체 좌석 - 예약된 좌석
+                List<Reserve> reserve = reserveService.selectSeat(t.getId());
+                int MaxPerson = 0;
+                for (Reserve r : reserve) {
+                    // System.out.println(r.getSeat());
+                    String[] re = r.getSeat().split(",");
+                    MaxPerson += re.length;
+                }
+                // System.out.println(MaxPerson);
+                TicketList ticket = new TicketList();
+                Cinema cinema = t.getCinema();
+                Movie movie = t.getMovie();
+                Theater theater = t.getTheater();
+
+                int SeatNum = theater.getSeat() - MaxPerson;
+
+                ticket.setArea(cinema.getArea()); // 지역
+                ticket.setAreaSub(cinema.getAreaSub()); // 극장
+
+                ticket.setTime(t.getTime()); // 상영날짜 + 시간
+                ticket.setId(t.getId()); // 상영리스트 ID (상영시간 ID)
+
+                ticket.setTitle(movie.getTitle()); // 영화 제목
+
+                ticket.setTheaterName(theater.getName()); // 상영관이름
+                ticket.setMapUrl(theater.getMap()); // 상영관맵경로
+                ticket.setSeat(SeatNum); // 좌석 (예메리스트에서 계산해서 넘기기 추가예정)
+
+                ticket.setMovieId(t.getMovieId()); // 무비 ID
+                ticket.setTheaterId(t.getTheaterId()); // 시에터 ID
+                ticket.setCinemaId(t.getCinemaId()); // 시네마 ID
+
+                ticketLists.add(ticket); // List 업로드
+
             }
-            //System.out.println(MaxPerson);
-            TicketList ticket = new TicketList();
-            Cinema cinema = t.getCinema();
-            Movie movie = t.getMovie();
-            Theater theater = t.getTheater();
-
-            int SeatNum = theater.getSeat() - MaxPerson;
-
-            ticket.setArea(cinema.getArea()); // 지역
-            ticket.setAreaSub(cinema.getAreaSub()); // 극장
-
-            ticket.setTime(t.getTime()); // 상영날짜 + 시간
-            ticket.setId(t.getId()); // 상영리스트 ID (상영시간 ID)
-
-            ticket.setTitle(movie.getTitle()); // 영화 제목
-
-            ticket.setTheaterName(theater.getName()); // 상영관이름
-            ticket.setMapUrl(theater.getMap()); // 상영관맵경로
-            ticket.setSeat(SeatNum); // 좌석 (예메리스트에서 계산해서 넘기기 추가예정)
-
-            ticket.setMovieId(t.getMovieId()); // 무비 ID
-            ticket.setTheaterId(t.getTheaterId()); // 시에터 ID
-            ticket.setCinemaId(t.getCinemaId()); // 시네마 ID
-
-            ticketLists.add(ticket); // List 업로드
-
+            // log.info("리스트?" + ticketLists);
+            log.info("무비ID" + movie_.getFiles().getId());
+            response.put("ticketList", ticketLists);
+            response.put("movieId", movie_.getFiles().getId());
+            response.put("movieTitle", movie_.getTitle());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         // log.info("리스트 : " + ticketLists);
-        model.addAttribute("ticketList", ticketLists);
-        return "/movie/ticket";
+        // model.addAttribute("ticketList", ticketLists);
+
     }
 
-    @GetMapping("/s")
-    public String seatSelectionmain(@RequestParam("theaterListId") String id, @RequestParam("person") String person,
+    @GetMapping("/seatSelection")
+    public ResponseEntity<?> seatSelectionmain(@RequestParam("theaterListId") String id,
+            @RequestParam("person") String person,
             Model model, @AuthenticationPrincipal CustomUser authUser)
             throws Exception {
         // log.info("좌석선택");
         // log.info("상영시간ID : " + id);
         // id = "8ecb1cf9-679b-4c74-8443-b04409feb9ee";
-        String uuuuid = UUID.randomUUID().toString();
-        model.addAttribute("uuuuid", uuuuid);
-        model.addAttribute("authUser", authUser);
-        String[] data = person.split("_");
-        person = data[0];
-        String money = data[1];
+        Map<String, Object> response = new HashMap<String, Object>();
+        // log.info(id);
+        log.info(person + "명");
 
-        TheaterList num = theaterListService.select(id);
-        String mapId = num.getTheaterId();
-        // log.info("맵정보 : " + mapId);
-        // System.out.println(num);
-        model.addAttribute("movieName", num.getMovie().getTitle());
-        String path = "C:\\upload\\test"; // 파일 저장 경로
-        String fileName = mapId + ".txt"; // JSON에서 fileName 추출
-        // 파일 읽기
-        String result = ft.read(path, fileName);
-        // System.out.println(result);
+        try {
 
-        // String을 List<List<String>>으로 변환
-        List<List<String>> mapData = new ArrayList<>();
-        String[] rows = result.split("\n");
-        for (String row : rows) {
-            List<String> rowList = Arrays.asList(row.split(","));
-            mapData.add(rowList);
-        }
-        // System.out.println(mapData);
+            String uuuuid = UUID.randomUUID().toString();
+            String[] data = person.split("_");
+            person = data[0];
+            String money = data[1]; //
+            TheaterList num = theaterListService.select(id);
+            String mapId = num.getTheaterId();
+            // log.info("맵정보 : " + mapId);
+            // System.out.println(num);
 
-        // log.info("아이디" + id);
-        // log.info("사람수" + person);
-        model.addAttribute("theaterId", id);
-        model.addAttribute("person", Integer.parseInt(person));
-        model.addAttribute("money", money);
-        model.addAttribute("mapData", mapData);
+            String path = "C:\\upload\\test"; // 파일 저장 경로
+            String fileName = mapId + ".txt"; // JSON에서 fileName 추출
+            // 파일 읽기
+            String result = ft.read(path, fileName);
+            log.info(fileName);
+            // System.out.println(result);
 
-        Movie movie_ = movieService.movieInfo(num.getMovieId());
-        model.addAttribute("movie", movie_);
-
-        // 예약된 좌석 선별
-        List<Reserve> reserve = reserveService.selectSeat(id);
-        List<String> seat = new ArrayList<>();
-        for (Reserve s : reserve) {
-            String[] se = s.getSeat().split(",");
-            for (String ss : se) {
-                seat.add(ss);
+            // String을 List<List<String>>으로 변환
+            List<List<String>> mapData = new ArrayList<>();
+            String[] rows = result.split("\n");
+            for (String row : rows) {
+                List<String> rowList = Arrays.asList(row.split(","));
+                mapData.add(rowList);
             }
-        }
-        // log.info("좌석 : " + seat);
-        model.addAttribute("reservationSeat", seat);
+            // System.out.println(mapData);
 
-        return "/movie/seatSelection";
+            // log.info("아이디" + id);
+            // log.info("사람수" + person);
+
+            Movie movie_ = movieService.movieInfo(num.getMovieId());
+
+            // 예약된 좌석 선별
+            List<Reserve> reserve = reserveService.selectSeat(id);
+            List<String> seat = new ArrayList<>();
+            for (Reserve s : reserve) {
+                String[] se = s.getSeat().split(",");
+                for (String ss : se) {
+                    seat.add(ss);
+                }
+            }
+            // log.info("좌석 : " + seat);
+            response.put("movie", movie_);
+            response.put("uuuuid", uuuuid);
+            response.put("authUser", authUser);
+            response.put("movieName", num.getMovie().getTitle());
+            response.put("theaterId", id);
+            response.put("person", Integer.parseInt(person));
+            response.put("money", money);
+            response.put("mapData", mapData);
+            log.info("맵데이터" + mapData);
+            response.put("reservationSeat", seat);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("여기왔나?");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/payment")
@@ -193,7 +231,7 @@ public class ticketController {
             reserve.setDate(formatDate);
             reserve.setTime(formatTime);
         }
-        //System.out.println("Reserve : " + reserve);
+        // System.out.println("Reserve : " + reserve);
         // System.out.println("넘 있나?" + num);
         // 영화사진
         Movie movie_ = movieService.movieInfo(num.getMovieId());
@@ -257,12 +295,12 @@ public class ticketController {
         reserve.setTheaterId(num.getTheaterId());
         reserve.setTheaterListId(num.getId());
         reserve.setUserName(userName);
-        //System.out.println(reserve);
+        // System.out.println(reserve);
 
         session.setAttribute("reserve", reserve);
 
-        //System.out.println("시트 : " + seat);
-        //System.out.println(seat == null);
+        // System.out.println("시트 : " + seat);
+        // System.out.println(seat == null);
         if (seat == null) {
             return "/m/s?theaterListId=0c701709-0c0d-49dd-b96f-8c30961eee2d&person=1_10000&error";
         }
@@ -312,11 +350,11 @@ public class ticketController {
 
     @ResponseBody
     @DeleteMapping("/delete")
-    public String deleteReserv( @AuthenticationPrincipal CustomUser authUser,
-                @RequestBody Map<String, String> data) throws Exception{
+    public String deleteReserv(@AuthenticationPrincipal CustomUser authUser,
+            @RequestBody Map<String, String> data) throws Exception {
         String id = data.get("id");
 
-        if(reserveService.isOwner(id,authUser.getUser().getId())){
+        if (reserveService.isOwner(id, authUser.getUser().getId())) {
             return "Fail";
         }
         int result = reserveService.delectReserve(id);
