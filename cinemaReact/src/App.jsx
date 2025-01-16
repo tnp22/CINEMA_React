@@ -15,6 +15,9 @@ import MovieChart from './pages/movie/movieChart/MovieChart'
 import MovieSearch from './pages/movie/Search/MovieSearch'
 import MovieInfo from './pages/movie/MovieInfo/MovieInfo'
 import Ticket from './pages/Ticket'
+import ReviewList from './components/movie/MovieInfo/ReviewList'
+import NoticeList from './pages/notice/NoticeList'
+import NoticeSelect from './pages/notice/NoticeSelect'
 
 function App() {
 
@@ -34,6 +37,8 @@ function App() {
             <Route path="/movie/movieChart" element={<MovieChart/>}></Route>
             <Route path="/movie/search" element={<MovieSearch/>}></Route>
             <Route path="/movie/movieInfo" element={<MovieInfo/>}></Route>
+            <Route path="/notice/list" element={<NoticeList/>}></Route>
+            <Route path="/notice/select" element={<NoticeSelect/>}></Route>
           </Route>
             <Route path="/Ticket/*" element={<Ticket />}></Route>
             <Route path="/admin/*" element={<Admin />} />
