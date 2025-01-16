@@ -130,29 +130,33 @@ const MyPageEditForm = ({ username, email, orifile, encryptedPassword }) => {
                 {/* 비밀번호 수정 */}
                 <div className="mypageedit-mb-2">
                     <label htmlFor="password" className="mypageedit-form-label">새 비밀번호</label>
-                    <input
-                        type="password"
-                        className="mypageedit-form-control"
-                        id="password"
-                        name="password"
-                        placeholder="새 비밀번호를 입력해주세요"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <div className="mypageedit-d-flex align-items-center">
+                        <input
+                           type="password"
+                           className="mypageedit-form-control"
+                           id="password"
+                           name="password"
+                           placeholder="새 비밀번호를 입력해주세요"
+                           required
+                           value={password}
+                           onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 <div className="mypageedit-mb-4">
                     <label htmlFor="passwordCheck" className="mypageedit-form-label">새 비밀번호 확인</label>
-                    <input
-                        type="password"
-                        className="mypageedit-form-control"
-                        id="passwordCheck"
-                        placeholder="새 비밀번호를 다시 입력해주세요"
-                        required
-                        value={passwordCheck}
-                        onChange={(e) => setPasswordCheck(e.target.value)}
-                    />
+                    <div className="mypageedit-d-flex align-items-center">
+                        <input
+                           type="password"
+                           className="mypageedit-form-control"
+                           id="passwordCheck"
+                           placeholder="새 비밀번호를 다시 입력해주세요"
+                           required
+                           value={passwordCheck}
+                           onChange={(e) => setPasswordCheck(e.target.value)}
+                        />
+                    </div>
                     <p className="mypageedit-alert-text" style={{ color: 'red' }}>{errorMessage}</p>
                 </div>
 
