@@ -14,6 +14,7 @@ import Layout from './components/Layout/Layout'
 import MovieChart from './pages/movie/movieChart/MovieChart'
 import MovieSearch from './pages/movie/Search/MovieSearch'
 import MovieInfo from './pages/movie/MovieInfo/MovieInfo'
+import Ticket from './pages/Ticket'
 function App() {
 
   return (
