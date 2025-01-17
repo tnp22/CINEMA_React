@@ -10,6 +10,11 @@ export const LoginContext = createContext()
 
 const LoginContextProvider = ({ children }) => {
 
+
+   // Authorization 헤더가 설정된 여부 확인
+   const [authReady, setAuthReady] = useState(false);  
+   // Authorization이 준비되었는지 여부 확인
+
   // 🔄 로딩중
   const [isLoading, setIsLoading] = useState(true)
   // 🔐 로그인 여부
@@ -226,6 +231,7 @@ const LoginContextProvider = ({ children }) => {
     })
     setRoles(updatedRoles)
     localStorage.setItem("roles", JSON.stringify(updatedRoles)) // ⭐ localStorage 등록
+    setAuthReady(true); 
   }
 
   useEffect( () => {
@@ -240,6 +246,7 @@ const LoginContextProvider = ({ children }) => {
   
       // 💍 JWT 를 Authorizaion 헤더에 등록
       api.defaults.headers.common.Authorization = authorization
+      setAuthReady(true); 
     }
     console.log('api : '+api.defaults.headers.common.Authorization)
     if(!sessionStorage.getItem('isLogin')){
@@ -266,7 +273,11 @@ const LoginContextProvider = ({ children }) => {
   return (
     // 컨텍스트 값 지정 ➡ value={ ?, ? }
     <LoginContext.Provider value={ { isLoading, logout, login, userInfo, roles } }>
-      {children}
+      {sessionStorage.getItem('isLogin') && !authReady ? (
+        <div>Loading...</div>  // Authorization 설정 완료 전에 로딩 상태 표시
+      ) : (
+        children
+      )}
     </LoginContext.Provider>
   )
 }

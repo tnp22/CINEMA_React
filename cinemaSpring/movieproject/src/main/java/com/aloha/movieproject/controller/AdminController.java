@@ -57,6 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
+@Secured("ROLE_ADMIN")
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -107,7 +108,6 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    
     @GetMapping({ "", "/", "/cinema/list", "/cinema", "/cinema/" })
     public ResponseEntity<?> index(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -143,7 +143,7 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/authList/list")
+    @GetMapping("/cinema/insert")
     public ResponseEntity<?> authListList() throws Exception {
         try {
             // 데이터 요청
@@ -166,8 +166,10 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/cinema/insert")
-    public ResponseEntity<?> cinemaInsert(@RequestBody Cinema cinema) throws Exception {
+    @PostMapping(value = "/cinema/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> cinemaInsert(
+    @ModelAttribute Cinema cinema,
+    @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
         log.info("시네마 생성 요청");
         int result = cinemaService.insert(cinema);
 
@@ -276,18 +278,18 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/cinema/update")
-    public ResponseEntity<?> cinemaUpdate(@RequestBody Cinema cinema) throws Exception {
+    @PostMapping(value = "/cinema/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> cinemaUpdate(@ModelAttribute Cinema cinema) throws Exception {
         int result = cinemaService.update(cinema);
         // if(result>0){
         // return "redirect:/admin/cinema/select?id="+cinema.getId();
         // }
         // return "redirect:/admin/cinema/update?id="+cinema.getId()+"&error";
         if (result > 0) {
-            log.info("시네마 생성 성공!");
+            log.info("시네마 업뎃 성공!");
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
         } else {
-            log.info("시네마 생성 실패!");
+            log.info("시네마 업뎃 실패!");
             return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
         }
     }
@@ -329,8 +331,9 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/cinema/mainPlus")
-    public ResponseEntity<?> mainPlus(@RequestBody Cinema cinema) throws Exception {
+    @PostMapping(value = "/cinema/mainPlus", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> mainPlus(@ModelAttribute Cinema cinema,
+    @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
         // log.info(cinema.toString());
         int result = fileService.delete(cinema.getFileId());
 
@@ -400,21 +403,20 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
-    @GetMapping("/theater/insert")
-    public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
-            @RequestParam(name = "fileName", required = false) String fileName) throws Exception {
-        try {
-            Map<String, Object> response = new HashMap<String, Object>();
-            response.put("cinema", cinemaService.select(id));
-            response.put("UUID", UUID.randomUUID().toString());
-            response.put("fileName", fileName);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        // return "/admin/theater/insert";
-    }
+    // @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    // @GetMapping("/theater/insert")
+    // public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
+    //         @RequestParam(name = "fileName", required = false) String fileName) throws Exception {
+    //     try {
+    //         Map<String, Object> response = new HashMap<String, Object>();
+    //         response.put("cinema", cinemaService.select(id));
+    //         response.put("fileName", fileName);
+    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //     } catch (Exception e) {
+    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    //     // return "/admin/theater/insert";
+    // }
 
     FileText ft = new FileText();
 
@@ -431,6 +433,8 @@ public class AdminController {
     @PostMapping("/theater/insert")
     public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
             @RequestBody Theater theater) throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        theater.setId(uuid);
         theater.setMap(theater.getId());
         theater.setMapSize(theater.getX() * theater.getY());
 
@@ -1959,8 +1963,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/userManager/user/update")
-    public ResponseEntity<?> userUpdate(@RequestBody Users user) throws Exception {
+    @PostMapping(value = "/userManager/user/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> userUpdate(@ModelAttribute Users user) throws Exception {
 
         try {
             // 데이터 요청
@@ -2028,8 +2032,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/userManager/user/authPlus")
-    public ResponseEntity<?> userAuthPlus(@RequestBody UserAuth userAuth) throws Exception {
+    @PostMapping(value = "/userManager/user/authPlus", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> userAuthPlus(@ModelAttribute UserAuth userAuth) throws Exception {
 
         try {
             // 데이터 요청
@@ -2173,8 +2177,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/userManager/auth/insert")
-    public ResponseEntity<?> postMethodName(@RequestBody AuthList authList) throws Exception {
+    @PostMapping(value = "/userManager/auth/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> postMethodName(@ModelAttribute AuthList authList) throws Exception {
 
         log.info("authList : " + authList);
 

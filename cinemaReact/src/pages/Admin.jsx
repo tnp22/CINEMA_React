@@ -83,10 +83,10 @@ const admin = () => {
 
           <Route path="/reviewManager/reviewManagerList" element={<ReviewManagerList/>}></Route>
 
-          <Route path="/theater/list" element={<TheaterList/>}></Route>
-          <Route path="/theater/insert" element={<TheaterInsert/>}></Route>
-          <Route path="/theater/select" element={<TheaterSelect/>}></Route>
-          <Route path="/theater/update" element={<TheaterUpdate/>}></Route>
+          <Route path="/theater/list/:id" element={<TheaterList/>}></Route>
+          <Route path="/theater/insert/" element={<TheaterInsert/>}></Route>
+          <Route path="/theater/select/:id" element={<TheaterSelect/>}></Route>
+          <Route path="/theater/update/:id" element={<TheaterUpdate/>}></Route>
 
           <Route path="/theaterList/list" element={<TheaterListList/>}></Route>
           <Route path="/theaterList/insert" element={<TheaterListInsert/>}></Route>
@@ -98,7 +98,7 @@ const admin = () => {
 
           <Route path="/user/list" element={<UserList/>}></Route>
           <Route path="/user/select/:id" element={<UserSelect/>}></Route>
-          <Route path="/user/select/:id" element={<UserUpdate/>}></Route>
+          <Route path="/user/update/:id" element={<UserUpdate/>}></Route>
 
 
       </Routes>

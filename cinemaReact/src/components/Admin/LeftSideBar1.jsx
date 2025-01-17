@@ -33,7 +33,7 @@ const LeftSideBar1 = () => {
     <div style={{ marginTop: '100px', fontSize: '26px' }}>
       <ul>
         <li>
-          <Link className={location.pathname === "/admin" ? "aactivee" : ""}
+          <Link className={(location.pathname === "/admin" || location.pathname.startsWith("/admin/cinema")) ? "aactivee" : ""}
             to={`/admin`}>
             영화관
           </Link>
