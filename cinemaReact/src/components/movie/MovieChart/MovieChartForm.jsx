@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const MovieChartForm = ({ moviePageInfo, expectPageInfo, moviePage, expectPage }) => {
   const [currentTab, setCurrentTab] = useState('movie');
-
+  const isLogin = sessionStorage.getItem('isLogin')
   const handleTabClick = (tab) => {
     setCurrentTab(tab);
   };
@@ -31,9 +31,21 @@ const MovieChartForm = ({ moviePageInfo, expectPageInfo, moviePage, expectPage }
               <p className="card-text">
                 개봉일 {new Date(movie.releaseDate).toLocaleDateString('ko-KR')}
               </p>
-              <Link to={`/m/t?id=${movie.id}`} className="btn chart-btn-purple">
-                예매하기
-              </Link>
+              {isLogin ? (
+                  <Link
+                      to={`/Ticket/DateSelection?id=${movie.id}`}
+                      className="btn chart-btn-purple reserve-btn"
+                  >
+                      예매하기
+                  </Link>
+              ) : (
+                  <button
+                      className="btn chart-btn-purple reserve-btn"
+                      onClick={() => alert("로그인 후 이용해 주세요.")}
+                  >
+                      예매하기
+                  </button>
+              )}
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 @import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 /* 스크롤 박스 스타일 */
-.scroll {
+.ticket_scroll {
     width: 100%;
     height: 100%;
     overflow-y: scroll; /* 수직 스크롤 활성화 */
@@ -9,13 +9,13 @@
     padding-right: 15px;
   }
   /* 스크롤 커스터마이징 */
-  .scroll::-webkit-scrollbar {
+  .ticket_scroll::-webkit-scrollbar {
     width: 5px;
   }
-  .scroll::-webkit-scrollbar-track {
+  .ticket_scroll::-webkit-scrollbar-track {
     background: white;
   }
-  .scroll::-webkit-scrollbar-thumb {
+  .ticket_scroll::-webkit-scrollbar-thumb {
     background: #666;
   }
   .header {
@@ -57,10 +57,12 @@
   }
   .list_group{
     border-radius: 0;
+    padding: 0;
   }
   .list_group_item{
-      text-align: center;
+    text-align: center;
     border: none;
+    cursor: pointer;
   }
   .list_group_item:hover{
     background-color: #C3B2FD;

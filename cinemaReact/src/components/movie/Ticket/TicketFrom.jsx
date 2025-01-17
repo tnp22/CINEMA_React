@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styles from './TicketFrom.module.css';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 const TicketFrom = ({movie,ticketList1,movieTitle}) => {
   console.log(movie);
   // const title = movieTitle
@@ -270,13 +273,13 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
     if (!region) return;
 
     // 스크롤바에서 선택한 부분 active 클래스 추가해서 활성화
-    const activeItem = document.querySelector("#region-list .list-group-item.active");
+    const activeItem = document.querySelector(`#region-list .${styles.list_group_item}.${styles.active}`);
     if (activeItem) {
       // active 모두 지우기
-      activeItem.classList.remove("active");
+      activeItem.classList.remove(styles.active);
     }
     // 클릭된 항목에 'active' 클래스 추가
-    e.target.classList.add("active");
+    e.target.classList.add(styles.active);
 
     
     // 하단의 정보창 비우기
@@ -308,13 +311,13 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
     if (!theater) return;
     
     // 스크롤바에서 선택한 부분 active 클래스 추가해서 활성화
-    const activeItem = document.querySelector("#theater-list .list-group-item.active");
+    const activeItem = document.querySelector(`#theater-list .${styles.list_group_item}.${styles.active}`);
     if (activeItem) {
       // active 모두 지우기
-      activeItem.classList.remove("active");
+      activeItem.classList.remove(styles.active);
     }
     // 클릭된 항목에 'active' 클래스 추가
-    e.target.classList.add("active");
+    e.target.classList.add(styles.active);
     
     // 하단의 정보창 비우기
     dateInfo.textContent="";
@@ -354,13 +357,13 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
   };
 
   const handleDateClick = (cinema,date, timeInfo, dateInfo) => {
-    const activeItem = document.querySelector("#date-list .list-group-item.active");
+    const activeItem = document.querySelector(`#date-list .${styles.list_group_item}.${styles.active}`);
       if (activeItem) {
-        activeItem.classList.remove("active");
+        activeItem.classList.remove(styles.active);
       }
       const clickedItem = document.querySelector(`[data-date="${date}"][cinema="${cinema}"]`);
       if (clickedItem) {
-        clickedItem.classList.add("active");
+        clickedItem.classList.add(styles.active);
       }
 
       // 시간 정보 초기화 및 업데이트
@@ -387,7 +390,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
             const timeBox = document.createElement("div");
             timeBox.className = "d-flex align-items-center me-3 mb-3 "+ styles.time_box;
             timeBox.innerHTML = `
-              <button class="${seats !== 0 ? "btn-time" : "btn-mazin"}" seat="${seats}" data-MovieId="${movieId}" data-theater="${theater}" ${seats === 0 ? "disabled" : ""}>
+              <button class="${seats !== 0 ? styles.btn_time : "btn-mazin"}" seat="${seats}" data-MovieId="${movieId}" data-theater="${theater}" ${seats === 0 ? "disabled" : ""}>
                 ${time}
               </button>
               <p class="m-0">${seats === 0 ? "매진" : `${seats}석`}</p>
@@ -407,7 +410,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
   const timeContainerClick = (e, timeInfo) =>{
     
     console.log(e.target.getAttribute("data-movieId"));
-    if (e.target && e.target.classList.contains("btn-time")) {
+    if (e.target && e.target.classList.contains(styles.btn_time)) {
       const button = e.target;
       const time = button.textContent;
       const theater = button.getAttribute("data-theater"); // 상영관 정보 가져오기
@@ -423,13 +426,13 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
 
       // **활성화된 항목 관리**: 기존 활성화된 항목 제거
       // 모든 .btn-time 버튼들을 선택
-      const timeButtons = document.querySelectorAll('.btn-time');
+      const timeButtons = document.querySelectorAll(`.btn_time .${styles.active}`);
       // 각 버튼에 대해 배경색을 하얀색으로 설정
       timeButtons.forEach(button => {
-        button.classList.remove("active");
+        button.classList.remove(styles.active);
       });
       // 클릭된 항목에 'active' 클래스 추가
-      e.target.classList.add("active");
+      e.target.classList.add(styles.active);
       
       // 좌석선택 버튼 클릭 이벤트 초기화 및 재등록
       const ticketSeatButton = document.getElementById("ticketSeat");
@@ -559,7 +562,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
               <div className={styles.header}><h5>지역</h5></div>
               {/* 지역 스크롤 바 */}
               <div className={styles.content+" p-0"}>
-                <div className={styles.scroll+" h-100 w-100 mt-3 mb-3"}>
+                <div className={styles.ticket_scroll+" h-100 w-100 mt-3 mb-3"}>
                   <ul className={styles.list_group} id='region-list'>
                     {/* 비동기 생성 */}
                   </ul>
@@ -571,7 +574,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
               <div className={styles.header}><h5>극장</h5></div>
               {/* 극장 스크롤바 */}
               <div className={styles.content}>
-                <div className={styles.scroll+" mt-3 mb-3"}>
+                <div className={styles.ticket_scroll+" mt-3 mb-3"}>
                   <ul className={styles.list_group} id="theater-list">
                     {/* 비동기 생성 */}
                   </ul>
@@ -583,7 +586,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
                 <div className={styles.header}><h5>날짜</h5></div>
                 {/* 날짜 스크롤바 */}
                 <div className={styles.content}>
-                  <div className={styles.scroll+" mt-3 mb-3"}>
+                  <div className={styles.ticket_scroll+" mt-3 mb-3"}>
                     <ul className={styles.list_group} id="date-list">
                       {/* 비동기 생성 */}
                     </ul>
@@ -595,7 +598,7 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
                 <div className={styles.header}><h5>시간</h5></div>
                 {/* 시간 스크롤바 */}
                 <div className={styles.content}>
-                  <div id="time-container" className={styles.scroll+" mt-3 mb-3"}>
+                  <div id="time-container" className={styles.ticket_scroll+" mt-3 mb-3"}>
                     {/* 비동기 생성 */}
                   </div>
                 </div>
@@ -628,17 +631,17 @@ const TicketFrom = ({movie,ticketList1,movieTitle}) => {
             <div className="d-flex mb-2 align-items-center align-content-center">
               <p className="p-0 m-0">어른</p>
               <span className={styles.span1} id="adult" person="1">1</span>
-              <button className={"btn btn-secondary "+styles.btnUp} onClick={aup}><i className="fa-solid fa-arrow-up"></i></button>
-              <button className={"btn btn-secondary "+styles.btnDown} onClick={adown}><i className="fa-solid fa-arrow-down"></i></button>
+              <button className={"btn btn-secondary "+styles.btnUp} onClick={aup}><FontAwesomeIcon icon={faArrowUp}/></button>
+              <button className={"btn btn-secondary "+styles.btnDown} onClick={adown}><FontAwesomeIcon icon={faArrowDown}/></button>
             </div>
             <div className="d-flex align-items-center align-content-center">
               <p className="p-0 m-0">학생</p>
               <span className={styles.span1} id="student" person="0">0</span>
-              <button className={"btn btn-secondary "+styles.btnUp} onClick={sup}><i className="fa-solid fa-arrow-up"></i></button>
-              <button className={"btn btn-secondary "+styles.btnDown} onClick={sdown}><i className="fa-solid fa-arrow-down"></i></button>
+              <button className={"btn btn-secondary "+styles.btnUp} onClick={sup}><FontAwesomeIcon icon={faArrowUp}/></button>
+              <button className={"btn btn-secondary "+styles.btnDown} onClick={sdown}><FontAwesomeIcon icon={faArrowDown}/></button>
             </div>
           </div>
-            <button className={"btn "+styles.reserve_btn} id="ticketSeat"><i className="fa-solid fa-angle-right fa-3x"></i><p>좌석선택</p></button>
+            <button className={"btn "+styles.reserve_btn} id="ticketSeat"><FontAwesomeIcon icon={faAngleRight} size="3x" /><p>좌석선택</p></button>
           </div>
         </div>
       </div>

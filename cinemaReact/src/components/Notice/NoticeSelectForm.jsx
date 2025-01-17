@@ -30,7 +30,7 @@ const NoticeSelectForm = ({notice, before, after}) => {
           {notice.content}
         </p>
         <div className="mb-4 d-flex justify-content-end">
-            <Link to={`/notice/list`} className="btn list-btn">목록</Link>
+            <Link to={`/notice/list`} className="btn select-list-btn">목록</Link>
         </div>
       </div>
       <div className="container" style={{ marginBottom: '80px' }}>
