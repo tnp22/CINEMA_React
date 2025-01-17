@@ -261,10 +261,15 @@ const AddMapFrom = () => {
   const addButton = async () => {
 
     
-    // let name = document.getElementById('name').value;
+    let name = document.getElementById('name').value;
     // let cinemaId = document.getElementById('cinemaId')
-    let cinemaId = 'cfbec3ad-3730-4ae1-96aa-54863c44bf1b'
-    // console.log(name);
+
+    // 주소창에서 갖고오기
+    const searchParams = new URLSearchParams(location.search);
+    const cinemaId = searchParams.get("cinemaId");
+
+    console.log("이름",name);
+    console.log("시네마ID",cinemaId);
 
     var x = document.getElementsByName('width_length')[0]?.value || null;
     var y = document.getElementsByName('height_length')[0]?.value || null;
@@ -299,8 +304,7 @@ const AddMapFrom = () => {
       'x' : x,
       'y' : y,
       'mapData' : YMap,
-      'id' : '1234',
-      'name' : 'name',
+      'name' : name,
       'cinemaId' : cinemaId
     }
     const headers = {
@@ -356,6 +360,14 @@ const AddMapFrom = () => {
         <br/>
         <div>
             {/* CSRF TOKEN 부분 및 상영관 이름 작성 theater/insert/ 상영관생성 아래 from 태그 */}
+            <table style={{ width: "100%" }}>
+              <tr>
+                  <th style={{ padding: "12px 0", width: "20%", textAlign: "center" }}>이름</th>
+                  <td>
+                      <li><input style={{ width: "90%" }} type="text" name="name" id="name" required/></li>
+                  </td>
+              </tr>
+          </table>
         </div>
         <div className={styles.createContainer}>
           <h4>좌석 배치</h4>

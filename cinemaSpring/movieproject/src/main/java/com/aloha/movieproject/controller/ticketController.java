@@ -185,16 +185,21 @@ public class ticketController {
                 }
             }
             // log.info("좌석 : " + seat);
-            response.put("movie", movie_);
+            // response.put("movie", movie_); // 필요한가?
+            response.put("movieId", movie_.getFiles().getId());
+            response.put("movieTitle", movie_.getTitle());
             response.put("uuuuid", uuuuid);
-            response.put("authUser", authUser);
-            response.put("movieName", num.getMovie().getTitle());
-            response.put("theaterId", id);
-            response.put("person", Integer.parseInt(person));
-            response.put("money", money);
             response.put("mapData", mapData);
-            log.info("맵데이터" + mapData);
             response.put("reservationSeat", seat);
+
+            response.put("authUserName", authUser.getName());
+            response.put("authUserEmail", authUser.getEmail());
+            response.put("theaterId", id);
+            response.put("money", money);
+            response.put("person", Integer.parseInt(person));
+
+
+            // log.info("맵데이터" + mapData);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
