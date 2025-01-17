@@ -3,9 +3,13 @@ package com.aloha.movieproject.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,9 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -306,64 +313,56 @@ public class UserController {
     }
 
     @GetMapping("/myInquiry/inquiries")
-    public String list(Model model    
-    ,@AuthenticationPrincipal UserDetails userDetails
+    public ResponseEntity<?> list(   
+    @AuthenticationPrincipal UserDetails userDetails
     ,@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
     ,@RequestParam(name = "size", required = false, defaultValue = "10") Integer size
     ,@RequestParam(name = "option", defaultValue = "0") int option
-    ,@RequestParam(name = "keyword", defaultValue = "") String keyword) {
-        String username = userDetails.getUsername();
+    ,@RequestParam(name = "keyword", defaultValue = "") String keyword
+    ,@RequestParam(name = "username", defaultValue = "") String username) {
         PageInfo<Inquiry> inquiryList = inquiryService.inquiries(page, size, option, keyword,username);
-        model.addAttribute("inquiryList", inquiryList);
-        model.addAttribute("option", option);
-        
-        return "/user/myInquiry/inquiries";
+        Map<String, Object> response = new HashMap<>();
+        response.put("inquiryList", inquiryList);
+        response.put("option", option);
+        response.put("keyword", keyword);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/myInquiry/select/{id}")
-    public String select(Model model, @PathVariable("id") String id) {
+    public ResponseEntity<?> select(@PathVariable("id") String id) {
         Inquiry inquiry = inquiryService.select(id);
-        model.addAttribute("inquiry", inquiry);
-        return "/user/myInquiry/select";
+        Map<String, Object> response = new HashMap<>();
+        response.put("inquiry", inquiry);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
-    @GetMapping("/myInquiry/insert")
-    public String insert() {
-        return "/user/myInquiry/insert";
-    }
-    
     @PostMapping("/myInquiry/insert")
-    public String insert(Inquiry inquiry) {
+    public ResponseEntity<?> insert(@RequestBody Inquiry inquiry) {
         int result = inquiryService.insert(inquiry);
-        if(result > 0)
-            return "redirect:/user/myInquiry/inquiries";
-        else
-            return "redirect:/user/myInquiry/insert?error";
+        if(result>0){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping("/myInquiry/update")
-    public String update(Model model, @RequestParam("id") String id) {
-        Inquiry inquiry = inquiryService.select(id);
-        model.addAttribute("inquiry", inquiry);
-        return "/user/myInquiry/update";
-    }
-
-    @PostMapping("/myInquiry/update")
-    public String update(Inquiry inquiry) {
+    @PutMapping("/myInquiry/update")
+    public ResponseEntity<?> update(@RequestBody Inquiry inquiry) {
         int result = inquiryService.update(inquiry);
-        if(result > 0)
-            return "redirect:/user/myInquiry/select/"+inquiry.getId();
-        else
-            return "redirect:/user/myInquiry/update?error";
+        if(result>0){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping("/myInquiry/delete")
-    public String delete(@RequestParam("id") String id) {
+    @DeleteMapping("/myInquiry/delete")
+    public ResponseEntity<?> delete(@RequestParam("id") String id) {
         int result = inquiryService.delete(id);
-        if(result > 0)
-            return "redirect:/user/myInquiry/inquiries";
-        else
-            return "redirect:/user/myInquiry/update?id="+id;
+        if(result>0){
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
     }
 }

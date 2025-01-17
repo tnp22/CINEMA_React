@@ -66,7 +66,7 @@ const Header = () => {
                     <Link to="/mypage" className={styles.navLink}>마이페이지</Link>
                 </li>
                 <li className="nav-item mx-2">
-                    <Link to="/inquiry" className={styles.navLink}>고객센터</Link>
+                    <Link to="/inquiry/list" className={styles.navLink}>고객센터</Link>
                 </li>
               </>
             :
@@ -78,7 +78,7 @@ const Header = () => {
                   <Link to="/join" className={styles.navLink}>회원가입</Link>
                 </li>
                 <li className="nav-item mx-2">
-                    <Link to="/inquiry" className={styles.navLink}>고객센터</Link>
+                    <Link to="/inquiry/list" className={styles.navLink}>고객센터</Link>
                 </li>
               </>
             }  

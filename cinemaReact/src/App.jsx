@@ -18,6 +18,14 @@ import Ticket from './pages/Ticket'
 import ReviewList from './components/movie/MovieInfo/ReviewList'
 import NoticeList from './pages/notice/NoticeList'
 import NoticeSelect from './pages/notice/NoticeSelect'
+import InquiryList from './pages/inquiry/InquiryList'
+import InquirySelect from './pages/inquiry/InquirySelect'
+import InquiryInsert from './pages/inquiry/InquiryInsert'
+import InquiryUpdate from './pages/inquiry/InquiryUpdate'
+import MyInquiryList from './pages/inquiry/MyInquiry/MyInquiryList'
+import MyInquirySelect from './pages/inquiry/MyInquiry/MyInquirySelect'
+import MyInquiryInsert from './pages/inquiry/MyInquiry/MyInquiryInsert'
+import MyInquiryUpdate from './pages/inquiry/MyInquiry/MyInquiryUpdate'
 
 
 function App() {
@@ -41,6 +49,14 @@ function App() {
             <Route path="/notice/list" element={<NoticeList/>}></Route>
             <Route path="/notice/select" element={<NoticeSelect/>}></Route>
             <Route path="/Ticket/*" element={<Ticket />}></Route>
+            <Route path="/inquiry/list" element={<InquiryList/>}></Route>
+            <Route path="/inquiry/select/:id/:password?" element={<InquirySelect/>}></Route>
+            <Route path="/inquiry/insert" element={<InquiryInsert/>}></Route>
+            <Route path="/inquiry/update/:id" element={<InquiryUpdate/>}></Route>
+            <Route path="/user/myInquiry/inquiries" element={<MyInquiryList/>}></Route>
+            <Route path="/user/myInquiry/select/:id/" element={<MyInquirySelect/>}></Route>
+            <Route path="/user/myInquiry/insert" element={<MyInquiryInsert/>}></Route>
+            <Route path="/user/myInquiry/update/:id" element={<MyInquiryUpdate/>}></Route>
           </Route>
             <Route path="/admin/*" element={<Admin />} />
         </Routes>
