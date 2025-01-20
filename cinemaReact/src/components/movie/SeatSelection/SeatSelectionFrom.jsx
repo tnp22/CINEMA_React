@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import * as ticket from '../../../apis/ticket';
 import styles from './SeatSelectionFrom.module.css';
-import { useLocation } from 'react-router-dom';
-import * as ticket from '../../../apis/ticket'
 
 
 const SeatSelectionFrom = () => {
-
 
     const [mapData,setMapData] = useState([]);
     const [reservationSeat,setReservationSeat] = useState([]);
@@ -60,17 +58,7 @@ const SeatSelectionFrom = () => {
     
     const [x,setX] = useState(); 
     const [y,setY] = useState();
-    
-    // const location = useLocation();
-    // const searchParams = new URLSearchParams(location.search);
 
-    // const theaterListId = searchParams.get("theaterListId");
-    // const data = searchParams.get("person").split("_");
-    // const person = data[0];
-    // const money = data[1];
-    // console.log(theaterListId)
-    // console.log(person)
-    // console.log(money)
 
 
     // 2️⃣  객체 초기화 하기
@@ -79,15 +67,6 @@ const SeatSelectionFrom = () => {
     let uuida = uuuuid;
   
     var orderId = "IMP"+uuida
-
-    // let potName = "[[${authUser.name}]]"
-    // let potEmail = "[[${authUser.email}]]"
-    // const mapData = [
-    //     ["A1_통로", "A2_통로", "A3", "A4", "A5", "A6", "A7", "A8"],
-    //     ["B1_통로", "B2_통로", "B3", "B4", "B5", "B6", "B7", "B8"],
-    //     ["C1_통로", "C2_통로", "C3", "C4", "C5", "C6", "C7", "C8"],
-    //     ["D1_통로", "D2_통로", "D3", "D4", "D5", "D6", "D7", "D8"]
-    // ]
 
     // console.log(reservationSeat);
     const endExport = (mapData) => { 
@@ -105,6 +84,7 @@ const SeatSelectionFrom = () => {
         
         
     const [ascii,setAscii] = useState(65);
+    const [seatNum, setSeatNum] = useState(0);
     /** 맵 생성 */
     const addMap = () => {
         console.log("addMap 생성 시작");
@@ -116,31 +96,24 @@ const SeatSelectionFrom = () => {
     }
     for(var n = 0; n < y; n++){
         let boidcountCheck=0
-        // console.log(mapData[n])
-        // console.log(mapData[n][0]);
         var map = document.createElement("div")
         let ascii2 = String.fromCharCode(ascii + n); // 아스키코드 문자변환
-        // console.log("아스키 : ",ascii2);
         
         map.id = ascii2;
         map.className=styles.mapBACHI;
         
         
-        // map.textContent = mapData[n][0];
         mapdiv.appendChild(map);
         
         // 좌석 생성
         var count = 1;
         for(var mapdate of mapData[n]){
-            // console.log(map)
             var seat = document.createElement("div");
             seat.className = `${styles.seat} ${styles.available}`;
             var seatId = ascii2+count;count++;
-            // console.log("시트넘버 : ",seatId);
             
             seat.setAttribute("seat", mapdate);
             seat.setAttribute("seatNumber", seatId);
-            // console.log("시트 ID  : ",seatId);
             seat.id = seatId;
             seat.textContent = seatId;
             map.appendChild(seat);
@@ -149,7 +122,6 @@ const SeatSelectionFrom = () => {
                 var seat1 = document.createElement("div")
                 seat1.className = styles.seat;
                 map.appendChild(seat1)
-                // seat.style.marginRight = "50px"
                 // console.log(mapdate)
             }
         }
@@ -225,8 +197,7 @@ const SeatSelectionFrom = () => {
     }
     
     let selectedSeats = []; // 선택된 요소를 저장할 배열
-    // let seats = document.querySelectorAll(".select");
-    // console.dir(seats);
+
     
     const seatsClick =(seats) => {
         
@@ -253,6 +224,7 @@ const SeatSelectionFrom = () => {
                     // 선택한 요소 배경색 변경
                     seat.style.backgroundColor = "#b0b0b0";
                     selectedSeats.push(seat); // 선택 요소 배열에 추가
+                    setSeatNum(selectedSeats.length);
                 }
                 
                 // 상태를 화면에 표시
@@ -262,13 +234,14 @@ const SeatSelectionFrom = () => {
         });
     }
     // 예매하기 버튼
-    const reservation = () =>{
+    const reservation = async () =>{
         //   var person = "[[${person}]]";
+        var person = document.getElementById("person").getAttribute("person"); // 예약 인원
         console.log('selectedSeats');
         console.log(selectedSeats)
-        var setnum = selectedSeats.length;
-        console.log("setNum : ",setnum);
-        if(person != setnum){
+        console.log("예매수",person,"현제 예매수",seatNum);
+        if(person != seatNum){
+            
             alert("예약인원수만큼 좌석을 선택하시오")
             return;
         }
@@ -277,7 +250,10 @@ const SeatSelectionFrom = () => {
         let productName = document.getElementById('theater-info').textContent
         console.log('상품이름은 ' + productName);
         console.log('상품아이디는 ' + orderId);
-        
+
+        var IMP = window.IMP;
+
+        console.log("요까진 옴?");
           IMP.request_pay({
                   pg : 'kcp',                                 // PG사
                   pay_method : 'card', 
@@ -289,48 +265,54 @@ const SeatSelectionFrom = () => {
                   buyer_tel : '010-1234-1234',                            // 결제자 전화번호
                     buyer_addr : '테스트 테스트대로',                       // 결제자 주소
                     buyer_postcode : '1234-1234'                   // 결제자 우편번호
-      }, function (rsp) { // callback
+                }, async function (rsp) { // callback
           if (rsp.success) {
-                  // 결제 성공
-                  console.log("rsp",rsp);
-                  // 결제 완료 페이지로 이동
-                  var person = document.getElementById("person").getAttribute("person"); // 예약 인원
-                  var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
-                //   var id = "[[${theaterId}]]";
-                    var id =  theaterId;
-                //   var name = "[[${#authentication.name}]]";
+                // 결제 성공
+                console.log("rsp",rsp);
+                // 결제 완료 페이지로 이동
+                  
+                var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
+                var id =  theaterId;
                 var name = authUserName;
-                //   var money = "[[${money}]]"
-                var money = money        
-                  // console.log(seat)
-                  // console.log(person);
-                  console.log(id);
-                  let data = {
-                          'id' : id,
-                          'seat': seat,
-                          'person': person,
-                          'userName' : name,
-                          'money' : money
-                      };
-            
-                      let request = new XMLHttpRequest();
-                      let url = '/m/p';
-                      request.open('POST', url, true);
-                      request.setRequestHeader('Content-Type', 'application/json');
-            
-                      request.onreadystatechange = function () {
-                              if (request.readyState === 4 && request.status === 200) {
-                                      window.location.href = '/m/payment';
-                                  }
-                              };
+
+                console.log(id);
+                let data = {
+                    'id' : id,
+                    'seat': seat,
+                    'person': person,
+                    'userName' : name,
+                    'money' : money
+                };
+                const headers = {
+                    'Content-Type' : 'multupart/form-data'
+                }
+                
+                const response = await ticket.moviePayment(data,headers);
+                
+                
+                console.log(response.status);
+                const status = response.status
+                const data2 = response.data
+                if(status == 200){
+                    console.log("결제 성공");
+                    console.log("예매 ID",data2.reserveId);
+                    location.href = '/Ticket/Payment?id='+data2.reserveId
+                    // 이동경로 설정해줘야함
+                } else {
+                    console.log("결제 실패");
+                    alert('결제 실패')
+                }
                     
-                              request.send(JSON.stringify(data));
-                          } else {
-                                  // 결제 실패
-                                  console.log(rsp);
-                                  return;
-                              }
-                          });
+                
+            
+                } else {
+                    // 결제 실패
+                    console.log("결제 실패");
+                    console.log(rsp);
+                    
+                    return;
+                }
+            });
                         
     }
 
@@ -373,10 +355,6 @@ const SeatSelectionFrom = () => {
                 // 아임포트 초기화
                 if (window.IMP) {
                     const IMP = window.IMP;
-                    IMP.init("imp67011510"); // 첫 번째 상점 아이디로 초기화
-                    console.log("IMP initialized with imp67011510");
-                    
-                    // 필요한 경우 다른 상점 아이디로 다시 초기화 가능
                     IMP.init("imp00366386");
                     console.log("IMP re-initialized with imp00366386");
                 } else {
@@ -397,7 +375,6 @@ const SeatSelectionFrom = () => {
     return (
     <>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"></link>
-    
     <style>
         {`.select {cursor: pointer;}`}
     </style>
