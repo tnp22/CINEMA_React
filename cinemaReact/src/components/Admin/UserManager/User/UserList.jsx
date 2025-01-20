@@ -6,17 +6,11 @@ import { Link, useLocation } from 'react-router-dom';
 import LeftSideBar1 from '../../LeftSideBar1'
 import AdminHeader from '../../AdminHeader';
 import * as admins from '../../../../apis/admins'
+import formatDate from '../../../Admin/formatDate'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale'; // 한국어 요일 지원
-
-const formatDate = (dateString) => {
-  return format(new Date(dateString), 'yyyy-MM-dd (E) HH:mm', { locale: ko });
-};
 
 
 const UserList = () => {

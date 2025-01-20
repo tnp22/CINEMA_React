@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -43,6 +44,7 @@ public class InquiryController {
         Map<String, Object> response = new HashMap<>();
         response.put("inquiryList", inquiryList);
         response.put("option", option);
+        response.put("keyword", keyword);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -67,7 +69,7 @@ public class InquiryController {
     }
     
     @PostMapping("/insert")
-    public ResponseEntity<?> insert(Inquiry inquiry) {
+    public ResponseEntity<?> insert(@RequestBody Inquiry inquiry) {
         int result = inquiryService.insert(inquiry);
         if(result>0){
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
@@ -76,16 +78,8 @@ public class InquiryController {
         }
     }
 
-    @GetMapping("/update")
-    public ResponseEntity<?> update( @RequestParam("id") String id) {
-        Inquiry inquiry = inquiryService.select(id);
-        Map<String, Object> response = new HashMap<>();
-        response.put("inquiry", inquiry);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @PutMapping("/update")
-    public ResponseEntity<?> update(Inquiry inquiry) {
+    public ResponseEntity<?> update(@RequestBody Inquiry inquiry) {
         int result = inquiryService.update(inquiry);
         if(result>0){
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
@@ -95,7 +89,7 @@ public class InquiryController {
     }
 
     @PutMapping("/replyUpdate")
-    public ResponseEntity<?> replyUpdate(Inquiry inquiry) {
+    public ResponseEntity<?> replyUpdate(@RequestBody Inquiry inquiry) {
         int result = inquiryService.replyUpdate(inquiry);
         if(result>0){
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);

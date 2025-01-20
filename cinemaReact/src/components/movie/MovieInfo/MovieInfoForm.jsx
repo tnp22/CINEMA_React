@@ -19,6 +19,7 @@ const MovieInfoForm = ({ movie, castList, stilList, history, tab, page, average}
     const [myReview, setMyReview] = useState();
     const [movieId, setMovieId] = useState()
     const [count, setCount] = useState();
+    const isLogin = sessionStorage.getItem('isLogin')
 
     // 스틸컷 클릭 시 모달 열기
     const handleImageClick = (index) => {
@@ -208,12 +209,21 @@ const MovieInfoForm = ({ movie, castList, stilList, history, tab, page, average}
                 </div>
                 <p>({average.toFixed(1)})</p>
                 </div>
-                <button 
-                    className="btn chart-btn-purple reserve-btn" 
-                    onClick={() => window.location.href = `/m/t?id=${movie.id}`}
-                >
-                    예매하기
-                </button>
+                {isLogin ? (
+                    <Link
+                        to={`/Ticket/DateSelection?id=${movie.id}`}
+                        className="btn chart-btn-purple reserve-btn"
+                    >
+                        예매하기
+                    </Link>
+                ) : (
+                    <button
+                        className="reserve-btn"
+                        onClick={() => alert("로그인 후 이용해 주세요.")}
+                    >
+                        예매하기
+                    </button>
+                )}
             </div>
             </div>
         )}
