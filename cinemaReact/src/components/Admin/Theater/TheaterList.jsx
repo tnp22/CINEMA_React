@@ -122,7 +122,7 @@ const TheaterList = () => {
                               <td>{`${cinema.area} ${cinema.areaSub}점`}</td>
                               <td>{theater.name}</td>
                               <td>
-                                <Link to={`/admin/theater/select/${theater.id}?cinemaId=${cinema.id}`} className={`btn ${ResetCs.butten}`}>
+                                <Link to={`/admin/theater/select?id=${theater.id}&cinemaId=${cinema.id}`} className={`btn ${ResetCs.butten}`}>
                                   조회
                                 </Link>
                               </td>
