@@ -6,6 +6,7 @@ import Join from './pages/Join'
 import User from './pages/User'
 import MyPage from './pages/MyPage'
 import MyPageEdit from './pages/MyPageEdit'
+import MyPageEdit3 from './pages/MyPageEdit3'
 import MyPageReservationList from './pages/MyPageReservationList'
 import About from './pages/About'
 import Admin from './pages/Admin'
@@ -32,6 +33,7 @@ function App() {
             <Route path="/user" element={<User/>}></Route>
             <Route path="/mypage" element={<MyPage/>}></Route>
             <Route path="/mypageedit" element={<MyPageEdit/>}></Route>
+            <Route path="/mypageedit3" element={<MyPageEdit3/>}></Route>
             <Route path="/mypagereservationlist" element={<MyPageReservationList/>}></Route>
             <Route path="/about" element={<About/>}></Route>
             <Route path="/movie/movieChart" element={<MovieChart/>}></Route>

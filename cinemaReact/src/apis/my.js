@@ -1,15 +1,5 @@
 import api from './api';
 
-// 사용자 정보 조회
-export const getUserInfo = () => api.get('/usersss/info');
-
-// 회원가입
-export const join = (data) => api.post('/usersss', data, {
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
 // 마이페이지 조회
 export const getMyPage = () => api.get('/usersss/mypage');
 

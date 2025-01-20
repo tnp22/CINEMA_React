@@ -1,40 +1,70 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { LoginContext } from '../../contexts/LoginContextProvider';
-import { useNavigate } from 'react-router-dom'; // React Router 사용
+import { useNavigate, Link } from 'react-router-dom'; // React Router 사용
 import './MyPageForm.css';
-import * as auth from "../../apis/auth";
 import * as Swal from "../../apis/alert";
+import { getMyPage, checkPassword } from "../../apis/my"; // API 호출 함수 임포트
 
 const MyPageForm = () => {
+  const { userInfo, login } = useContext(LoginContext);
   const [password, setPassword] = useState(""); // 비밀번호 상태
-  const navigate = useNavigate(); // 라우팅
-  const { userInfo } = useContext(LoginContext); // 사용자 정보
-  
-  const handlePasswordChange = (e) => setPassword(e.target.value);
+  const [error, setError] = useState(false); // 에러 상태
+  const [userData, setUserData] = useState(null); // 사용자 데이터 상태
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
+  useEffect(() => {
+    // 컴포넌트 마운트 시 사용자 정보 가져오기
+    const fetchUserData = async () => {
+      try {
+        const response = await getMyPage();
+        setUserData(response.data);
+      } catch (error) {
+        console.error("사용자 정보 가져오기 중 오류 발생:", error);
+        Swal.alert("오류", "사용자 정보를 가져오는 데 실패했습니다.", "error");
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // 비밀번호 입력 값 처리
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  // 비밀번호 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!password) {
       Swal.alert("비밀번호 입력", "비밀번호를 입력해주세요.", "warning");
       return;
     }
 
     try {
-      const response = await auth.verifyPassword(password); // 비밀번호 검증
+      // 비밀번호 검증 후 페이지 이동
+      const response = await checkPassword(password);
       if (response.status === 200) {
-        Swal.alert("인증 성공", "회원 정보를 수정할 수 있습니다.", "success");
-        navigate("/mypageedit"); // 인증 성공 시 이동
+        navigate("/mypageedit");
       } else {
-        Swal.alert("인증 실패", "비밀번호가 올바르지 않습니다.", "error");
+        Swal.alert(response.data.message, "error");
+        setError(true); // 서버 오류 시 오류 상태 true
       }
     } catch (error) {
       console.error("비밀번호 확인 중 오류 발생:", error);
       Swal.alert("오류", "비밀번호 확인에 실패했습니다.", "error");
+      setError(true); // 서버 오류 시 오류 상태 true
     }
   };
 
-  const handleCancel = () => setPassword(""); // 입력 초기화
+  // 취소 버튼 처리
+  const handleCancel = () => {
+    setPassword(""); // 비밀번호 초기화
+    setError(false); // 에러 상태 초기화
+  };
+
+  if (!userData) {
+    return <p>로딩 중...</p>;
+  }
 
   return (
     <div className="mypage-page-wrapper">
@@ -44,12 +74,7 @@ const MyPageForm = () => {
           <div className="mypage-profile-image-container">
             <img
               id="mypage-profileImage"
-              src={
-                userInfo.orifile
-                  ? `/api/files/img?id=${userInfo.orifile.id}`
-                  : "/api/files/image?id=C:/upload/normal.png"
-
-              }
+              src={userData.orifile ? `/api/files/img?id=${userData.orifile.id}` : "/api/files/image?id=C:/upload/normal.png"}
               style={{
                 width: "124px",
                 height: "124px",
@@ -61,52 +86,36 @@ const MyPageForm = () => {
             />
           </div>
           <div className="mypage-text-section">
-            <h2>{`${userInfo.username}님, 반갑습니다.`}</h2>
+            <h2>{`${userData.username}님, 반갑습니다.`}</h2>
           </div>
           <div className="mypage-user-stats">
             <span>
-              시청한 영화: <strong>{userInfo.movieCount || 0}</strong>
+              시청한 영화: <strong>{userData.movieCount || 0}</strong>
             </span>
             <span>
-              리뷰: <strong>{userInfo.reviewCount || 0}</strong>
+              리뷰: <strong>{userData.reviewCount || 0}</strong>
             </span>
           </div>
         </div>
 
         {/* Main Section */}
         <div className="mypage-main">
-          {/* Sidebar */}
           <div className="mypage-sidebar">
             <ul>
-              <li>
-                <a href="/mypageedit">나의 정보</a>
-              </li>
-              <li>
-                <a href="/mypagereservationlist">예매 내역</a>
-              </li>
-              <li>
-                <a href="/user/myInquiry/inquiries">문의 내역</a>
-              </li>
+              <li><Link to="/mypageedit">나의 정보</Link></li>
+              <li><Link to="/mypagereservationlist">예매 내역</Link></li>
+              <li><Link to="/user/myInquiry/inquiries">문의 내역</Link></li>
             </ul>
           </div>
-
 
           {/* Content */}
           <div className="mypage-content">
             <div className="mypage-profile-section">
-              {/* 프로필 이미지 */}
               <div className="mypage-logo-and-upload">
-                <div
-                  className="mypage-logo-container"
-                  style={{ marginRight: "auto", display: "flex", justifyContent: "center" }}
-                >
+                <div className="mypage-logo-container" style={{ marginRight: "auto", display: "flex", justifyContent: "center" }}>
                   <img
                     id="mypage-profileImage"
-                    src={
-                      userInfo.orifile
-                        ? `/api/files/img?id=${userInfo.orifile.id}`
-                        : "/api/files/image?id=C:/upload/normal.png"
-                    }
+                    src={userData.orifile ? `/api/files/img?id=${userData.orifile.id}` : "/api/files/image?id=C:/upload/normal.png"}
                     alt="프로필 이미지"
                     style={{
                       width: "124px",
@@ -118,7 +127,7 @@ const MyPageForm = () => {
                   />
                 </div>
               </div>
-              {/* 텍스트와 입력 필드 */}
+
               <p>회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.</p>
               <form id="mypage-passwordForm" onSubmit={handleSubmit}>
                 <div className="mypage-form-group">
@@ -133,11 +142,7 @@ const MyPageForm = () => {
                   />
                 </div>
                 <div className="mypage-form-buttons">
-                  <button
-                    type="button"
-                    className="mypage-btn-cancel"
-                    onClick={handleCancel}
-                  >
+                  <button type="button" className="mypage-btn-cancel" onClick={handleCancel}>
                     취소
                   </button>
                   <button type="submit" className="mypage-btn-confirm">
@@ -145,6 +150,13 @@ const MyPageForm = () => {
                   </button>
                 </div>
               </form>
+
+              {/* 오류 메시지 표시 */}
+              <div className="mypage-error-message-container">
+                <p className={`mypage-error-message ${error ? "active" : ""}`}>
+                  비밀번호가 올바르지 않습니다. 다시 시도해주세요.
+                </p>
+              </div>
             </div>
           </div>
         </div>
