@@ -370,7 +370,7 @@ public class AdminController {
      * @return
      */
     // 해당 아이디 권한 추가 요망
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/cinema/enter")
     public ResponseEntity<?> cinemaEnter(@RequestParam("id") String id,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -428,7 +428,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/insert")
     public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
@@ -501,7 +501,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theater/select")
     public ResponseEntity<?> theaterSelect(@RequestParam("id") String id, @RequestParam("theaterId") String theaterId)
             throws Exception {
@@ -526,7 +526,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theater/update")
     public ResponseEntity<?> theaterUpdate(@RequestParam("id") String id, @RequestParam("theaterId") String theaterId)
             throws Exception {
@@ -552,7 +552,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/update")
     public ResponseEntity<?> theaterUpate(@RequestParam("id") String id,
@@ -629,7 +629,7 @@ public class AdminController {
      * @return
      */
     // 해당 아이디 권한 추가 요망
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theaterList/list")
     public ResponseEntity<?> theaterListList(@RequestParam("id") String id,
             @RequestParam(name = "search", required = false) String search,
@@ -670,7 +670,7 @@ public class AdminController {
      * @return
      */
     // 해당 아이디 권한 추가 요망
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theaterList/insert")
     public ResponseEntity<?> theaterListInsert(@RequestParam("id") String id,
             @RequestParam(name = "search", required = false) String search) throws Exception {
@@ -709,16 +709,14 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
-    @PostMapping("/theaterList/insert")
-    public ResponseEntity<?> theaterListInsert(@RequestParam("cinemaId") String id,
-            @RequestBody TheaterList theaterList) throws Exception {
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
+    @PostMapping(value = "/theaterList/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> theaterListInsert(
+        @ModelAttribute TheaterList theaterList) throws Exception {
         try {
             // 데이터 요청
             int result = theaterListService.insert(theaterList);
             Map<String, Object> response = new HashMap<String, Object>();
-            response.put("cinema", cinemaService.select(id));
-            response.put("id", id);
             // model.addAttribute("cinema", );
             // model.addAttribute("id", id);
             if (result > 0) {
@@ -745,7 +743,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theaterList/select")
     public ResponseEntity<?> theaterListSelect(@RequestParam("id") String id,
             @RequestParam("theaterListId") String theaterListId) throws Exception {
@@ -772,7 +770,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theaterList/update")
     public ResponseEntity<?> theaterListUpdate(@RequestParam("id") String id,
             @RequestParam("theaterListId") String theaterListId,
@@ -821,17 +819,17 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
-    @PostMapping("/theaterList/update")
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
+    @PostMapping(value = "/theaterList/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> theaterListUpdate(@RequestParam("cinemaId") String id,
-            @RequestBody TheaterList theaterList) throws Exception {
+            @ModelAttribute TheaterList theaterList) throws Exception {
 
         try {
             // 데이터 요청
             int result = theaterListService.update(theaterList);
             Map<String, Object> response = new HashMap<String, Object>();
-            response.put("cinema", cinemaService.select(id));
-            response.put("id", id);
+            //response.put("cinema", cinemaService.select(id));
+            //response.put("id", id);
             log.info(theaterList.toString());
             // model.addAttribute("cinema", cinemaService.select(id));
             // model.addAttribute("id", id);
@@ -948,8 +946,9 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/banner/insert")
-    public ResponseEntity<?> bannerInsert(@RequestBody Banner banner) throws Exception {
+    @PostMapping(value = "/banner/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> bannerInsert(@ModelAttribute Banner banner
+    ,@RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
 
         try {
             // 데이터 요청
@@ -1019,8 +1018,9 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/banner/update")
-    public ResponseEntity<?> bannerUpdate(@RequestBody Banner banner) throws Exception {
+    @PostMapping(value = "/banner/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> bannerUpdate(@ModelAttribute Banner banner,
+    @RequestParam(name ="mainFiles", required = false) MultipartFile[] mainFiles) throws Exception {
 
         try {
             // 데이터 요청
@@ -1028,15 +1028,17 @@ public class AdminController {
             int result = bannerService.update(banner);
             log.info(pastBanner.toString());
             Map<String, Object> response = new HashMap<String, Object>();
-            if (result > 0) {
-                for (MultipartFile files : banner.getMainFiles()) {
-                    Files file = new Files();
-                    file.setFile(files);
-                    file.setDivision("main");
-                    file.setFkTable("banner");
-                    file.setFkId(banner.getId());
-
-                    fileService.update(file, pastBanner.getFiles().getId());
+            if (result > 0 ) {
+                if(mainFiles != null){
+                    for (MultipartFile files : banner.getMainFiles()) {
+                        Files file = new Files();
+                        file.setFile(files);
+                        file.setDivision("main");
+                        file.setFkTable("banner");
+                        file.setFkId(banner.getId());
+    
+                        fileService.update(file, pastBanner.getFiles().getId());
+                    }
                 }
                 response.put("id", banner.getId());
                 // return "redirect:/admin/banner/select?id="+banner.getId();

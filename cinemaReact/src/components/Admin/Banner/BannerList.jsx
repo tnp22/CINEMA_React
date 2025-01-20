@@ -1,18 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import $ from 'jquery';
 import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import LeftSideBar1 from '../LeftSideBar1'
 import AdminHeader from '../AdminHeader';
-
-
+import * as admins from '../../../apis/admins'
 
 const BannerList = () => {
-    // select 함수는 아직 구현되지 않았습니다.
-    const select = (bannerId) => {
-      console.log(`Banner ID selected: ${bannerId}`);
-    };
+
+    const [bannerList, setBannerList] = useState([])
+
+    // 🎁 게시글 목록 데이터
+    const getList = async () => {
+      let response = null
+      response = await admins.bannerList()      
+      const data = await response.data
+      const list = data.bannerList
+      console.dir(data)
+
+      setBannerList( list )
+    }
+    useEffect( () => {
+      getList()
+    }, [])
 
     useEffect(() => {
       document.title = "ADMINISTRATOR";
@@ -63,18 +74,18 @@ const BannerList = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* {bannerList.map((banner) => (
+                {bannerList.map((banner) => (
                   <tr style={{ lineHeight: '40px' }} key={banner.id}>
                     <td>{banner.name}</td>
                     <td>{banner.bannerDivi}</td>
                     <td>{banner.movie.title}</td>
                     <td>
-                      <button className="btn butten" type="button" onClick={() => select(banner.id)}>
+                      <Link to={`/admin/banner/select/${banner.id}`} className={`btn ${ResetCs.butten}`} type="button">
                         조회
-                      </button>
+                      </Link>
                     </td>
                   </tr>
-                ))} */}
+                ))}
                 {/* 추가 행 삽입 */}
               </tbody>
             </table>
@@ -89,8 +100,7 @@ const BannerList = () => {
           </div>
         </div>
       </div>
-      <br /><br /><br /><br /><br /><br />
-      <br /><br /><br /><br /><br /><br />
+      <div style={{ height: '200px' }}></div>
     </div>
 
   )

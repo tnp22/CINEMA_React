@@ -2,46 +2,146 @@ import React, { useEffect, useState } from 'react';
 import $ from 'jquery';
 import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import LeftSideBar1 from '../LeftSideBar1'
 import AdminHeader from '../AdminHeader';
+import * as admins from '../../../apis/admins'
+import * as Swal from '../../../apis/alert'
 
-const BannerInsert = ({ pageInfo }) => {
+const BannerInsert = () => {
+  
+  const location = useLocation()
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [selectedMovie, setSelectedMovie] = useState('');
+  const [searchText, setSearchText] = useState('');
 
-  // 영화 선택 시 호출되는 함수
-  const updateSelectedValue = (movieTitle) => {
-    setSelectedMovie(movieTitle);
-  };
+  const [movieList, setMovieList] = useState([]);
 
-  // 검색 폼 제출 시 호출되는 함수
-  const submitSearchForm = () => {
-    if (search && search !== '') {
-      navigate(`/admin/banner/insert?search=${search}`);
-    } else {
-      navigate('/admin/banner/insert');
+  // 🧊 state 선언
+  const [movieId, setMovieId] = useState()
+  const [name, setName] = useState()
+  const [bannerDivi, setBannerDivi] = useState('main')
+  const [mainFiles, setMainFiles] = useState(null)  
+
+  
+  const changeMovieId = (e) => { setMovieId( e.target.value ) }
+  const changeName = (e) => { setName( e.target.value ) }
+  const changeBannerDivi = (e) => { setBannerDivi( e.target.value ) }
+  const changeMainFiles = (e) => {
+    setMainFiles(e.target.files[0])
+  }
+
+  const updateSelectedValue = (setmovieTitle) => {
+    const selectedItem = document.getElementById("selectedValue");
+    selectedItem.innerText = setmovieTitle || "없음";
+  }
+
+
+  // 게시글 등록 요청 이벤트 핸들러
+  // const onInsert = async (title, writer, content) => {
+  const onInsert = async (formData, headers) => {
+    try {
+      // const response = await boards.insert(title, writer, content)
+      const response = await admins.bannerInsert(formData, headers)
+      const data = await response.data
+      const status = response.status
+      console.log(data);
+      if(status == 200){
+        console.log('성공!');
+        Swal.alert('SUCCESS', '이동합니다', 'success',
+                    () => {navigate(`/admin/banner/list`)}
+        )
+      }else{
+        console.log('실패!');
+        //alert('회원가입 실패!')
+        Swal.alert('FAIL', '실패했습니다.', 'error')
+      }
+    
+    } catch (error) {
+      console.log(error);
+      
     }
-  };
+  }
+    
+    
+  const onSubmit = () => {
+    // console.log(movieId)
+    // console.log(name)
+    // console.log(bannerDivi)
+    // console.log(mainFiles)
+    if(movieId == null || name == null || bannerDivi === '' || bannerDivi == null || mainFiles == null ){
+      alert('선택이 제대로 되지 않았습니다. 확인해주세요.')
+      return
+    }
+    // 파일 업로드
+    // application/json ➡ multipart/form-data
+    const formData = new FormData()
+    // 게시글 정보 세팅
+    formData.append('movieId', movieId)
+    formData.append('name',name)
+    formData.append('bannerDivi',bannerDivi)
 
-  const handleBack = () => {
-    navigate(-1); // 뒤로 가기
-  };
+    // 📄 파일 데이터 세팅
+    if( mainFiles ) {
+      formData.append('mainFiles', mainFiles)
+    }
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-  };
+    // 🎫 헤더
+    const headers = {
+      'Content-Type' : 'multipart/form-data'
+    }
+
+
+    onInsert(formData, headers)           // multipart/form-data
+
+  }
+  
+  // 🎁 게시글 목록 데이터
+  const getList = async () => {
+    let response = null
+    if(search != null){
+      response = await admins.bannerInsertGetSearch(search)
+    }
+    else{
+      response = await admins.bannerInsertGet()
+    }
+    const data = await response.data
+    const movieList = data.pageInfo
+    console.dir(data)
+
+    setMovieList( movieList )
+  }
+  
+  const updatePage = () => {
+    const query = new URLSearchParams(location.search)
+    const newsearch = query.get("search")
+    console.log(`newsearch : ${newsearch}`);
+    setSearch(newsearch)
+  }
+
+  useEffect( () => {
+    updatePage()
+  }, [location.search])
+
+  useEffect( () => {
+    getList()
+  }, [search])
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // 검색 처리를 하고 새로운 URL로 이동
+    navigate(`/admin/banner/insert?search=${searchText}`);
+  }
 
   useEffect(() => {
     document.title = "ADMINISTRATOR";
 
     $(".mainLi").on("mouseover",function(){
       $(this).find(".subLi").stop().slideDown();
-      //$(this).find(".movieLi").stop().slideDown();
+      $(this).find(".movieLi").stop().slideDown();
     })
     $(".mainLi").on("mouseout",function(){
-        //$(this).find(".movieLi").stop().slideUp();
+        $(this).find(".movieLi").stop().slideUp();
         $(this).find(".subLi").stop().slideUp();
     })
 
@@ -102,7 +202,7 @@ const BannerInsert = ({ pageInfo }) => {
         <LeftSideBar1/>
 
         <div className="col-md-8">
-          <form action="/admin/banner/insert" method="post" encType="multipart/form-data">
+          {/* <form action="/admin/banner/insert" method="post" encType="multipart/form-data"> */}
             <br />
             <h1>배너 생성</h1>
             <br />
@@ -120,46 +220,34 @@ const BannerInsert = ({ pageInfo }) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* `pageInfo`를 사용하여 영화 목록을 렌더링 */}
-                          {/* {pageInfo.map((movie) => (
-                            <tr key={movie.id}>
-                              <td>
-                                <input
-                                  type="radio"
-                                  className="movieRadio"
-                                  name="movieId"
-                                  value={movie.id}
-                                  onClick={() => updateSelectedValue(movie.title)}
-                                  required
-                                />
-                              </td>
-                              <td>{movie.title}</td>
-                            </tr>
-                          ))} */}
+                          {/* 영화 리스트를 반복하는 부분은 실제 데이터를 사용하여 동적으로 작성해야 함 */}
+                          {movieList?.map(movie => (
+                              <tr key={movie.id}>
+                                <td><input type="radio" className="movieRadio" name="movie" value={movie.id} onChange={changeMovieId} onClick={() => updateSelectedValue(movie.title,movie.id)} required /></td>
+                                <td>{movie.title}</td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
 
                     <br />
                     <div id="selectedItem" style={{ textAlign: 'center' }}>
-                      <p>선택된 항목: <span id="selectedValue">{selectedMovie || '없음'}</span></p>
+                      <p>선택된 항목: <span id="selectedValue">없음</span></p>
                     </div>
 
                     <div className="container mt-4" style={{ display: 'flex' }}>
-                      <input type="hidden" id="id" name="cinemaId" value="${id}" />
-                      <input
+                    <input
                         className="form-control me-3"
                         style={{ width: '85%' }}
                         id="search"
                         type="search"
-                        value={search}
-                        onChange={handleSearchChange}
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
                         placeholder="검색어를 입력하세요"
                         aria-label="Search"
                       />
-                      <button className="btn btn-outline-success" type="button" onClick={submitSearchForm}>
-                        검색
-                      </button>
+                      <button className="btn btn-outline-success" type="button" onClick={handleSearch}>검색</button>
                     </div>
                     <br />
                   </td>
@@ -172,8 +260,7 @@ const BannerInsert = ({ pageInfo }) => {
                       className="form-control me-3"
                       style={{ width: '85%' }}
                       type="text"
-                      name="name"
-                      id="name"
+                      onChange={changeName}
                     />
                   </td>
                 </tr>
@@ -181,7 +268,7 @@ const BannerInsert = ({ pageInfo }) => {
                 <tr>
                   <th style={{ padding: '12px 0', width: '20%', textAlign: 'center' }}>배너종류</th>
                   <td>
-                    <select name="bannerDivi" id="bannerDivi">
+                    <select onChange={changeBannerDivi}>
                       <option value="main">main</option>
                       <option value="sub">sub</option>
                     </select>
@@ -191,7 +278,7 @@ const BannerInsert = ({ pageInfo }) => {
                 <tr>
                   <th style={{ padding: '12px 0', width: '20%', textAlign: 'center' }}>타이틀 파일</th>
                   <td>
-                    <input style={{ width: '90%' }} type="file" name="mainFiles" id="mainFiles" required />
+                    <input style={{ width: '90%' }} type="file" onChange={changeMainFiles} required />
                   </td>
                 </tr>
               </tbody>
@@ -199,17 +286,15 @@ const BannerInsert = ({ pageInfo }) => {
 
             <br />
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <button onClick={handleBack} className={ResetCs.sub_butten} style={{ marginRight: '20px' }}>
+              <button onClick={() => navigate(-1)} className={ResetCs.sub_butten} style={{ marginRight: '20px' }}>
                 취소
               </button>
-              <input type="submit" value="생성" className={ResetCs.butten} />
+              <button type="submit" onClick={onSubmit} className={ResetCs.butten} >생성</button>
             </div>
-          </form>
         </div>
         <div className="col-md-2"></div>
       </div>
-      <br /><br /><br /><br /><br /><br />
-      <br /><br /><br />
+      <div style={{ height: '100px' }}></div>
     </div>
   );
 };
