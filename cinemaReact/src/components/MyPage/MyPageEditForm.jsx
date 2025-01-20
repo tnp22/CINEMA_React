@@ -28,19 +28,19 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
 
   return (
 
-    <div className="mypageedit-content">
+    <div>
       <div className="mypageedit-title">
         <h5 style={{ color: 'white' }}>나의 정보</h5>
       </div>
-
-      <div style={{ marginLeft: '290px', marginTop: '10px' }}>
+      <div className="container">
+      <div style={{marginTop: '10px' }}>
         <h5 style={{ color: '#6c757d', fontSize: '24px', display: 'inline' }}>
           {userInfo.username}
         </h5>
         <span style={{ color: '#6c757d', fontSize: '16px' }}> 님</span>
       </div>
 
-      <div className="mypage-profile-image-container">
+      <div className="mypage-profile-image-container mt-3 d-flex align-items-center">
         <img
           id="mypage-profileImage"
           src={userInfo.orifile ? `/api/files/img?id=${userStateInfo.orifile.id}` : "/api/files/image?id=C:/upload/normal.png"}
@@ -53,9 +53,14 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
           }}
           alt="프로필 이미지"
         />
+        <div className='ms-3'>
+            <button className="mypageedit-btn-purple" style={{ width: '110px', textAlign: 'center', marginTop:'0' }}>이미지 변경</button>
+            <br />
+            <button className="mypageedit-btn-purple" style={{ width: '110px', textAlign: 'center', marginTop:'10px' }}>변경 확인</button>
+        </div>
       </div>
 
-      <form className='userform-login-form' onSubmit={(e) => onUpdate(e)} >
+      <form className='mypageedit-login-form mt-3' onSubmit={(e) => onUpdate(e)} >
         {/* <div>
                         <label htmlFor="username">username</label>
                         <input type="text"
@@ -68,13 +73,13 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
                             defaultValue={userInfo?.username}
                         />
                     </div> */}
-        <div className="userform-mb-4" id="box-id">
-          <label htmlFor="username" className="userform-form-label">아이디</label>
-          <div className="userform-d-flex align-items-center">
+        <div className="mypageedit-mb-4" id="box-id">
+          <label htmlFor="username" className="mypageedit-form-label">아이디</label>
+          <div className="mypageedit-d-flex align-items-center">
             <input
               type="text"
               id='username'
-              className="userform-form-control me-2"
+              className="mypageedit-form-control form-control me-2"
               style={{ backgroundColor: '#e9ecef', color: '#6c757d' }}
               placeholder='username'
               name='username'
@@ -96,12 +101,12 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
               required
               defaultValue={userInfo?.email} />
           </div> */}
-        <div className="userform-mb-4" id="box-email">
-          <label htmlFor="email" className="userform-form-label">이메일</label>
-          <div className="userform-d-flex align-items-center">
+        <div className="mypageedit-mb-4" id="box-email">
+          <label htmlFor="email" className="mypageedit-form-label">이메일</label>
+          <div className="mypageedit-d-flex align-items-center">
             <input
               type="email"
-              className="userform-form-control me-2"
+              className="mypageedit-form-control form-control me-2"
               id='email'
               name='email'
               autoComplete='email'
@@ -120,12 +125,12 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
               autoComplete='password'
               required />
           </div> */}
-        <div className="userform-mb-2">
-          <label htmlFor="password" className="userform-form-label">새 비밀번호</label>
-          <div className="userform-d-flex align-items-center">
+        <div className="mypageedit-mb-2">
+          <label htmlFor="password" className="mypageedit-form-label">새 비밀번호</label>
+          <div className="mypageedit-d-flex align-items-center">
             <input
               type="password"
-              className="userform-form-control"
+              className="mypageedit-form-control form-control"
               id='password'
               placeholder="새 비밀번호를 입력해주세요"
               name='password'
@@ -135,12 +140,12 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
           </div>
 
         </div>
-        <div className="userform-mb-2">
-          <label htmlFor="password" className="userform-form-label">이름</label>
-          <div className="userform-d-flex align-items-center">
+        <div className="mypageedit-mb-2">
+          <label htmlFor="password" className="mypageedit-form-label">이름</label>
+          <div className="mypageedit-d-flex align-items-center">
             <input
               type="text"
-              className="userform-form-control"
+              className="mypageedit-form-control form-control"
               id='name'
               placeholder='name'
               name='name'
@@ -164,12 +169,6 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
 
       <form id="infoForm" className="mypageedit-needs-validation" encType="multipart/form-data">
         <div className="mypageedit-divider" />
-
-        <div className="mypageedit-btn-container" style={{ marginBottom: '20px' }}>
-          <button type="submit" className="mypageedit-btn-purple" style={{ width: '125px' }}>
-            저장
-          </button>
-        </div>
       </form>
 
       <div className="mypageedit-btn-container" style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -192,6 +191,8 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
       </div>
 
       <div style={{ marginBottom: '30px' }} />
+
+      </div>
     </div>
 
 
