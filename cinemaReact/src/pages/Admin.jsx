@@ -78,10 +78,10 @@ const admin = () => {
 
           <Route path="/notice/list" element={<NoticeList/>}></Route>
           <Route path="/notice/insert" element={<NoticeInsert/>}></Route>
-          <Route path="/notice/select" element={<NoticeSelect/>}></Route>
-          <Route path="/notice/update" element={<NoticeUpdate/>}></Route>
+          <Route path="/notice/select/:id" element={<NoticeSelect/>}></Route>
+          <Route path="/notice/update/:id" element={<NoticeUpdate/>}></Route>
 
-          <Route path="/reviewManager/reviewManagerList" element={<ReviewManagerList/>}></Route>
+          <Route path="/reviewManager/list" element={<ReviewManagerList/>}></Route>
 
           <Route path="/theater/list/:id" element={<TheaterList/>}></Route>
           <Route path="/theater/insert/" element={<TheaterInsert/>}></Route>

@@ -78,3 +78,30 @@ export const authPlus = (formData, headers) => {
 
 export const authDelete = (no) => 
   api.get(`admin/userManager/auth/delete?no=${no}` )
+
+// 공지사항
+export const noticeList = (page, size) => api.get(`/admin/notice/list?page=${page}&size=${size}`)
+export const noticeListSearch = (page, size,search) => api.get(`/admin/notice/list?page=${page}&size=${size}&search=${search}`)
+
+export const noticeSelect = (id) => api.get(`/admin/notice/select?id=${id}`)
+
+export const noticeInsert = (data) => api.post(`/admin/notice/insert`, data,{
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+export const noticeUpdate = (data) => api.post(`/admin/notice/update`, data,{
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+export const noticeDelete = (id) => api.get(`/admin/notice/delete?id=${id}`)
+
+// 리뷰
+export const reviewList = (page, size) => api.get(`/admin/reviewManager/list?page=${page}&size=${size}`)
+export const reviewListSearch = (page, size,search) => api.get(`/admin/reviewManager/list?page=${page}&size=${size}&search=${search}`)
+
+export const reviewDelete = (id) => api.get(`/admin/reviewManager/delete?id=${id}`)
+
