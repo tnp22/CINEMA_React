@@ -3,6 +3,27 @@ import api from './api';
 api.defaults.baseURL = "/api"
 
 
+//출연진
+export const castList = (page, size) => api.get(`/admin/cast/list?page=${page}&size=${size}`)
+export const castListSearch = (page, size,search) => api.get(`/admin/cast/list?page=${page}&size=${size}&search=${search}`)
+
+export const castSelect = (id) => api.get(`admin/cast/select/${id}`)
+
+
+export const castInsert = (formData, headers) => {
+  return api.post('admin/cast/insert', formData, { headers: headers });
+}
+
+export const castUpdateGet = (id) => 
+  api.get(`admin/cast/update?id=${id}` )
+export const castUpdateGetSearch = (id,search) => 
+  api.get(`admin/cast/update?id=${id}&search=${search}` )
+
+export const castUpdate = (formData, headers) => 
+  api.post("admin/cast/update", formData, { headers: headers } )
+
+export const castDelete = (id) => 
+  api.get(`admin/cast/delete?id=${id}` )
 
 //배너
 export const bannerList = () => api.get(`/admin/banner/list`)

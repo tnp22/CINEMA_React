@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import $, { Callbacks } from 'jquery';
+import $ from 'jquery';
 import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
