@@ -78,16 +78,14 @@ const MyPageEdit = () => {
     if( isLoading ) return
 
     // 사용자 정보가 로딩완료 되었을 때만, 로그인 여부 체크
-    if( !isLogin || !roles.isUser ) {
+    if( !isLogin) {
       navigate("/login")
     }
   }, [isLoading])
 
   return (
     <>
-        <div className="container">
             <MyPageEditForm userInfo={userInfo} updateUser={updateUser} deleteUser={deleteUser} />
-        </div>
     </>
   )
 }
