@@ -1,0 +1,14 @@
+.header {
+  height: 70px;
+  background-color: #583BBF;
+  color: white;
+  text-align: center;
+  display: flex; /* 중앙 정렬을 위한 플렉스 박스 사용 */
+  justify-content: center;
+  align-items: center;
+  font-size: 20px; /* 글자 크기 추가 */
+  font-weight: bold; /* 글자 굵기 추가 */
+}
+
+
+

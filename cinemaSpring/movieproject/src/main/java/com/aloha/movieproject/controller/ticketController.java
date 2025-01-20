@@ -198,7 +198,6 @@ public class ticketController {
             response.put("money", money);
             response.put("person", Integer.parseInt(person));
 
-
             // log.info("맵데이터" + mapData);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -209,10 +208,12 @@ public class ticketController {
     }
 
     @GetMapping("/payment")
-    public String showPaymentPage(HttpSession session, Model model,
-            @RequestParam(name = "id", required = false) String id) throws Exception {
+    public ResponseEntity<?> showPaymentPage(HttpSession session,
+            @RequestParam(name = "id", required = false) String id)
+            throws Exception {
         Reserve reserve = new Reserve();
         TheaterList num = new TheaterList();
+        log.info("들어왔을까?" + id);
         if (id == null) {
             reserve = (Reserve) session.getAttribute("reserve");
             num = theaterListService.select(reserve.getTheaterListId());
@@ -236,21 +237,18 @@ public class ticketController {
             reserve.setDate(formatDate);
             reserve.setTime(formatTime);
         }
+
         // System.out.println("Reserve : " + reserve);
         // System.out.println("넘 있나?" + num);
         // 영화사진
         Movie movie_ = movieService.movieInfo(num.getMovieId());
 
-        model.addAttribute("movie", movie_);
-        model.addAttribute("reserve", reserve);
-        // 세션에서 데이터 읽기
-        // String seat = (String) session.getAttribute("seat");
-        // String person = (String) session.getAttribute("person");
-        // String theaterListId = (String) session.getAttribute("theaterId");
-        // String userName = (String) session.getAttribute("userName");
+        Map<String, Object> response = new HashMap<String, Object>();
 
-        // 뷰 반환
-        return "/movie/payment";
+        response.put("movie", movie_);
+        response.put("reserve", reserve);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -258,62 +256,70 @@ public class ticketController {
      * 
      * @return
      */
-    @PostMapping("/p")
-    public String handlePayment(@RequestBody Map<String, String> data, HttpSession session) throws Exception {
-        String seat = data.get("seat");
-        String person = data.get("person");
-        String id = data.get("id");
-        String userName = data.get("userName");
-        int money = Integer.parseInt(data.get("money"));
+    @PostMapping("/payment")
+    public ResponseEntity<?> handlePayment(@RequestBody Map<String, String> data, HttpSession session)
+            throws Exception {
+        log.info("결제 진입?");
+        try {
+            String seat = data.get("seat");
+            String person = data.get("person");
+            String id = data.get("id");
+            String userName = data.get("userName");
+            int money = Integer.parseInt(data.get("money"));
 
-        // 세션에 데이터 저장
-        session.setAttribute("seat", seat);
-        session.setAttribute("person", person);
-        session.setAttribute("theaterId", id);
-        session.setAttribute("userName", userName);
+            // 세션에 데이터 저장
+            session.setAttribute("seat", seat);
+            session.setAttribute("person", person);
+            session.setAttribute("theaterId", id);
+            session.setAttribute("userName", userName);
+            log.info("7");
 
-        // 로그 확인
-        System.out.println("세션 저장 데이터 확인 - seat: " + seat + ", person: " + person);
+            // 로그 확인
+            System.out.println("세션 저장 데이터 확인 - seat: " + seat + ", person: " + person);
 
-        TheaterList num = theaterListService.select(id);
+            TheaterList num = theaterListService.select(id);
 
-        Reserve reserve = new Reserve();
-        reserve.setRegDate(new Date());
-        // 시간 형식 변경
-        Date date = num.getTime();
+            Reserve reserve = new Reserve();
+            reserve.setRegDate(new Date());
+            // 시간 형식 변경
+            Date date = num.getTime();
 
-        // 원하는 패턴 설정
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        String formatDate = dateFormat.format(date);
-        String formatTime = timeFormat.format(date);
+            // 원하는 패턴 설정
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            String formatDate = dateFormat.format(date);
+            String formatTime = timeFormat.format(date);
 
-        reserve.setTitle(num.getMovie().getTitle());
-        reserve.setTheater(num.getTheater().getName());
-        reserve.setAreaSub(num.getCinema().getAreaSub());
-        reserve.setDate(formatDate);
-        reserve.setTime(formatTime);
-        reserve.setId(UUID.randomUUID().toString()); // 값 넣어야함
-        reserve.setMoney(money); // 값 계산해야함 아직안했어
-        reserve.setSeat(seat);
-        reserve.setPerson(Integer.parseInt(person));
-        reserve.setTheaterId(num.getTheaterId());
-        reserve.setTheaterListId(num.getId());
-        reserve.setUserName(userName);
-        // System.out.println(reserve);
+            reserve.setTitle(num.getMovie().getTitle());
+            reserve.setTheater(num.getTheater().getName());
+            reserve.setAreaSub(num.getCinema().getAreaSub());
+            reserve.setDate(formatDate);
+            reserve.setTime(formatTime);
+            reserve.setId(UUID.randomUUID().toString()); // 값 넣어야함
+            reserve.setMoney(money); // 값 계산해야함 아직안했어
+            reserve.setSeat(seat);
+            reserve.setPerson(Integer.parseInt(person));
+            reserve.setTheaterId(num.getTheaterId());
+            reserve.setTheaterListId(num.getId());
+            reserve.setUserName(userName);
+            // System.out.println(reserve);
 
-        session.setAttribute("reserve", reserve);
+            session.setAttribute("reserve", reserve);
 
-        // System.out.println("시트 : " + seat);
-        // System.out.println(seat == null);
-        if (seat == null) {
-            return "/m/s?theaterListId=0c701709-0c0d-49dd-b96f-8c30961eee2d&person=1_10000&error";
+            // System.out.println("시트 : " + seat);
+            // System.out.println(seat == null);
+            if (seat == null) {
+            }
+
+            // DB 저장
+            int result = reserveService.insertReserve(reserve);
+            // System.out.println("리졸트 : " + result);
+            Map<String, Object> response = new HashMap<String, Object>();
+            response.put("reserveId", reserve.getId());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        // DB 저장
-        int result = reserveService.insertReserve(reserve);
-        // System.out.println("리졸트 : " + result);
-        return "redirect:/m/payment";
     }
 
     @GetMapping("/rsList")
@@ -355,18 +361,15 @@ public class ticketController {
 
     @ResponseBody
     @DeleteMapping("/delete")
-    public String deleteReserv(@AuthenticationPrincipal CustomUser authUser,
-            @RequestBody Map<String, String> data) throws Exception {
-        String id = data.get("id");
+    public ResponseEntity<?> deleteReserv(@RequestParam("id") String id) throws Exception {
+        log.info("아이디 : " + id);
 
-        if (reserveService.isOwner(id, authUser.getUser().getId())) {
-            return "Fail";
-        }
         int result = reserveService.delectReserve(id);
 
-        if (result > 0)
-            return "SUCCESS";
-        return "Fail";
+        if (result > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }

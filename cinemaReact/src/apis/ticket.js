@@ -5,3 +5,11 @@ import api from './api';
 export const dateSelection = (movieId, headers) => api.get(`/movie/dateSelection?id=${movieId}`, headers)
 
 export const seatSelection = (theaterListId,person, headers) => api.get(`/movie/seatSelection?theaterListId=${theaterListId}&person=${person}`, headers)
+
+export const moviePayment = (data, headers) => api.post(`/movie/payment`,data,headers)
+
+export const GETPayment = (headers) => api.get(`/movie/payment`,headers)
+
+export const GETPayment2 = (reserveId, headers) => api.get(`/movie/payment?id=${reserveId}`,headers)
+
+export const remove = (reserveId, headers) => api.delete(`/movie/delete?id=${reserveId}`,headers)
