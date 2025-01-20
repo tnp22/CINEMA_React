@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("/usersss")
-@CrossOrigin(origins = "http://localhost:*")
+@CrossOrigin("*")
 public class UserController {
 
     @Autowired
@@ -161,11 +162,10 @@ public class UserController {
     //     }
     // }
 
-    @PostMapping("/mypage")
+    @GetMapping("/checkMypage")
     public ResponseEntity<Map<String, String>> myPage(@RequestParam("password") String password, HttpServletRequest request) {
         // 현재 로그인된 사용자의 정보를 가져오기
         String username = request.getUserPrincipal().getName();
-
         Map<String, String> response = new HashMap<>();
 
         try {
@@ -249,8 +249,7 @@ public class UserController {
      */
     @Secured("ROLE_USER")
     @PostMapping("/mypageImageUpdate")
-    public String movieInsert(Model model,
-                              Users users) throws Exception {
+    public ResponseEntity<?> movieInsert(@ModelAttribute Users users) throws Exception {
 
 
         Users oriUser = userService.select(users.getUsername());
@@ -270,10 +269,10 @@ public class UserController {
         }
 
         if(result){
-
-            return "redirect:/user/mypageUpdate";
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/user/mypageUpdate?error";
     }
 
 

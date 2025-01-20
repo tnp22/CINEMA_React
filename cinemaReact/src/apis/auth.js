@@ -23,3 +23,5 @@ export const remove = (username) => api.delete(`/users/${username}`)
 
 // 중복 확인
 export const check = (username) => api.get(`/check/${username}`)
+
+export const profileUpdate = (formData, headers) => api.post(`/usersss/mypageImageUpdate`, formData, headers)

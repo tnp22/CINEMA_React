@@ -4,7 +4,7 @@ import api from './api';
 export const getMyPage = () => api.get('/usersss/mypage');
 
 // 마이페이지 비밀번호 확인
-export const checkPassword = (password) => api.post('/usersss/mypage', { password });
+export const checkPassword = (password) => api.get(`/usersss/checkMypage?password=${password}`);
 
 // 마이페이지 업데이트 조회
 export const getMyPageUpdate = () => api.get('/usersss/mypageUpdate');
