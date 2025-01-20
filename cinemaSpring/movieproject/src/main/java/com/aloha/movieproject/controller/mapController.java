@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,25 +27,17 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 @RequestMapping("/admin")
+@CrossOrigin("*")
 public class mapController {
 
     FileText ft = new FileText();
 
-    /**
-     * addMap 맵 이동
-     * 
-     * @return
-     */
-    @GetMapping("/addMap")
-    public String addMap() {
-        return "/admin/addMap";
-    }
-
     // 불러오기
-    @PutMapping("/addMap")
-    public ResponseEntity<Map<String, Object>> readMap(@RequestBody Map<String, String> requestData) {
+    @GetMapping("/addMap")
+    public ResponseEntity<?> readMap(@RequestParam("id") String id) {
+        log.info("맵불러오기 진입" + id);
         String path = "C:\\upload\\test"; // 파일 저장 경로
-        String fileName = requestData.get("fileName")+".txt"; // JSON에서 fileName 추출
+        String fileName = id + ".txt"; // JSON에서 fileName 추출
         // 파일 읽기
         String result = ft.read(path, fileName);
         System.out.println(result);
@@ -60,7 +54,7 @@ public class mapController {
         Map<String, Object> response = new HashMap<>();
         response.put("readMapData", mapData);
 
-        return ResponseEntity.ok(response); // JSON 데이터 반환
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

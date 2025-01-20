@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-
 
 import com.aloha.movieproject.domain.AuthList;
 import com.aloha.movieproject.domain.Banner;
@@ -51,6 +50,8 @@ import com.aloha.movieproject.service.cinema.TheaterService;
 import com.github.pagehelper.PageInfo;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
@@ -168,8 +169,8 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping(value = "/cinema/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> cinemaInsert(
-    @ModelAttribute Cinema cinema,
-    @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
+            @ModelAttribute Cinema cinema,
+            @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
         log.info("시네마 생성 요청");
         int result = cinemaService.insert(cinema);
 
@@ -333,7 +334,7 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping(value = "/cinema/mainPlus", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> mainPlus(@ModelAttribute Cinema cinema,
-    @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
+            @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
         // log.info(cinema.toString());
         int result = fileService.delete(cinema.getFileId());
 
@@ -403,19 +404,21 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    // @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
+    // @PreAuthorize("(hasRole('SUPER')) or ( #p1 != null and
+    // @TheaterService.isOwner(#p1,authentication.principal.user.authList))")
     // @GetMapping("/theater/insert")
     // public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
-    //         @RequestParam(name = "fileName", required = false) String fileName) throws Exception {
-    //     try {
-    //         Map<String, Object> response = new HashMap<String, Object>();
-    //         response.put("cinema", cinemaService.select(id));
-    //         response.put("fileName", fileName);
-    //         return new ResponseEntity<>(response, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    //     // return "/admin/theater/insert";
+    // @RequestParam(name = "fileName", required = false) String fileName) throws
+    // Exception {
+    // try {
+    // Map<String, Object> response = new HashMap<String, Object>();
+    // response.put("cinema", cinemaService.select(id));
+    // response.put("fileName", fileName);
+    // return new ResponseEntity<>(response, HttpStatus.OK);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // // return "/admin/theater/insert";
     // }
 
     FileText ft = new FileText();
@@ -431,8 +434,7 @@ public class AdminController {
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/insert")
-    public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,
-            @RequestBody Theater theater) throws Exception {
+    public ResponseEntity<?> theaterInsert(@RequestBody Theater theater) throws Exception {
         String uuid = UUID.randomUUID().toString();
         theater.setId(uuid);
         theater.setMap(theater.getId());
@@ -493,6 +495,35 @@ public class AdminController {
         }
     }
 
+    // 불러오기
+    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
+    @GetMapping("/theater/select")
+    public ResponseEntity<?> readMap(@RequestParam("id") String id) throws Exception {
+        log.info("맵불러오기 진입" + id);
+        String path = "C:\\upload\\test"; // 파일 저장 경로
+        String fileName = id + ".txt"; // JSON에서 fileName 추출
+        // 파일 읽기
+        String result = ft.read(path, fileName);
+        System.out.println(result);
+
+        Theater theater = theaterService.select(id);
+
+        // String을 List<List<String>>으로 변환
+        List<List<String>> mapData = new ArrayList<>();
+        String[] rows = result.split("\n");
+        for (String row : rows) {
+            List<String> rowList = Arrays.asList(row.split(","));
+            mapData.add(rowList);
+        }
+
+        // 응답 데이터 구성
+        Map<String, Object> response = new HashMap<>();
+        response.put("name", theater.getName());
+        response.put("readMapData", mapData);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     /**
      * 상영관 선택
      * 
@@ -501,22 +532,24 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
-    @GetMapping("/theater/select")
-    public ResponseEntity<?> theaterSelect(@RequestParam("id") String id, @RequestParam("theaterId") String theaterId)
-            throws Exception {
+    // @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and
+    // @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
+    // @GetMapping("/theater/select")
+    // public ResponseEntity<?> theaterSelect(@RequestParam("id") String id,
+    // @RequestParam("theaterId") String theaterId)
+    // throws Exception {
 
-        try {
-            // 데이터 요청
-            Map<String, Object> response = new HashMap<String, Object>();
-            response.put("cinema", cinemaService.select(id));
-            response.put("theater", theaterService.select(theaterId));
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        // return "/admin/theater/select";
-    }
+    // try {
+    // // 데이터 요청
+    // Map<String, Object> response = new HashMap<String, Object>();
+    // response.put("cinema", cinemaService.select(id));
+    // response.put("theater", theaterService.select(theaterId));
+    // return new ResponseEntity<>(response, HttpStatus.OK);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // // return "/admin/theater/select";
+    // }
 
     /**
      * 상영관 수정
@@ -555,8 +588,7 @@ public class AdminController {
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/update")
-    public ResponseEntity<?> theaterUpate(@RequestParam("id") String id,
-            @RequestBody Theater theater) throws Exception {
+    public ResponseEntity<?> theaterUpate(@RequestBody Theater theater) throws Exception {
         theater.setMap(theater.getId());
         theater.setMapSize(theater.getX() * theater.getY());
 
@@ -712,7 +744,7 @@ public class AdminController {
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @PostMapping(value = "/theaterList/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> theaterListInsert(
-        @ModelAttribute TheaterList theaterList) throws Exception {
+            @ModelAttribute TheaterList theaterList) throws Exception {
         try {
             // 데이터 요청
             int result = theaterListService.insert(theaterList);
@@ -828,8 +860,8 @@ public class AdminController {
             // 데이터 요청
             int result = theaterListService.update(theaterList);
             Map<String, Object> response = new HashMap<String, Object>();
-            //response.put("cinema", cinemaService.select(id));
-            //response.put("id", id);
+            // response.put("cinema", cinemaService.select(id));
+            // response.put("id", id);
             log.info(theaterList.toString());
             // model.addAttribute("cinema", cinemaService.select(id));
             // model.addAttribute("id", id);
@@ -947,8 +979,8 @@ public class AdminController {
      */
     @Secured("ROLE_SUPER")
     @PostMapping(value = "/banner/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> bannerInsert(@ModelAttribute Banner banner
-    ,@RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
+    public ResponseEntity<?> bannerInsert(@ModelAttribute Banner banner,
+            @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
 
         try {
             // 데이터 요청
@@ -1020,7 +1052,7 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping(value = "/banner/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> bannerUpdate(@ModelAttribute Banner banner,
-    @RequestParam(name ="mainFiles", required = false) MultipartFile[] mainFiles) throws Exception {
+            @RequestParam(name = "mainFiles", required = false) MultipartFile[] mainFiles) throws Exception {
 
         try {
             // 데이터 요청
@@ -1028,15 +1060,15 @@ public class AdminController {
             int result = bannerService.update(banner);
             log.info(pastBanner.toString());
             Map<String, Object> response = new HashMap<String, Object>();
-            if (result > 0 ) {
-                if(mainFiles != null){
+            if (result > 0) {
+                if (mainFiles != null) {
                     for (MultipartFile files : banner.getMainFiles()) {
                         Files file = new Files();
                         file.setFile(files);
                         file.setDivision("main");
                         file.setFkTable("banner");
                         file.setFkId(banner.getId());
-    
+
                         fileService.update(file, pastBanner.getFiles().getId());
                     }
                 }
@@ -1198,8 +1230,8 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping(value = "/movie/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> movieInsert(@ModelAttribute Movie movie,
-    @RequestParam("mainFiles") MultipartFile[] mainFiles,
-    @RequestParam(name ="stilcuts" ,required = false) MultipartFile[] stilcuts) throws Exception {
+            @RequestParam("mainFiles") MultipartFile[] mainFiles,
+            @RequestParam(name = "stilcuts", required = false) MultipartFile[] stilcuts) throws Exception {
 
         try {
             // 데이터 요청
@@ -1212,10 +1244,10 @@ public class AdminController {
                     file.setDivision("main");
                     file.setFkTable("movie");
                     file.setFkId(movie.getId());
-    
+
                     fileService.upload(file);
                 }
-                if(stilcuts != null){
+                if (stilcuts != null) {
                     for (MultipartFile stilcut : movie.getStilcuts()) {
                         Files stilfile = new Files();
                         stilfile.setFile(stilcut);
@@ -1237,7 +1269,6 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
 
     /**
      * 업데이트 post
@@ -1248,7 +1279,7 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping(value ="/movie/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/movie/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> movieUpdate(@ModelAttribute Movie movie) throws Exception {
 
         try {
@@ -1316,8 +1347,7 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/stilcutPlus")
     public ResponseEntity<?> stilcutPlus(@ModelAttribute Movie movie,
-    @RequestParam("stilcuts") MultipartFile[] stilcuts
-        ) throws Exception {
+            @RequestParam("stilcuts") MultipartFile[] stilcuts) throws Exception {
 
         try {
             Map<String, Object> response = new HashMap<String, Object>();
@@ -1349,8 +1379,7 @@ public class AdminController {
     @Secured("ROLE_SUPER")
     @PostMapping("/movie/mainPlus")
     public ResponseEntity<?> mainPlus(@ModelAttribute Movie movie,
-    @RequestParam("mainFiles") MultipartFile[] mainFiles
-    ) throws Exception {
+            @RequestParam("mainFiles") MultipartFile[] mainFiles) throws Exception {
         try {
             log.info(movie.toString());
             int result = fileService.delete(movie.getFileId());
@@ -2071,7 +2100,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    //@Secured("ROLE_SUPER")
+    // @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/sleep")
     public ResponseEntity<?> userSleep(@RequestParam("username") String username) throws Exception {
 
