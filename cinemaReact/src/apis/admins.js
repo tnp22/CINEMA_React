@@ -3,6 +3,31 @@ import api from './api';
 api.defaults.baseURL = "/api"
 
 
+
+//배너
+export const bannerList = () => api.get(`/admin/banner/list`)
+export const bannerSelect = (id) => api.get(`admin/banner/select?id=${id}`)
+
+export const bannerInsertGet = () => 
+  api.get(`admin/banner/insert` )
+export const bannerInsertGetSearch = (search) => 
+  api.get(`admin/banner/insert?search=${search}` )
+
+export const bannerInsert = (formData, headers) => {
+  return api.post('admin/banner/insert', formData, { headers: headers });
+}
+
+export const bannerUpdateGet = (id) => 
+  api.get(`admin/banner/update?id=${id}` )
+export const bannerUpdateGetSearch = (id,search) => 
+  api.get(`admin/banner/update?id=${id}&search=${search}` )
+
+export const bannerUpdate = (formData, headers) => 
+  api.post("admin/banner/update", formData, { headers: headers } )
+
+export const bannerDelete = (id) => 
+  api.get(`admin/banner/delete?id=${id}` )
+
 // 영화관
 export const cinemaList = (page, size) => api.get(`/admin?page=${page}&size=${size}`)
 export const cinemaListSearch = (page, size,search) => api.get(`/admin?page=${page}&size=${size}&search=${search}`)
@@ -25,7 +50,32 @@ export const cinemaMainPlus = (formData, headers) => {
 }
 
 // 상영관
-export const theaterList = (page, size,id) => api.get(`admin/cinema/enter?page=${page}&size=${size}&id=${id}`)
+export const theaterList = (page, size,id) => api.get(`/admin/cinema/enter?page=${page}&size=${size}&id=${id}`)
+
+
+
+// 상영리스트
+export const theaterListList = (page, size,id) => api.get(`/admin/theaterList/list?page=${page}&size=${size}&id=${id}`)
+export const theaterListListSearch = (page, size,id,search) => api.get(`/admin/theaterList/list?page=${page}&size=${size}&id=${id}&search=${search}`)
+
+export const theaterListInsertGet = (id) => 
+  api.get(`admin/theaterList/insert?id=${id}` )
+export const theaterListInsertGetSearch = (id,search) => 
+  api.get(`admin/theaterList/insert?id=${id}&search=${search}` )
+
+export const theaterListInsert = (formData, headers) => {
+  return api.post('admin/theaterList/insert', formData, { headers: headers });
+}
+
+export const theaterListSelect = (id,theaterListId) => api.get(`admin/theaterList/select?id=${id}&theaterListId=${theaterListId}`)
+
+export const theaterListUpdateGet = (id,theaterListId) => 
+  api.get(`admin/theaterList/update?id=${id}&theaterListId=${theaterListId}` )
+export const theaterListUpdateGetSearch = (id,theaterListId,search) => 
+  api.get(`admin/theaterList/update?id=${id}&theaterListId=${theaterListId}&search=${search}` )
+
+export const theaterListUpdate = (formData, headers) => 
+  api.post("/admin/theaterList/update", formData, { headers: headers } )
 
 // 영화
 export const movieList = (page, size) => api.get(`/admin/movie/list?page=${page}&size=${size}`)

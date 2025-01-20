@@ -21,7 +21,7 @@ const TheaterList = () => {
     const [theaterList, setTheaterList] = useState([])
     const [pagination, setPagination] = useState({})
     const [page, setPage] = useState(1)
-    const [size, setSize] = useState(6)
+    const [size, setSize] = useState(10)
     const [search, setSearch] = useState()
 
     // ?파라미터=값 가져오는 방법
@@ -30,7 +30,7 @@ const TheaterList = () => {
     const updatePage = () => {
       const query = new URLSearchParams(location.search)
       const newPage = query.get("page") ?? 1
-      const newSize = query.get("size") ?? 6
+      const newSize = query.get("size") ?? 10
       const newsearch = query.get("search")
       console.log(`newPage : ${newPage}`);
       console.log(`newSize : ${newSize}`);
@@ -100,7 +100,7 @@ const TheaterList = () => {
                 <div style={{ marginTop: '100px', fontSize: '26px' }}>
                     <ul>
                         <li><Link to={`/admin/theater/list/${cinema?.id}`} style={{ color: '#583BBF' }}>상영관</Link></li>
-                        <li><Link to={`/admin/theaterList/list?id=${cinema?.id}`}>상영리스트</Link></li>
+                        <li><Link to={`/admin/theaterList/list/${cinema?.id}`}>상영리스트</Link></li>
                     </ul>
                 </div>
             </div>
@@ -176,7 +176,7 @@ const TheaterList = () => {
             <div className="col-md-2">
                 <div style={{ marginTop: '100px', fontSize: '26px' }}>
                     <ul className="mt-5">
-                        <li><Link to={`/admin/theater/insert?id=${id}`}>상영관 생성</Link></li>
+                        <li><Link to={`/admin/theater/insert?cinemId=${id}`}>상영관 생성</Link></li>
                     </ul>
                 </div>
             </div>
