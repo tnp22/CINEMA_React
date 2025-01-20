@@ -95,6 +95,7 @@
               ,email = #{email}
               ,enabled = #{enabled}
               ,upd_date = now()
+              ,password=#{password}
         WHERE username = #{username}
     </update>
 

@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as my from '../../apis/my';
 import Swal from 'sweetalert2';
 import './MyPageEditForm.css';
+import { getMyPage, checkPassword } from "../../apis/my"; // API 호출 함수 임포트
 
 
 
-
-const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
-
+const MyPageEditForm = ({ userInfo, updateUser, deleteUser , updateImage}) => {
+const [userData, setUserData] = useState(null); // 사용자 데이터 상태
+const [mainFile, setMainFile] = useState(null)
 
   // 정보 수정 
   const onUpdate = (e) => {
@@ -26,6 +27,60 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
     updateUser({ username, password, name, email, enabled });
   };
 
+  const [selectedImage, setSelectedImage] = useState(
+    userData?.orifile
+      ? `api/files/img?id=${userData?.orifile?.id}`
+      : "api/files/image?id=C:/upload/normal.png"
+  );
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result); // 미리 보기 이미지 설정
+      };
+      reader.readAsDataURL(file);
+      setMainFile(file)
+    }
+  };
+  const fetchUserData = async () => {
+        try {
+          const response = await getMyPage();
+          setUserData(response.data);
+        } catch (error) {
+          console.error("사용자 정보 가져오기 중 오류 발생:", error);
+        }
+      };
+
+  const onSumbit = () => {
+    const formData = new FormData()
+
+    formData.append('username',userInfo?.username)
+
+    if(mainFile){
+        formData.append('file', mainFile)
+    }
+
+    const headers = {
+        'Content-Type' : 'multipart/form-data'
+    }
+
+    updateImage(formData,headers)
+  }
+
+  useEffect(() => {
+    
+    if (userData) {
+      setSelectedImage(`api/files/img?id=${userData?.orifile?.id}`);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
+  
+
   return (
 
     <div>
@@ -41,23 +96,50 @@ const MyPageEditForm = ({ userInfo, updateUser, deleteUser }) => {
       </div>
 
       <div className="mypage-profile-image-container mt-3 d-flex align-items-center">
-        <img
-          id="mypage-profileImage"
-          src={userInfo.orifile ? `/api/files/img?id=${userStateInfo.orifile.id}` : "/api/files/image?id=C:/upload/normal.png"}
-          style={{
-            width: "124px",
-            height: "124px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
-          alt="프로필 이미지"
-        />
-        <div className='ms-3'>
-            <button className="mypageedit-btn-purple" style={{ width: '110px', textAlign: 'center', marginTop:'0' }}>이미지 변경</button>
-            <br />
-            <button className="mypageedit-btn-purple" style={{ width: '110px', textAlign: 'center', marginTop:'10px' }}>변경 확인</button>
+        {/* 프로필 이미지 및 변경 버튼 */}
+      <div
+        className="logo-and-upload"
+        style={{display: "flex", alignItems: "center" }}
+      >
+        <div className="logo-container">
+          <img
+            id="profileImage"
+            src={selectedImage}
+            style={{
+              width: "124px",
+              height: "124px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+            alt="프로필 이미지"
+          />
         </div>
+
+        <div
+          className="profile-upload-btn"
+          style={{
+            marginLeft: "10px",
+            display: "flex",
+            flexDirection: "column",
+            rowGap: "9px",
+          }}
+        >
+          <label htmlFor="fileInput" className="mypageedit-btn-purple" style={{ width: '110px', textAlign: 'center', marginTop:'0' }}>
+            이미지 변경
+          </label>
+          <button htmlFor="imageSubmit" className="mypageedit-btn-purple" onClick={onSumbit} style={{ width: '110px', textAlign: 'center', marginTop:'10px' }}>
+            변경 확인
+          </button>
+          <input
+            type="file"
+            name="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleImageChange}
+          />
+        </div>
+      </div>
       </div>
 
       <form className='mypageedit-login-form mt-3' onSubmit={(e) => onUpdate(e)} >

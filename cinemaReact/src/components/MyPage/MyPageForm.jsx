@@ -34,7 +34,6 @@ const MyPageForm = () => {
 
   // 비밀번호 제출 처리
   const handleSubmit = async (e) => {
-    e.preventDefault();
     if (!password) {
       Swal.alert("비밀번호 입력", "비밀번호를 입력해주세요.", "warning");
       return;
@@ -129,7 +128,6 @@ const MyPageForm = () => {
               </div>
 
               <p>회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.</p>
-              <form id="mypage-passwordForm" onSubmit={handleSubmit}>
                 <div className="mypage-form-group">
                   <input
                     type="password"
@@ -145,11 +143,10 @@ const MyPageForm = () => {
                   <button type="button" className="mypage-btn-cancel" onClick={handleCancel}>
                     취소
                   </button>
-                  <button type="submit" className="mypage-btn-confirm">
+                  <button type="button" className="mypage-btn-confirm" onClick={handleSubmit}>
                     확인
                   </button>
                 </div>
-              </form>
 
               {/* 오류 메시지 표시 */}
               <div className="mypage-error-message-container">

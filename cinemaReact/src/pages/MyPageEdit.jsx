@@ -73,19 +73,32 @@ const MyPageEdit = () => {
     
   }
 
+  const updateImage = async (formData,headers) => {
+    try{
+      const response = await auth.profileUpdate(formData, headers)
+      const data = await response.data
+      console.log(data);
+      alert('등록 완료')
+      navigate('/mypageedit')
+    }catch(error){
+      console.log(error);
+      
+    }
+  }
+
   useEffect( () => {
     // 로딩중...
     if( isLoading ) return
 
     // 사용자 정보가 로딩완료 되었을 때만, 로그인 여부 체크
     if( !isLogin) {
-      navigate("/login")
+      navigate("/mypageedit")
     }
   }, [isLoading])
 
   return (
     <>
-            <MyPageEditForm userInfo={userInfo} updateUser={updateUser} deleteUser={deleteUser} />
+            <MyPageEditForm userInfo={userInfo} updateUser={updateUser} deleteUser={deleteUser} updateImage={updateImage} />
     </>
   )
 }
