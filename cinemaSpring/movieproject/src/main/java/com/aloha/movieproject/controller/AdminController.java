@@ -1494,8 +1494,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/cast/insert")
-    public ResponseEntity<?> castInsert(@RequestBody Cast cast) throws Exception {
+    @PostMapping(value = "/cast/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> castInsert(@ModelAttribute Cast cast) throws Exception {
 
         try {
             // 데이터 요청
@@ -1559,7 +1559,7 @@ public class AdminController {
     }
 
     /**
-     * 배너 수정
+     * 캐스터 수정
      * 
      * @param model
      * @param userAuth
@@ -1567,8 +1567,9 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @PostMapping("/cast/update")
-    public ResponseEntity<?> bannerUpdate(@RequestBody Cast cast) throws Exception {
+    @PostMapping(value = "/cast/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> bannerUpdate(@ModelAttribute Cast cast,
+    @RequestParam(name = "mainFiles", required = false) MultipartFile[] mainFiles) throws Exception {
 
         try {
             // 데이터 요청
@@ -1580,14 +1581,16 @@ public class AdminController {
 
             response.put("id", cast.getId());
             if (result > 0) {
-                for (MultipartFile files : cast.getMainFiles()) {
-                    Files file = new Files();
-                    file.setFile(files);
-                    file.setDivision("main");
-                    file.setFkTable("cast");
-                    file.setFkId(cast.getId());
+                if(mainFiles != null){
+                    for (MultipartFile files : cast.getMainFiles()) {
+                        Files file = new Files();
+                        file.setFile(files);
+                        file.setDivision("main");
+                        file.setFkTable("cast");
+                        file.setFkId(cast.getId());
 
-                    fileService.update(file, pastCast.getFiles().getId());
+                        fileService.update(file, pastCast.getFiles().getId());
+                        }
                 }
                 // return "redirect:/admin/cast/select?id="+cast.getId();
                 return new ResponseEntity<>(response, HttpStatus.OK);
