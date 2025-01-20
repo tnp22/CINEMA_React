@@ -1658,7 +1658,7 @@ public class AdminController {
     public ResponseEntity<?> noticeList(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(name = "option", defaultValue = "0") int option,
+            @RequestParam(name = "option", defaultValue = "1") int option,
             @RequestParam(name = "search", defaultValue = "") String search) throws Exception {
         // 데이터 요청
 
@@ -1695,8 +1695,8 @@ public class AdminController {
      * @throws Exception
      */
     @Secured("ROLE_SUPER")
-    @GetMapping("/notice/select/{id}")
-    public ResponseEntity<?> noticeSelect(@PathVariable("id") String id) throws Exception {
+    @GetMapping("/notice/select")
+    public ResponseEntity<?> noticeSelect(@RequestParam("id") String id) throws Exception {
 
         try {
             // 데이터 요청
