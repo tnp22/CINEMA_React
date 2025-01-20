@@ -1,70 +1,6 @@
-/* .userform-form {
-    width: 400px;
-    margin: auto;
-    padding: 36px 48px 48px 48px;
-    background-color: #f2efee;
-    border-radius: 11px;
-    box-shadow: 0 2.4rem 4.8rem rgba(0,0,0,0.15);
-}
-
-.userform-login-title {
-    padding: 15px;
-    font-size: 22px;
-    font-weight: 600;
-    text-align: center;
-}
-
-.userform-login-form {
-    display: grid;
-    grid-template-columns: 1fr;
-    row-gap: 16px;
-}
-
-.userform-login-form label {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.userform-login-form input {
-    width: 100%;
-    padding: 1.2rem;
-    border-radius: 9px;
-    border: none;
-}
-
-.userform-login-form input:focus {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(253,242,233,0.5);
-}
-
-.userform-btn--form {
-    background-color: #f48982;
-    color: #fdf2e9;
-    padding: 8px;
-    border: none;
-}
-
-.userform-btn,
-.userform-btn:link,
-.userform-btn:visited {
-    display: inline-block;
-    text-decoration: none;
-    font-size: 20px;
-    font-weight: 600;
-    border-radius: 9px;
-    bottom: none;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.3s;
-}
-
-.userform-btn-login:hover {
-    outline: 1px solid #f48982;
-}
-
-.userform-btn--form:hover {
-    background-color: #fdf2e9;
-    color: #f48982;
+/* body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f8f9fa;
 } */
 
 .mypageedit-title {
@@ -107,6 +43,7 @@
     border: none;
     cursor: pointer;
     margin-top: 30px;
+    margin-left: 290px;
     text-align: left;
     border-radius: 5px; /* 테두리 둥글게 */
     width: 110px;
@@ -196,13 +133,4 @@
     height: 1px;
     margin: 10px 0;
     border: none;
-}
-
-.mypageedit-btn-container {
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 0; /* 내부 여백 제거 */
-    width: 100%; /* 부모 너비에 맞춤 */
 }

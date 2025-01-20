@@ -1,4 +1,6 @@
 import React from 'react'
+import './UserForm.css';
+
 
 const UserForm = ({ userInfo, updateUser, deleteUser }) => {
 
@@ -11,9 +13,11 @@ const UserForm = ({ userInfo, updateUser, deleteUser }) => {
     const password = form.password.value
     const name = form.name.value
     const email = form.email.value
-    console.log( username, password, name, email );
+    const enabled = userInfo.enabled; // enabled 필드를 포함
 
-    updateUser( { username, password, name, email } )
+    console.log(username, password, name, email, enabled);
+
+    updateUser({ username, password, name, email, enabled });
   }
 
   return (
