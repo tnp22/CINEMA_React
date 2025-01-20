@@ -278,58 +278,59 @@ const SeatSelectionFrom = () => {
         console.log('상품이름은 ' + productName);
         console.log('상품아이디는 ' + orderId);
         
-        //   IMP.request_pay({
-            //       pg : 'kcp',                                 // PG사
-            //       pay_method : 'card', 
-            //       merchant_uid: orderId,                       // 결제방식
-            //       name : productName,                         // 상품명
-            //       amount : '100',                              // 결제금액
-            //       buyer_email : potEmail ,                        // 결제자 이메일
-            //       buyer_name : potName,                          // 결제자 이름
-            //       buyer_tel : '010-1234-1234',                            // 결제자 전화번호
-    //       buyer_addr : '테스트 테스트대로',                       // 결제자 주소
-    //       buyer_postcode : '1234-1234'                   // 결제자 우편번호
-    //   }, function (rsp) { // callback
-    //       if (rsp.success) {
-        //           // 결제 성공
-        //           console.log(rsp);
-        //           // 결제 완료 페이지로 이동
-        //           var person = document.getElementById("person").getAttribute("person"); // 예약 인원
-        //           var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
-        //           var id = "[[${theaterId}]]";
-        //           var name = "[[${#authentication.name}]]";
-        //           var money = "[[${money}]]"        
-        //           // console.log(seat)
-        //           // console.log(person);
-        //           console.log(id);
-        //           let data = {
-            //               'id' : id,
-            //               'seat': seat,
-            //               'person': person,
-            //               'userName' : name,
-            //               'money' : money
-            //           };
+          IMP.request_pay({
+                  pg : 'kcp',                                 // PG사
+                  pay_method : 'card', 
+                  merchant_uid: orderId,                       // 결제방식
+                  name : productName,                         // 상품명
+                  amount : '100',                              // 결제금액
+                  buyer_email : 'authUserName@naver.com',                        // 결제자 이메일
+                  buyer_name : authUserName,                          // 결제자 이름
+                  buyer_tel : '010-1234-1234',                            // 결제자 전화번호
+                    buyer_addr : '테스트 테스트대로',                       // 결제자 주소
+                    buyer_postcode : '1234-1234'                   // 결제자 우편번호
+      }, function (rsp) { // callback
+          if (rsp.success) {
+                  // 결제 성공
+                  console.log("rsp",rsp);
+                  // 결제 완료 페이지로 이동
+                  var person = document.getElementById("person").getAttribute("person"); // 예약 인원
+                  var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
+                //   var id = "[[${theaterId}]]";
+                    var id =  theaterId;
+                //   var name = "[[${#authentication.name}]]";
+                var name = authUserName;
+                //   var money = "[[${money}]]"
+                var money = money        
+                  // console.log(seat)
+                  // console.log(person);
+                  console.log(id);
+                  let data = {
+                          'id' : id,
+                          'seat': seat,
+                          'person': person,
+                          'userName' : name,
+                          'money' : money
+                      };
             
-            //           let request = new XMLHttpRequest();
-            //           let url = '/m/p';
-            //           request.open('POST', url, true);
-            //           request.setRequestHeader('Content-Type', 'application/json');
-            //           let csrfToken = "[[${_csrf.token}]]";
-            //           request.setRequestHeader("X-CSRF-TOKEN", csrfToken);
+                      let request = new XMLHttpRequest();
+                      let url = '/m/p';
+                      request.open('POST', url, true);
+                      request.setRequestHeader('Content-Type', 'application/json');
             
-            //           request.onreadystatechange = function () {
-                //               if (request.readyState === 4 && request.status === 200) {
-                    //                   window.location.href = '/m/payment';
-                    //               }
-                    //           };
+                      request.onreadystatechange = function () {
+                              if (request.readyState === 4 && request.status === 200) {
+                                      window.location.href = '/m/payment';
+                                  }
+                              };
                     
-                    //           request.send(JSON.stringify(data));
-                    //       } else {
-                        //           // 결제 실패
-                        //           console.log(rsp);
-                        //           return;
-                        //       }
-                        //   });
+                              request.send(JSON.stringify(data));
+                          } else {
+                                  // 결제 실패
+                                  console.log(rsp);
+                                  return;
+                              }
+                          });
                         
     }
 
@@ -346,7 +347,6 @@ const SeatSelectionFrom = () => {
         console.log("movieTitle : ", movieTitle);
         console.log("UUID: ", uuuuid);
         console.log("mapData", mapData);
-        log
         if(mapData.length > 0){
             console.log("endExport 실행");
             endExport(mapData)
