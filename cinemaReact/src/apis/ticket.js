@@ -13,3 +13,5 @@ export const GETPayment = (headers) => api.get(`/movie/payment`,headers)
 export const GETPayment2 = (reserveId, headers) => api.get(`/movie/payment?id=${reserveId}`,headers)
 
 export const remove = (reserveId, headers) => api.delete(`/movie/delete?id=${reserveId}`,headers)
+
+export const rsList = (data, headers) => api.get(`/movie/rsList`,data,headers)

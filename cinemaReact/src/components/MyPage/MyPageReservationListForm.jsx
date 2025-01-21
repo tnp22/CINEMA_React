@@ -1,34 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import './MyPageReservationListForm.css';
+import { getMyPage } from '../../apis/my';
+import ticket from '../../apis/ticket';
 
 function MyPageReservationListForm() {
   const [reservationList, setReservationList] = useState([]);
+  const [userData, setUserData] = useState(null); // 사용자 데이터 상태
+
+  useEffect( () => {
+    if(userData){
+      console.log("유저이름",userData.username);
+      getData()
+    }
+  },[userData])
 
   useEffect(() => {
-    // 이 부분은 실제 API 호출 로직으로 교체해 주세요.
-    // 예시로 임시 데이터를 사용합니다.
-    const fetchedReservations = [
-      {
-        id: 1,
-        file: 'poster1.jpg',
-        title: '영화 1',
-        date: '2025-01-14',
-        time: '14:00',
-        theater: '상영관 1',
-        seat: 'A1',
-      },
-      {
-        id: 2,
-        file: 'poster2.jpg',
-        title: '영화 2',
-        date: '2025-01-15',
-        time: '16:00',
-        theater: '상영관 2',
-        seat: 'B2',
-      },
-    ];
-    setReservationList(fetchedReservations);
+
+    const fetchUserData = async () => {
+      try {
+        const response = await getMyPage();
+        setUserData(response.data);
+      } catch (error) {
+        console.error("사용자 정보 가져오기 중 오류 발생:", error);
+        Swal.alert("오류", "사용자 정보를 가져오는 데 실패했습니다.", "error");
+      }
+    };
+
+    fetchUserData();
   }, []);
+
+  const getData = async () => {
+    const headers = {
+      'Content-Type' : 'multupart/form-data'
+    }
+    const data = {
+      'username' : userData.username
+    }
+    console.log("여기까진 옴");
+    
+    // const response = await ticket.rsList(data,headers)
+  }
 
   const handleDetail = (id) => {
     window.location.href = `/m/payment?id=${id}`;
