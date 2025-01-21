@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './MyPageReservationListForm.css';
 import { getMyPage } from '../../apis/my';
+import { rsList, rsList2 } from '../../apis/ticket';
+import Pagination from './Pagination';
 
 function MyPageReservationListForm() {
   const [reservationList, setReservationList] = useState([]);
   const [userData, setUserData] = useState(null); // 사용자 데이터 상태
+  const [pageData, setPageData] = useState(null)
+
+  useEffect ( () => {
+    if(reservationList){
+      console.log("예매 목록",reservationList);
+    }
+    if(pageData){
+      console.log("페이지 정보 : ", pageData);
+    }
+  }, [reservationList,pageData])
 
   useEffect( () => {
     if(userData){
-      console.log("유저이름",userData.username);
+      // console.log("유저이름",userData.username);
       getData()
     }
   },[userData])
@@ -35,9 +47,21 @@ function MyPageReservationListForm() {
     const data = {
       'username' : userData.username
     }
-    console.log("여기까진 옴");
     
-    // const response = await ticket.rsList(data,headers)
+    const searchParams = new URLSearchParams(location.search);
+    const page = searchParams.get("page");
+    if(page){
+      const response = await rsList2(userData.username,page,headers)
+      const d = response.data
+      setReservationList(d.reservationList.list)
+      setPageData(d.reservationList)
+    } else {
+      const response = await rsList(userData.username,headers)
+      const d = response.data
+      setReservationList(d.reservationList.list)
+      setPageData(d.reservationList)
+    }
+    // console.log(d.reservationList);
   }
 
   const handleDetail = (id) => {
@@ -74,7 +98,7 @@ function MyPageReservationListForm() {
         <div key={reservation.id} className="movie-card row align-items-center">
           <div className="col-md-2 text-center">
             <img
-              src={`/api/img?id=${reservation.file}`}
+              src={`/api/files/img?id=${reservation.file}`}
               alt="Movie Poster"
               className="movie-poster"
             />
@@ -103,18 +127,16 @@ function MyPageReservationListForm() {
       ))}
 
       {/* 페이지네이션 (예시로 static 페이지 번호 처리) */}
-      <div className="mypagereservationlist-pagination flex justify-content-center" style={{ margin: '30px 0' }}>
-        <ul style={{ display: 'flex', listStyleType: 'none', gap: '10px' }}>
-          {/* 페이지 번호들 */}
-          <li>
-            <a href="/mypagereservationlist?page=1">1</a>
-          </li>
-          <li>
-            <a href="/mypagereservationlist?page=2">2</a>
-          </li>
-        </ul>
-      </div>
+      {
+        pageData && pageData.total > 1 && <Pagination pageData={pageData} />
+      }
     </div>
+
+
+    
+
+    
+    
   );
 }
 

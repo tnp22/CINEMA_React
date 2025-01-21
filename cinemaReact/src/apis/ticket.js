@@ -14,4 +14,6 @@ export const GETPayment2 = (reserveId, headers) => api.get(`/movie/payment?id=${
 
 export const remove = (reserveId, headers) => api.delete(`/movie/delete?id=${reserveId}`,headers)
 
-export const rsList = (data, headers) => api.get(`/movie/rsList`,data,headers)
+export const rsList = (username, headers) => api.get(`/movie/rsList?usesname=${username}`,headers)
+
+export const rsList2 = (username,page, headers) => api.get(`/movie/rsList?usesname=${username}&page=${page}`,headers)

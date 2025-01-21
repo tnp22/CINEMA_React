@@ -192,7 +192,7 @@ public class ticketController {
             response.put("mapData", mapData);
             response.put("reservationSeat", seat);
 
-            response.put("authUserName", authUser.getName());
+            response.put("authUserName", authUser.getUsername());
             response.put("authUserEmail", authUser.getEmail());
             response.put("theaterId", id);
             response.put("money", money);
@@ -323,11 +323,11 @@ public class ticketController {
     }
 
     @GetMapping("/rsList")
-    public ResponseEntity<?> reservationList(@RequestBody Map<String, String> data,
+    public ResponseEntity<?> reservationList(@RequestParam("usesname") String username,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(name = "size", required = false, defaultValue = "8") Integer size) throws Exception {
-        String username = data.get("username");
-        // log.info("테스트, " + username);
+        // String username = data.get("username");
+        log.info("테스트, " + username);
         // List<Reserve> reservationList = reserveService.selectUsername(username);
         PageInfo<Reserve> reservationList = reserveService.selectUsername(page, size, username);
         // System.out.println(reservationList);
@@ -355,6 +355,7 @@ public class ticketController {
         }
 
         // model.addAttribute("movie", movie_);
+        log.info("예매 내역" + reservationList);
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("reservationList", reservationList);
         return new ResponseEntity<>(response, HttpStatus.OK);
