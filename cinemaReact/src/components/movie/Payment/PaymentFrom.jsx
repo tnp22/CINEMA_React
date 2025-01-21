@@ -98,6 +98,10 @@ const PaymentFrom = () => {
         
     }
 
+    const rsList = () => {
+        location.href = '/mypagereservationlist'
+    }
+
 
 
 
@@ -176,7 +180,7 @@ const PaymentFrom = () => {
     <div className="container mt-4">
         <div className="d-flex justify-content-center">
             <button className="btn btn-secondary mx-2" onClick={remove}>예매취소</button>
-            <button className="btn btn-primary mx-2">예매 내역</button>
+            <button className="btn btn-primary mx-2" onClick={rsList}>예매 내역</button>
             <button className="btn btn-primary mx-2">메인으로</button>
         </div>
     </div>
