@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MyPageReservationListForm.css';
 import { getMyPage } from '../../apis/my';
-import ticket from '../../apis/ticket';
 
 function MyPageReservationListForm() {
   const [reservationList, setReservationList] = useState([]);
