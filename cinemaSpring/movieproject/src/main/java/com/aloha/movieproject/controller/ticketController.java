@@ -323,10 +323,10 @@ public class ticketController {
     }
 
     @GetMapping("/rsList")
-    public String reservationList(@AuthenticationPrincipal CustomUser authUser, Model model,
+    public ResponseEntity<?> reservationList(@RequestBody Map<String, String> data,
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(name = "size", required = false, defaultValue = "8") Integer size) throws Exception {
-        String username = authUser.getUsername();
+        String username = data.get("username");
         // log.info("테스트, " + username);
         // List<Reserve> reservationList = reserveService.selectUsername(username);
         PageInfo<Reserve> reservationList = reserveService.selectUsername(page, size, username);
@@ -355,8 +355,9 @@ public class ticketController {
         }
 
         // model.addAttribute("movie", movie_);
-        model.addAttribute("reservationList", reservationList);
-        return "/user/reservationList";
+        Map<String, Object> response = new HashMap<String, Object>();
+        response.put("reservationList", reservationList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ResponseBody
