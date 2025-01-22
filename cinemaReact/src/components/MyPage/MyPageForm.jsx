@@ -101,7 +101,7 @@ const MyPageForm = () => {
         <div className="mypage-main">
           <div className="mypage-sidebar">
             <ul>
-              <li><Link to="/mypageedit">나의 정보</Link></li>
+              <li><Link to="/mypage">나의 정보</Link></li>
               <li><Link to="/mypagereservationlist">예매 내역</Link></li>
               <li><Link to="/user/myInquiry/inquiries">문의 내역</Link></li>
             </ul>
