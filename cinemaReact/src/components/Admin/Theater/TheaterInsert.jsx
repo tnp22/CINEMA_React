@@ -1,8 +1,41 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './AddMapFrom/AddMapFrom.module.css'
+import ResetCs from '../css/Reset.module.css';
+import AdminHeader from '../AdminHeader';
+import * as admins from '../../../apis/admins'
 import * as addmap from '../../../apis/addmap'
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const TheaterInsert = () => {
+
+  
+  const [cinemaIDD, setCinemaIDD] = useState('')
+  const navigate = useNavigate();
+
+  // 🎁 게시글 목록 데이터
+  const getList = async () => {
+    let response = null
+    response = await admins.theaterListInsertGet(cinemaIDD)
+    const data = await response.data
+    const movieList = data.pageInfo
+    const theaterLists = data.theaterLists
+    console.dir(data)
+  }
+
+  useEffect( () => {
+    const searchParamss = new URLSearchParams(location.search);
+    setCinemaIDD(searchParamss.get("cinemaId"))
+    if(cinemaIDD != ''){
+      getList()
+      .then(() => {
+      
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+        navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+      });
+    }
+  }, [cinemaIDD])
 
   const automapingRef = useRef(null);
 
@@ -266,7 +299,7 @@ const TheaterInsert = () => {
 
     // 주소창에서 갖고오기
     const searchParams = new URLSearchParams(location.search);
-    const cinemaId = searchParams.get("cinemId");
+    const cinemaId = searchParams.get("cinemaId");
 
     console.log("이름",name);
     console.log("시네마ID",cinemaId);
@@ -312,7 +345,7 @@ const TheaterInsert = () => {
     }
     // id(UUID), name(이건 먼지모르겠) 암튼 컨트롤러에서 수정해야함
     let request = new XMLHttpRequest()
-    const response = await addmap.addmap(data, headers)
+    const response = await addmap.addmap(cinemaIDD,data, headers)
     const d = response.data
     console.log(d);
     alert('맵제작 완료')
@@ -339,42 +372,46 @@ const TheaterInsert = () => {
     }));
   };
   
+
+  
   return (
-    <div className='containerFluid'>
+    <div className={`container-fluid ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <br/>
       {/* 관리자 정보? */}
-
+      <AdminHeader/>
       {/* 맵 제작 */}
-      <div className="row">
-      <div className="colMd2">
-        <div>
-          <ul>
-            <li><a href="">상영관</a></li>
-            <li><a href="">상영리스트</a></li>
-          </ul>
-        </div>
+      <div className="row" style={{ height: '90%' }}>
+      <div className="col-md-2">
+          <div style={{ marginTop: '100px', fontSize: '26px' }}>
+              <ul>
+                  <li><Link to={`/admin/theater/list/${cinemaIDD}`} style={{ color: '#583BBF' }}>상영관</Link></li>
+                  <li><Link to={`/admin/theaterList/list/${cinemaIDD}`}>상영리스트</Link></li>
+              </ul>
+          </div>
       </div>
 
-      <div className="colMd8">
+      <div className="col-md-8">
         <br/>
         <h1>상영관 생성</h1>
         <br/>
         <div>
             {/* CSRF TOKEN 부분 및 상영관 이름 작성 theater/insert/ 상영관생성 아래 from 태그 */}
             <table style={{ width: "100%" }}>
+              <tbody>
               <tr>
                   <th style={{ padding: "12px 0", width: "20%", textAlign: "center" }}>이름</th>
                   <td>
                       <li><input style={{ width: "90%" }} type="text" name="name" id="name" required/></li>
                   </td>
               </tr>
+              </tbody>
           </table>
         </div>
         <div className={styles.createContainer}>
           <h4>좌석 배치</h4>
           <div className={styles.createBtn}>
             <input type="number" name='width_length' value={formValues.width_length} onChange={handleChange}/>
-            <input type="number" name='height_length' value={formValues.height_lenght} onChange={handleChange}/>
+            <input type="number" name='height_length' defaultValue={formValues.height_lenght} />
             <button type='button' onClick={create}>생성</button>
           </div>
 
@@ -390,14 +427,15 @@ const TheaterInsert = () => {
           <button id='readButton' onClick={automap}>일괄 번호생성</button>
         </div>
         <br/>
-        <div className={styles.ExitCreate}>
-          {/* 취소 링크 달아야함 */}
-            <a href="">취소</a>
-            <button id="addButton" onClick={addButton}>생성</button>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Link to={`/admin/theater/list/${cinemaIDD}`} type="button" className={ResetCs.sub_butten} style={{ marginRight: '20px' }} >취소</Link>
+          <button type="submit" onClick={addButton} className={ResetCs.butten} >생성</button>
         </div>
       </div>
 
-      <div className={styles.colMd2}></div>
+      <div className={styles.colMd2}>
+
+      </div>
       {/* ? */}
     </div>
     </div>

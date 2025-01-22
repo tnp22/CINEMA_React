@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import $ from 'jquery';
 import ResetCs from '../css/Reset.module.css';  // 상대 경로로 CSS 파일 포함
 import '../css/Admin.css';  // 상대 경로로 CSS 파일 포함
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import LeftSideBar1 from '../LeftSideBar1'
 import AdminHeader from '../AdminHeader';
 import * as admins from '../../../apis/admins'
@@ -26,6 +26,7 @@ const TheaterList = () => {
 
     // ?파라미터=값 가져오는 방법
     const location = useLocation()
+    const navigate = useNavigate();
   
     const updatePage = () => {
       const query = new URLSearchParams(location.search)
@@ -68,6 +69,13 @@ const TheaterList = () => {
     // ❓ 
     useEffect( () => {
       getList()
+      .then(() => {
+        console.log('list')
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+        navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+      });
     }, [page, size,search])
   
     useEffect( () => {
@@ -176,7 +184,7 @@ const TheaterList = () => {
             <div className="col-md-2">
                 <div style={{ marginTop: '100px', fontSize: '26px' }}>
                     <ul className="mt-5">
-                        <li><Link to={`/admin/theater/insert?cinemId=${id}`}>상영관 생성</Link></li>
+                        <li><Link to={`/admin/theater/insert?cinemaId=${id}`}>상영관 생성</Link></li>
                     </ul>
                 </div>
             </div>

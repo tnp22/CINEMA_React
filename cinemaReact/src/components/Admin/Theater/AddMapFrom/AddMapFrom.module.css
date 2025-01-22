@@ -156,6 +156,22 @@
     text-align: center; /* 텍스트 가운데 정렬 */
     vertical-align: middle;
 }
+.mapButton1 {
+    line-height: 70px;
+    width: 75px;
+    height: 75px;
+    border-style: solid;
+    border-width: 1px;
+    background: white;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    position: relative; /* 자식 요소들이 절대 위치를 가질 수 있도록 */
+    min-width: 75px; /* 최소 너비 설정 */
+    min-height: 75px; /* 최소 높이 설정 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    vertical-align: middle;
+}
 
 
 

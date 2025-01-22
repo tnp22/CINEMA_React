@@ -1,16 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './AddMapFrom/AddMapFrom.module.css'
 import * as addmap from '../../../apis/addmap'
+import ResetCs from '../css/Reset.module.css';
+import AdminHeader from '../AdminHeader';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 const TheaterUpdate = () => {
+  const navigate = useNavigate();
 
   const [mapData,setMapData] = useState([]);
+  const [xx,setX] = useState();
+  const [yy,setY] = useState();
+  
     const [Id, setId] = useState();
     const [name, setName] = useState();
+
+    const changeName = (e) => { setName( e.target.value ) }
+
+    const [cinemaIDD, setCinemaIDD] = useState()
+  
+    useEffect( () => {
+      const searchParamss = new URLSearchParams(location.search);
+      setCinemaIDD(searchParamss.get("cinemaId"))
+    }, [cinemaIDD])
   
     useEffect( () => {
       if(mapData.length > 0){
         console.log("맵정보",mapData);
+        setX(mapData[0].length)
+        setY(mapData.length)
         var x = mapData[0].length;
         var y = mapData.length;
     
@@ -44,7 +62,8 @@ const TheaterUpdate = () => {
       const headers = {
         'Content-Type' : 'application/json'
       }
-      const response = await addmap.readMap(theaterId,headers)
+      const searchParamsss = new URLSearchParams(location.search);
+      const response = await addmap.readMap(searchParamsss.get("cinemaId"),theaterId,headers)
       console.error(response);
       
       console.log(response.status);
@@ -78,7 +97,7 @@ const TheaterUpdate = () => {
           for (var i = 0; i < x; i++) {
               count++;
               // 버튼 생성
-              var map = document.createElement("div"); // 버튼 요소 생성
+              var map = document.createElement("button"); // 버튼 요소 생성
               map.className = styles.mapButton; // CSS 클래스 추가
   
               // id 값 A1 A2 ..... F숫자ㅑ
@@ -146,6 +165,13 @@ const TheaterUpdate = () => {
   
     useEffect( () => {
       readMap()
+      .then(() => {
+      
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+        navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+      });
     }, [])
 
   
@@ -399,7 +425,7 @@ const TheaterUpdate = () => {
   function children(map){
       const children = map.children;
       for (const child of children) {
-          child.style.display = 'felx';
+          child.style.display = 'flex';
       }
   }
 
@@ -407,7 +433,7 @@ const TheaterUpdate = () => {
   const addButton = async () => {
 
     
-    let name = document.getElementById('name').value;
+    //let name = document.getElementById('name').value;
     // let cinemaId = document.getElementById('cinemaId')
 
     // 주소창에서 갖고오기
@@ -458,12 +484,13 @@ const TheaterUpdate = () => {
     }
     // id(UUID), name(이건 먼지모르겠) 암튼 컨트롤러에서 수정해야함
     let request = new XMLHttpRequest()
-    const response = await addmap.updatemap(data, headers)
+    const searchParamsss = new URLSearchParams(location.search);
+    const response = await addmap.updatemap(searchParamsss.get("cinemaId"),data, headers)
     const d = response.data
     console.log(YMap);
 
     alert('맵수정 완료')
-    location.href = '/admin/theater/list/'+cinemaId
+    location.href = `/admin/theater/select?id=${Id}&cinemaId=${cinemaId}`
     
     
     
@@ -473,38 +500,38 @@ const TheaterUpdate = () => {
     
   }
 
-  const [formValues, setFormValues] = useState({
-    width_length : 8,
-    height_lenght : 4,
-  });
+  // const [formValues, setFormValues] = useState({
+  //   width_length : ,
+  //   height_lenght : mapData?.length
+  // });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues( (pervValues) => ({
-      ...pervValues,
-      [name]:value, //입력 필드 이름에 따라 상태 업데이트
-    }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormValues( (pervValues) => ({
+  //     ...pervValues,
+  //     [name]:value, //입력 필드 이름에 따라 상태 업데이트
+  //   }));
+  // };
   
   return (
-    <div className='containerFluid'>
+    <div className={`container-fluid ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <br/>
       {/* 관리자 정보? */}
-
+      <AdminHeader/>
       {/* 맵 제작 */}
-      <div className="row">
-      <div className="colMd2">
-        <div>
-          <ul>
-            <li><a href="">상영관</a></li>
-            <li><a href="">상영리스트</a></li>
-          </ul>
-        </div>
+      <div className="row" style={{ height: '90%' }}>
+      <div className="col-md-2">
+          <div style={{ marginTop: '100px', fontSize: '26px' }}>
+              <ul>
+                  <li><Link to={`/admin/theater/list/${cinemaIDD}`} style={{ color: '#583BBF' }}>상영관</Link></li>
+                  <li><Link to={`/admin/theaterList/list/${cinemaIDD}`}>상영리스트</Link></li>
+              </ul>
+          </div>
       </div>
 
-      <div className="colMd8">
+      <div className="col-md-8">
         <br/>
-        <h1>상영관 생성</h1>
+        <h1>상영관 수정</h1>
         <br/>
         <div>
             {/* CSRF TOKEN 부분 및 상영관 이름 작성 theater/insert/ 상영관생성 아래 from 태그 */}
@@ -512,7 +539,7 @@ const TheaterUpdate = () => {
               <tr>
                   <th style={{ padding: "12px 0", width: "20%", textAlign: "center" }}>이름</th>
                   <td>
-                      <li><input style={{ width: "90%" }} type="text" name="name" id="name" value={name} required/></li>
+                      <li><input style={{ width: "90%" }} type="text" name="name" id="name" onChange={changeName} value={name} required/></li>
                   </td>
               </tr>
           </table>
@@ -520,8 +547,8 @@ const TheaterUpdate = () => {
         <div className={styles.createContainer}>
           <h4>좌석 배치</h4>
           <div className={styles.createBtn}>
-            <input type="number" name='width_length' value={formValues.width_length} onChange={handleChange}/>
-            <input type="number" name='height_length' value={formValues.height_lenght} onChange={handleChange}/>
+            <input type="number" name='width_length' defaultValue={xx} />
+            <input type="number" name='height_length' defaultValue={yy} />
             <button type='button' onClick={create}>생성</button>
           </div>
 
@@ -537,10 +564,9 @@ const TheaterUpdate = () => {
           <button id='readButton' onClick={automap}>일괄 번호생성</button>
         </div>
         <br/>
-        <div className={styles.ExitCreate}>
-          {/* 취소 링크 달아야함 */}
-            <a href="">취소</a>
-            <button id="addButton" onClick={addButton}>생성</button>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Link to={`/admin/theater/select?id=${Id}&cinemaId=${cinemaIDD}`} type="button" className={ResetCs.sub_butten} style={{ marginRight: '20px' }} >취소</Link>
+          <button type="submit" onClick={addButton} className={ResetCs.butten} >수정</button>
         </div>
       </div>
 

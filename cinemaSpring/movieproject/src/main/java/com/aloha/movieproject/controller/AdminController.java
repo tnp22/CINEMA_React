@@ -434,7 +434,7 @@ public class AdminController {
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/insert")
-    public ResponseEntity<?> theaterInsert(@RequestBody Theater theater) throws Exception {
+    public ResponseEntity<?> theaterInsert(@RequestParam("id") String id,@RequestBody Theater theater) throws Exception {
         String uuid = UUID.randomUUID().toString();
         theater.setId(uuid);
         theater.setMap(theater.getId());
@@ -498,15 +498,15 @@ public class AdminController {
     // 불러오기
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @GetMapping("/theater/select")
-    public ResponseEntity<?> readMap(@RequestParam("id") String id) throws Exception {
-        log.info("맵불러오기 진입" + id);
+    public ResponseEntity<?> readMap(@RequestParam("id") String id,@RequestParam("theaterId") String theaterId) throws Exception {
+        log.info("맵불러오기 진입" + theaterId);
         String path = "C:\\upload\\test"; // 파일 저장 경로
-        String fileName = id + ".txt"; // JSON에서 fileName 추출
+        String fileName = theaterId + ".txt"; // JSON에서 fileName 추출
         // 파일 읽기
         String result = ft.read(path, fileName);
         System.out.println(result);
 
-        Theater theater = theaterService.select(id);
+        Theater theater = theaterService.select(theaterId);
 
         // String을 List<List<String>>으로 변환
         List<List<String>> mapData = new ArrayList<>();
@@ -588,7 +588,7 @@ public class AdminController {
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     // @ResponseBody
     @PostMapping("/theater/update")
-    public ResponseEntity<?> theaterUpate(@RequestBody Theater theater) throws Exception {
+    public ResponseEntity<?> theaterUpate(@RequestParam("id") String id,@RequestBody Theater theater) throws Exception {
         theater.setMap(theater.getId());
         theater.setMapSize(theater.getX() * theater.getY());
 
@@ -743,7 +743,7 @@ public class AdminController {
      */
     @PreAuthorize("(hasRole('SUPER')) or ( #p0 != null and @TheaterService.isOwner(#p0,authentication.principal.user.authList))")
     @PostMapping(value = "/theaterList/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> theaterListInsert(
+    public ResponseEntity<?> theaterListInsert(@RequestParam("id") String id,
             @ModelAttribute TheaterList theaterList) throws Exception {
         try {
             // 데이터 요청

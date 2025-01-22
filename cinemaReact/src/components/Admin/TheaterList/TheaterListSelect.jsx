@@ -29,6 +29,13 @@ const TheaterListSelect = () => {
 
   useEffect( () => {
     getList()
+    .then(() => {
+      
+    })
+    .catch((error) => {
+      console.error("Error occurred:", error);
+      navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+    });
   }, [])
 
 

@@ -109,35 +109,6 @@ const UserList = () => {
     
     }, [pagination])
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-      // 사용자 권한 가져오기 (예시: localStorage나 context에서)
-      const userRole = localStorage.getItem("userInfo")
-  
-  
-      // roles 값이 존재하지 않거나 파싱이 실패하면 기본값 설정
-      if (!userRole) {
-        navigate('/');
-        return;
-      }
-  
-      try {
-        // roles 값을 JSON 객체로 파싱
-        const parsedRole = JSON.parse(userRole);
-  
-        const hasSuperRole = parsedRole.authList.some(role => role.auth === "ROLE_SUPER");
-        // isAdmin 권한 체크
-        if (!hasSuperRole) {
-          // 권한이 없으면 메인 페이지로 리디렉션
-          navigate('/');
-        }
-      } catch (error) {
-        // JSON 파싱 실패 시 메인 페이지로 리디렉션
-        navigate('/');
-      }
-    }, [navigate]);
-
   return (
     <div className={`container-fluid ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <style>

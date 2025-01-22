@@ -49,7 +49,7 @@ const TheaterListInsert = () => {
     const onInsert = async (formData, headers) => {
       try {
         // const response = await boards.insert(title, writer, content)
-        const response = await admins.theaterListInsert(formData, headers)
+        const response = await admins.theaterListInsert(id,formData, headers)
         const data = await response.data
         const status = response.status
         console.log(data);
@@ -141,6 +141,13 @@ const TheaterListInsert = () => {
   
     useEffect( () => {
       getList()
+      .then(() => {
+      
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+        navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+      });
     }, [search])
 
   return (
