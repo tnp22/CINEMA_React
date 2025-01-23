@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import * as ticket from '../../../apis/ticket';
 import styles from './SeatSelectionFrom.module.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const SeatSelectionFrom = () => {
@@ -419,7 +421,7 @@ const SeatSelectionFrom = () => {
             </div>
 
             <div className="align-content-center">
-                <button className={'btn ' +styles.reserveBtn} id='reservatio' onClick={reservation} ><i className="fa-solid fa-angle-right fa-3x"></i><p>예매하기</p></button>
+                <button className={'btn ' +styles.reserveBtn} id='reservatio' onClick={reservation} ><FontAwesomeIcon icon={faAngleRight} size="3x" /><p>예매하기</p></button>
             </div>
         </div>
     </div>

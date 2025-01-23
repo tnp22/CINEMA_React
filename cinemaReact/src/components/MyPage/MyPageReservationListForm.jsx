@@ -65,7 +65,7 @@ function MyPageReservationListForm() {
   }
 
   const handleDetail = (id) => {
-    window.location.href = `/m/payment?id=${id}`;
+    window.location.href = `/Ticket/Payment?id=${id}`;
   };
 
   const handleRemove = (id) => {
