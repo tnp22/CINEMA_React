@@ -84,8 +84,8 @@ export const theaterListInsertGet = (id) =>
 export const theaterListInsertGetSearch = (id,search) => 
   api.get(`admin/theaterList/insert?id=${id}&search=${search}` )
 
-export const theaterListInsert = (formData, headers) => {
-  return api.post('admin/theaterList/insert', formData, { headers: headers });
+export const theaterListInsert = (id,formData, headers) => {
+  return api.post(`admin/theaterList/insert?id=${id}`, formData, { headers: headers });
 }
 
 export const theaterListSelect = (id,theaterListId) => api.get(`admin/theaterList/select?id=${id}&theaterListId=${theaterListId}`)

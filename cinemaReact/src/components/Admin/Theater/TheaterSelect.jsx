@@ -1,12 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './AddMapFrom/AddMapFrom.module.css'
 import * as addmap from '../../../apis/addmap'
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import ResetCs from '../css/Reset.module.css';
+import AdminHeader from '../AdminHeader';
+import * as admins from '../../../apis/admins'
 
 const TheaterSelect = () => {
 
   const [mapData,setMapData] = useState([]);
   const [Id, setId] = useState();
   const [name, setName] = useState();
+
+  const [cinemaIDD, setCinemaIDD] = useState('')
+  const navigate = useNavigate();
+
+    // 🎁 게시글 목록 데이터
+    const getList = async () => {
+      let response = null
+      response = await admins.theaterListInsertGet(cinemaIDD)
+      const data = await response.data
+      console.dir(data)
+    }
+
+  useEffect( () => {
+    const searchParamss = new URLSearchParams(location.search);
+    setCinemaIDD(searchParamss.get("cinemaId"))
+    if(cinemaIDD != ''){
+      getList()
+      .then(() => {
+      
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+        navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+      });
+    }
+  }, [cinemaIDD])
 
   useEffect( () => {
     if(mapData.length > 0){
@@ -44,7 +74,8 @@ const TheaterSelect = () => {
     const headers = {
       'Content-Type' : 'application/json'
     }
-    const response = await addmap.readMap(theaterId,headers)
+    const searchParamsss = new URLSearchParams(location.search);
+    const response = await addmap.readMap(searchParamsss.get("cinemaId"),theaterId,headers)
     console.error(response);
     
     console.log(response.status);
@@ -79,7 +110,7 @@ const TheaterSelect = () => {
             count++;
             // 버튼 생성
             var map = document.createElement("div"); // 버튼 요소 생성
-            map.className = styles.mapButton; // CSS 클래스 추가
+            map.className = styles.mapButton1; // CSS 클래스 추가
 
             // id 값 A1 A2 ..... F숫자ㅑ
             let ascii2 = String.fromCharCode(ascii); // 아스키코드 문자변환
@@ -492,34 +523,36 @@ const TheaterSelect = () => {
   }
   
   return (
-    <div className='containerFluid'>
+    <div className={`container-fluid ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <br/>
       {/* 관리자 정보? */}
-
+      <AdminHeader/>
       {/* 맵 제작 */}
-      <div className="row">
-      <div className="colMd2">
-        <div>
-          <ul>
-            <li><a href="">상영관</a></li>
-            <li><a href="">상영리스트</a></li>
-          </ul>
-        </div>
+      <div className="row" style={{ height: '90%' }}>
+      <div className="col-md-2">
+          <div style={{ marginTop: '100px', fontSize: '26px' }}>
+              <ul>
+                  <li><Link to={`/admin/theater/list/${cinemaIDD}`} style={{ color: '#583BBF' }}>상영관</Link></li>
+                  <li><Link to={`/admin/theaterList/list/${cinemaIDD}`}>상영리스트</Link></li>
+              </ul>
+          </div>
       </div>
 
-      <div className="colMd8">
+      <div className="col-md-8">
         <br/>
-        <h1>상영관 생성</h1>
+        <h1>상영관 조회</h1>
         <br/>
         <div>
             {/* CSRF TOKEN 부분 및 상영관 이름 작성 theater/insert/ 상영관생성 아래 from 태그 */}
             <table style={{ width: "100%" }}>
+              <tbody>
               <tr>
                   <th style={{ padding: "12px 0", width: "20%", textAlign: "center" }}>이름</th>
                   <td>
-                      <li><input style={{ width: "90%" }} type="text" name="name" id="name" value={name} required/></li>
+                      <li><input style={{ width: "90%" }} type="text" name="name" id="name" value={name || ''} required/></li>
                   </td>
               </tr>
+              </tbody>
           </table>
         </div>
         <div className={styles.createContainer}>
@@ -542,10 +575,9 @@ const TheaterSelect = () => {
           <button id='readButton' onClick={automap}>일괄 번호생성</button>
         </div>
         <br/>
-        <div className={styles.ExitCreate}>
-          {/* 취소 링크 달아야함 */}
-            <a href="">취소</a>
-            <button id="addButton" onClick={updatedFrom}>수정</button>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Link to={`/admin/theater/list/${cinemaIDD}`} type="button" className={ResetCs.sub_butten} style={{ marginRight: '20px' }} >취소</Link>
+          <button type="submit" onClick={updatedFrom} className={ResetCs.butten} >수정</button>
         </div>
       </div>
 

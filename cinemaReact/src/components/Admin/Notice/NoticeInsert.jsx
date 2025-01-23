@@ -50,10 +50,10 @@ const NoticeInsert = () => {
 
     $(".mainLi").on("mouseover",function(){
       $(this).find(".subLi").stop().slideDown();
-      //$(this).find(".movieLi").stop().slideDown();
+      $(this).find(".movieLi").stop().slideDown();
     })
     $(".mainLi").on("mouseout",function(){
-        //$(this).find(".movieLi").stop().slideUp();
+        $(this).find(".movieLi").stop().slideUp();
         $(this).find(".subLi").stop().slideUp();
     })
 
@@ -67,6 +67,9 @@ const NoticeInsert = () => {
     <div className={`container-fluid ${ResetCs.adminLEE}`} style={{ height: '98vh' }}>
       <style>
         {`
+          .movieLi {
+            display: none;
+          }
           .subLi {
             display: none;
           }

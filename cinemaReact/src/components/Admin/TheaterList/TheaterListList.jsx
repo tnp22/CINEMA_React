@@ -17,7 +17,7 @@ const TheaterListList = () => {
 
 
   // 🧊 state
-  const [cinema, setCinema] = useState()
+  const [cinema, setCinema] = useState({})
   const [theaterList, setTheaterList] = useState([])
   const [pagination, setPagination] = useState({})
   const [page, setPage] = useState(1)
@@ -60,12 +60,12 @@ const TheaterListList = () => {
     }
     
     const data = await response.data
+
     const list = data.pageInfo
     const ncinema = data.cinema
     const pagination = data.pagination
     console.dir(data)
-    console.dir(data.pageInfo)
-    console.dir(data.pagination)
+    console.dir(ncinema)
 
     setTheaterList( list )
     setCinema(ncinema)
@@ -83,6 +83,14 @@ const TheaterListList = () => {
   // ❓ 
   useEffect( () => {
     getList()
+    .then(() => {
+      
+    })
+    .catch((error) => {
+      console.error("Error occurred:", error);
+      navigate('/admin/error'); // 예외가 발생하면 에러 페이지로 리디렉션
+    });
+
   }, [page, size,search])
 
   useEffect( () => {
@@ -104,6 +112,7 @@ const TheaterListList = () => {
     createPageList()
   
   }, [pagination])
+
 
 
   return (
