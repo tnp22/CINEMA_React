@@ -3,6 +3,7 @@ import './MyPageReservationListForm.css';
 import { getMyPage } from '../../apis/my';
 import { rsList, rsList2 } from '../../apis/ticket';
 import Pagination from './Pagination';
+import * as ticket from '../../apis/ticket'
 
 function MyPageReservationListForm() {
   const [reservationList, setReservationList] = useState([]);
@@ -68,26 +69,23 @@ function MyPageReservationListForm() {
     window.location.href = `/Ticket/Payment?id=${id}`;
   };
 
-  const handleRemove = (id) => {
+  const handleRemove = async (id) => {
     if (window.confirm('삭제하시겠습니까?')) {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-      fetch('/m/delete', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: JSON.stringify({ id }),
-      })
-        .then((response) => response.text())
-        .then((data) => {
-          if (data === 'SUCCESS') {
-            alert('예매 취소 성공');
-            window.location.href = '/mypagereservationlist';
-          } else {
-            alert('예매 취소 실패');
+      const headers = {
+        'Content-Type' : 'application/json'
+      }
+      const reserveId = id
+      const response = await ticket.remove(reserveId,headers)
+      console.log(response.status);
+      if(response.status == 200){
+          alert('예매 취소 완료')
+          var mId = reserveId
+          const response2 = await ticket.hanbul(mId)
+          if(response2.status == 200){
+              console.log("환불완료");
+              location.href = '/Ticket/ReserveList'
           }
-        });
+      }
     }
   };
 

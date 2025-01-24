@@ -93,7 +93,12 @@ const PaymentFrom = () => {
         console.log(response.status);
         if(response.status == 200){
             alert('예매 취소 완료')
-            location.href = '/Ticket/ReserveList'
+            var mId = reserveId
+            const response2 = await ticket.hanbul(mId)
+            if(response2.status == 200){
+                console.log("환불완료");
+                location.href = '/Ticket/ReserveList'
+            }
         }
         
     }
