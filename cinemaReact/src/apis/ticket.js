@@ -18,6 +18,9 @@ export const rsList = (username, headers) => api.get(`/movie/rsList?usesname=${u
 
 export const rsList2 = (username,page, headers) => api.get(`/movie/rsList?usesname=${username}&page=${page}`,headers)
 
-export const hanbul = (data,headers) => api.post(`https://api.iamport.kr/payments/cancel`,data,headers)
+export const reserveRemove = (id,headers) => api.get(`/movie/delete?id=${id}`,headers)
+
+export const hanbul = (mId) => api.get(`/portone/cancal?mId=${mId}`)
+
 
 

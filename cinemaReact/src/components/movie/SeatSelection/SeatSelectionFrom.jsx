@@ -6,6 +6,8 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 
 const SeatSelectionFrom = () => {
+    // 딜레이
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const [mapData,setMapData] = useState([]);
 
@@ -23,11 +25,92 @@ const SeatSelectionFrom = () => {
     const [person, setPerson] = useState();
     const [theaterId, setTheaterId] = useState();
 
+    const [seatChecked, SetSeatChecked] = useState();
+
     useEffect( () => {
-        if(reservationSeat1){
-            // console.log("중복검사",reservationSeat1);
+        console.log("seatChecked 체크 : ", seatChecked);
+        if(seatChecked == 1){
+            console.log("값 1");
+            getdata()
         }
-    }, [reservationSeat1])
+        if(seatChecked == 2){
+            console.log("값 2");
+            console.log(reservationSeat1);
+
+            var seatcount = 0;
+            var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
+            var seats = seat.split(",")
+            console.log("선택한 seat값 : ", seat);
+            
+            for( var s1 of  reservationSeat1){
+                for( var s2 of seats){
+                    if(s1 == s2){
+                        console.log(s1,"좌석이 중복되었습니다");
+                        seatcount = 1;
+                    }
+                }
+            }
+            let data = {
+                'id' : theaterId, // theaterId
+                'seat': seat, // 시트값 외부 부러오기
+                'person': person, // 예약인원 외부에서
+                'userName' : authUserName, // 외부에서
+                'money' : money, // 외부에서
+                'orderId' : orderId // 외부?
+            };
+            const headers = {
+                'Content-Type' : 'multupart/form-data'
+            }
+            if( seatcount == 1){
+                console.log("환불진행");
+                jungbok(orderId)
+                alert("결제실패하였습니다.")
+                // location.href = `/Ticket/SeatSelection?theaterListId=${theaterId}&person=${person}_${money}`
+            } else {
+                // DB 등록
+                payment(data,headers)
+            }
+        }     
+
+    }, [seatChecked])
+
+
+    async function jungbok(){
+        var count = 0
+        while (true) {
+            var mId = orderId;
+            console.log(mId);
+            const response = await ticket.hanbul(mId);
+            console.log("결과?",response.status);
+            if(response.status == 200){
+                return
+            }
+            
+            
+            count++
+            console.log("카운트 : ", count);
+            
+            if(count == 10){
+                return
+            }
+        }
+    }
+
+    async function payment(data,headers){
+        const response = await ticket.moviePayment(data,headers);
+        console.log(response.status);
+        const status = response.status
+        const data2 = response.data
+        if(status == 200){
+            console.log("결제 성공");
+            console.log("예매 ID",data2.reserveId);
+            location.href = '/Ticket/Payment?id='+data2.reserveId
+            // 이동경로 설정해줘야함
+        } else {
+            console.log("결제 실패");
+            alert('결제 실패')
+        }
+    }
 
     // const getdata1 = async(seatcount) => {
     //     if(seatcount ==1){
@@ -48,31 +131,51 @@ const SeatSelectionFrom = () => {
     //     }
     // }
 
-    const getdata = async() => {
-        if(count == 1){
+    const getdata = async () => {
+        if(!seatChecked){
+            if(count == 1){
+                // 주소에서 불러오자
+                const searchParams = new URLSearchParams(location.search);
+                const theaterListId = searchParams.get("theaterListId");
+                const person = searchParams.get("person")
+                console.log("상영영화ID",theaterListId);
+                
+                const headers = {
+                    'Content-Type' : 'multupart/form-data'
+                }
+                const response = await ticket.seatSelection(theaterListId,person,headers)
+                const data = response.data;
+                setMapData(data.mapData);
+                setReservationSeat(data.reservationSeat)
+                setMovieId(data.movieId)
+                setMovieTitle(data.movieTitle)
+                setUuuuId(data.uuuuid)
+                setAuthUserName(data.authUserName)
+                setAuthUserEmail(data.authUserEmail)
+                setTheaterId(data.theaterId)
+                setMoney(data.money)
+                setPerson(data.person)
+                
+                setReservationSeat1(data.reservationSeat)
+            }
+        } else{
+            console.log("SetSeatChecked 값 존제");
+            
             // 주소에서 불러오자
             const searchParams = new URLSearchParams(location.search);
             const theaterListId = searchParams.get("theaterListId");
             const person = searchParams.get("person")
-            console.log("상영영화ID",theaterListId);
             
             const headers = {
                 'Content-Type' : 'multupart/form-data'
             }
+            await delay(1000); // 1초 딜레이
             const response = await ticket.seatSelection(theaterListId,person,headers)
             const data = response.data;
-            setMapData(data.mapData);
-            setReservationSeat(data.reservationSeat)
-            setMovieId(data.movieId)
-            setMovieTitle(data.movieTitle)
-            setUuuuId(data.uuuuid)
-            setAuthUserName(data.authUserName)
-            setAuthUserEmail(data.authUserEmail)
-            setTheaterId(data.theaterId)
-            setMoney(data.money)
-            setPerson(data.person)
-
             setReservationSeat1(data.reservationSeat)
+            console.log("setReservationSeat1 등록");
+            
+            SetSeatChecked(2)
         }
       
       
@@ -296,94 +399,17 @@ const SeatSelectionFrom = () => {
                     buyer_addr : '테스트 테스트대로',                       // 결제자 주소
                     buyer_postcode : '1234-1234'                   // 결제자 우편번호
                 }, async function (rsp) { // callback
-            if (rsp.success) {
+                if (rsp.success) {
                     // 결제 성공
                     console.log("rsp",rsp);
-                    // 결제 완료 페이지로 이동
-                    
-                    var seat = document.getElementById("seat").getAttribute("seat"); // 예약 좌석
-                    var id =  theaterId;
-                    var name = authUserName;
-
-                    console.log(id);
-                    let data = {
-                        'id' : id,
-                        'seat': seat,
-                        'person': person,
-                        'userName' : name,
-                        'money' : money,
-                        'orderId' : orderId
-                    };
-                    const headers = {
-                        'Content-Type' : 'multupart/form-data'
-                    }
-
-                     // 중복임의값 추가 테스트
-                    console.log("선택된 시트?",seat);
-                    console.log("이미 예매된 자석? ",reservationSeat1);
-                    
-                    var seatcount = 0;
-                    for( var s1 of  reservationSeat1){
-                        for( var s2 of seat){
-                            if(s1 == s2){
-                                // console.log(s1,"좌석이 중복되었습니다");
-                                seatcount = 1;
-                            }
-                        }
-                    }
-                    seatcount = 1;
-                    if( seatcount == 1){
-                        //중복있음
-                        console.log("중복있음");
-                        try {
-                              const headers = {'Content-Type': 'application/json'}
-                              const data = {                            
-                                  "imp_uid": "imp00366386",
-                                  "merchant_uid": orderId,
-                                  "amount": 0,
-                                  "tax_free": 0,
-                                  "vat_amount": 0,
-                                  "checksum": 0,
-                                  "reason": "reason",
-                                  "refund_holder": "refund_holder",
-                                  "refund_bank": "refund_bank",
-                                  "refund_account": "refund_account",
-                                  "refund_tel": "refund_tel",
-                                  "retain_promotion": false}
-                            const { datasadfsaf } = await ticket.hanbul(data,headers);
-                            console.log(datasadfsaf);
-
-                          } catch (error) {
-                            console.error(error);
-                          }
-                    }
-                    else {
-                        // 중복없음
-                        const response = await ticket.moviePayment(data,headers);
-                        console.log(response.status);
-                        const status = response.status
-                        const data2 = response.data
-                        if(status == 200){
-                            console.log("결제 성공");
-                            console.log("예매 ID",data2.reserveId);
-                            location.href = '/Ticket/Payment?id='+data2.reserveId
-                            // 이동경로 설정해줘야함
-                        } else {
-                            console.log("결제 실패");
-                            alert('결제 실패')
-                        }
-                    }
-
-                    
-                    
-                    
-                    
-                    } else {
-                        // 결제 실패
-                        console.log("결제 실패");
-                        console.log(rsp);
-                        return;
-                    }
+                    // 새로 데이터 불러오기
+                    SetSeatChecked(1)
+                } else {
+                    // 결제 실패
+                    console.log("결제 실패");
+                    console.log(rsp);
+                    return;
+                }
             });
                         
     }
