@@ -190,6 +190,8 @@ public class ticketController {
             response.put("movieTitle", movie_.getTitle());
             response.put("uuuuid", uuuuid);
             response.put("mapData", mapData);
+
+            response.put("reserve", reserve);
             response.put("reservationSeat", seat);
 
             response.put("authUserName", authUser.getUsername());
@@ -264,6 +266,7 @@ public class ticketController {
             String seat = data.get("seat");
             String person = data.get("person");
             String id = data.get("id");
+            String orderId = data.get("orderId");
             String userName = data.get("userName");
             int money = Integer.parseInt(data.get("money"));
 
@@ -295,7 +298,7 @@ public class ticketController {
             reserve.setAreaSub(num.getCinema().getAreaSub());
             reserve.setDate(formatDate);
             reserve.setTime(formatTime);
-            reserve.setId(UUID.randomUUID().toString()); // 값 넣어야함
+            reserve.setId(orderId); // 값 넣어야함
             reserve.setMoney(money); // 값 계산해야함 아직안했어
             reserve.setSeat(seat);
             reserve.setPerson(Integer.parseInt(person));
