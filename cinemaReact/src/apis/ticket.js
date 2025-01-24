@@ -17,3 +17,7 @@ export const remove = (reserveId, headers) => api.delete(`/movie/delete?id=${res
 export const rsList = (username, headers) => api.get(`/movie/rsList?usesname=${username}`,headers)
 
 export const rsList2 = (username,page, headers) => api.get(`/movie/rsList?usesname=${username}&page=${page}`,headers)
+
+export const hanbul = (data,headers) => api.post(`https://api.iamport.kr/payments/cancel`,data,headers)
+
+
