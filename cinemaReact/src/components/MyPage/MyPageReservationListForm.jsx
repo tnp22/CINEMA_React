@@ -75,14 +75,14 @@ function MyPageReservationListForm() {
         'Content-Type' : 'application/json'
       }
       const reserveId = id
-      const response = await ticket.remove(reserveId,headers)
-      console.log(response.status);
-      if(response.status == 200){
-          alert('예매 취소 완료')
-          var mId = reserveId
-          const response2 = await ticket.hanbul(mId)
-          if(response2.status == 200){
-              console.log("환불완료");
+      var mId = reserveId
+      const response2 = await ticket.hanbul(mId)
+      console.log(response2.status);
+      if(response2.status == 200){
+        console.log("환불완료");
+        const response = await ticket.remove(reserveId,headers)
+        if(response.status == 200){
+              alert('예매 취소 완료')
               location.href = '/Ticket/ReserveList'
           }
       }

@@ -14,7 +14,7 @@
     /* overflow-y: scroll; */
     position: absolute; 
     left: 50%; top:4%; 
-    transform: translate(-45%, 0);
+    transform: translate(-49%, 0);
 }
 .seat.available {
     background-color: #e0e0e0;

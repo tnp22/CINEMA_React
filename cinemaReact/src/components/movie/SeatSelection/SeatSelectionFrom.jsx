@@ -478,7 +478,6 @@ const SeatSelectionFrom = () => {
     </style>
     <div className="container-fluid p-0 d-flex">
         {/* <div className="header flex-fill" ></div> */}
-        <div className="container p-0">
             {/* 본문 */}
             <div className="row m-0 p-0 w-100 col-3 text-center">
                 <div className="col p-0">
@@ -496,7 +495,6 @@ const SeatSelectionFrom = () => {
                     </div>
                 </div>
             </div>
-        </div>
         <div className={styles.header + " flex-fill"}></div>
     </div>
 
