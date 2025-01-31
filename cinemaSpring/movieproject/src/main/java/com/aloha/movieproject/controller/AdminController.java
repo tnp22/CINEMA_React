@@ -674,6 +674,7 @@ public class AdminController {
             Map<String, Object> response = new HashMap<String, Object>();
             if (search == null || search.equals("")) {
                 pageInfo = theaterListService.list(page, size, id);
+                //log.info(pageInfo.toString());
             } else {
                 pageInfo = theaterListService.list(page, size, id, search);
                 response.put("search", search);
@@ -685,7 +686,7 @@ public class AdminController {
             response.put("pageInfo", pageInfo.getList());
             response.put("pagination", pagination);
             response.put("cinema", cinemaService.select(id));
-            response.put("id", id);
+            //response.put("id", id);
             // model.addAttribute("pageInfo", pageInfo);
             // model.addAttribute("cinema", cinemaService.select(id));
             // model.addAttribute("id", id);
@@ -747,6 +748,8 @@ public class AdminController {
             @ModelAttribute TheaterList theaterList) throws Exception {
         try {
             // 데이터 요청
+            theaterList.setId(UUID.randomUUID().toString());
+            theaterList.setCinemaId(id);
             int result = theaterListService.insert(theaterList);
             Map<String, Object> response = new HashMap<String, Object>();
             // model.addAttribute("cinema", );
