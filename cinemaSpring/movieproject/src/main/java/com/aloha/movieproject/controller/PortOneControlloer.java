@@ -204,12 +204,15 @@ public class PortOneControlloer {
         response.put("orIn", orIn);
 
         // 토큰 받아오기 & 환불요청
-        int result_delete = cancelPay(token, mId);
-        if (result_delete == -1) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            // 주문내역 삭제
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        for(int i=0 ; i<1000; i++){
+            int result_delete = cancelPay(token, mId);
+            if (result_delete == -1) {
+                
+            } else {
+                // 주문내역 삭제
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
         }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

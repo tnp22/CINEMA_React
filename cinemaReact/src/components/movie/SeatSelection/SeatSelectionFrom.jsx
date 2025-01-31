@@ -90,7 +90,7 @@ const SeatSelectionFrom = () => {
             count++
             console.log("카운트 : ", count);
             
-            if(count == 10){
+            if(count == 1000){
                 return
             }
         }
