@@ -70,7 +70,7 @@ function MyPageReservationListForm() {
   };
 
   const handleRemove = async (id) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+    if (window.confirm('예약 취소하시겠습니까?')) {
       const headers = {
         'Content-Type' : 'application/json'
       }
@@ -83,8 +83,8 @@ function MyPageReservationListForm() {
         const response = await ticket.remove(reserveId,headers)
         if(response.status == 200){
               alert('예매 취소 완료')
-              location.href = '/Ticket/ReserveList'
-          }
+              location.replace('/mypagereservationlist');
+        }
       }
     }
   };

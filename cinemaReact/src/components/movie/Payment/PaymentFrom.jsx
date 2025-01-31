@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../Payment/PaymentFrom.css'
+import { Link } from 'react-router-dom';
 import * as ticket from '../../../apis/ticket';
 
 const PaymentFrom = () => {
@@ -186,7 +187,7 @@ const PaymentFrom = () => {
         <div className="d-flex justify-content-center">
             <button className="btn btn-secondary mx-2" onClick={remove}>예매취소</button>
             <button className="btn btn-primary mx-2" onClick={rsList}>예매 내역</button>
-            <button className="btn btn-primary mx-2">메인으로</button>
+            <Link to="/" className="btn btn-primary mx-2">메인으로</Link>
         </div>
     </div>
 </div>

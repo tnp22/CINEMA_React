@@ -1,5 +1,8 @@
 package com.aloha.movieproject.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -107,19 +112,33 @@ public class UsersController {
         }
     }
     
-    // @PreAuthorize("hasRole('ADMIN') or #p0 == authentication.name")
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<?> destroy(@PathVariable("id") String username) throws Exception {
-    //     int result = userService.delete(username);
-    //     if(result > 0){
-    //         log.info("회원 삭제 성공");
-    //         return new ResponseEntity<>("SUCCESS",HttpStatus.OK);
-    //     }
-    //     else{
-    //         log.info("회원 삭제 실패");
-    //         return new ResponseEntity<>("FAIL",HttpStatus.BAD_REQUEST);
-    //     }
-    // }
+    @PreAuthorize("hasRole('ADMIN') or #p0 == authentication.name")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> destroy(@PathVariable("id") String username) throws Exception {
+        try {
+            // 데이터 요청
+            Users user = userService.select(username);
+            if (user.isEnabled()) {
+                user.setEnabled(false);
+            } else {
+                user.setEnabled(true);
+            }
+            int result = userService.update(user);
+            Map<String, Object> response = new HashMap<String, Object>();
+            if (result > 0) {
+                log.info("유저 휴먼 전환 성공!");
+                // return "redirect:/admin/userManager/user/list";
+                return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+            } else {
+                log.info("유저 휴먼 전환 실패!");
+                response.put("error", "error");
+                // return "redirect:/admin/userManager/user/list?error";
+                return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 
 }

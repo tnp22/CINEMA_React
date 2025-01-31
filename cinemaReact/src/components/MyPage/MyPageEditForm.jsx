@@ -242,12 +242,15 @@ const [mainFile, setMainFile] = useState(null)
           <button type="submit" className="mypageedit-btn-purple" style={{ width: '95px' }}>
             정보 수정
           </button>
-          <button type="submit" className="mypageedit-btn-purple" style={{ width: '95px' }}
+          </div>
+      </form>
+      <div>
+        <button type="submit" className="mypageedit-btn-purple" style={{ width: '95px' }}
             onClick={() => deleteUser(userInfo.username)}>
             회원 탈퇴
-          </button>
-        </div>
-      </form>
+        </button>
+      </div>
+      
 
       <form id="infoForm" className="mypageedit-needs-validation" encType="multipart/form-data">
         <div className="mypageedit-divider" />

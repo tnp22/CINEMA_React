@@ -64,8 +64,9 @@ const TheaterListList = () => {
     const list = data.pageInfo
     const ncinema = data.cinema
     const pagination = data.pagination
-    console.dir(data)
-    console.dir(ncinema)
+    //console.dir(data)
+    //console.dir(list)
+    //console.dir(ncinema)
 
     setTheaterList( list )
     setCinema(ncinema)
