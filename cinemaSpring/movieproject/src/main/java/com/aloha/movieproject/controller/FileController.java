@@ -92,6 +92,10 @@ public class FileController {
     @GetMapping("/img")
     public ResponseEntity<byte[]> thumbnail(@RequestParam("id") String id) throws Exception {
         Files file = fileService.select(id);
+
+        if(file == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         
         String filePath = file.getUrl();
         // 파일 객체 생성

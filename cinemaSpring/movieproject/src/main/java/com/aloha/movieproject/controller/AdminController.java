@@ -2100,7 +2100,7 @@ public class AdminController {
      * @return
      * @throws Exception
      */
-    // @Secured("ROLE_SUPER")
+    @Secured("ROLE_SUPER")
     @GetMapping("/userManager/user/sleep")
     public ResponseEntity<?> userSleep(@RequestParam("username") String username) throws Exception {
 
