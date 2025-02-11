@@ -147,11 +147,12 @@ class _BannerSliderState extends State<BannerSlider> {
     }).toList();
 
     List<Uint8List> images = await Future.wait(imageFutures);
-
-    setState(() {
+    if(mounted){
+      setState(() {
       _bannerImages = images;
       movieId = widget.banners.map((banner) => banner["movie"]["id"].toString()).toList();
-    });
+      });
+    }
   }
 
   void _onBannerTap(int index) {

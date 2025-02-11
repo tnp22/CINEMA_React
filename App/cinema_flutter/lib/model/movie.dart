@@ -1,8 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:cinema_flutter/model/Files.dart';
+import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 
 class Movie{
