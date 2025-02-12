@@ -19,16 +19,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-      ),initialRoute: '/main',
+      ),
+      initialRoute: '/main',
       routes: {
-        '/main' : (context) => const MainScreen(),
-        '/home' : (context) => const HomeScreen(),
-        '/login' : (context) => const LoginScreen(),
-        '/join' : (context) => const JoinScreen(),
-        '/mypage' : (context) => const MypageScreen(),
+        '/main': (context) => const MainScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/join': (context) => const JoinScreen(),
+        '/mypage': (context) => const MypageScreen(),
       },
       debugShowCheckedModeBanner: false,
-      
     );
   }
 }
