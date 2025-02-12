@@ -26,7 +26,7 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
   final noticeService = NoticeService();
   int _page = 1; // 초기 페이지 1
   final int _size = 8;
-  final int _option = 0;
+  int _option = 1; // 기본 옵션 값
   final TextEditingController _keywordController = TextEditingController();
   String _keyword = '';
 
@@ -55,6 +55,14 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
     }
   }
 
+  // 검색 버튼 클릭 시 호출되는 함수
+  void _onSearchPressed() {
+    setState(() {
+      _keyword = _keywordController.text.trim(); // 검색어 갱신
+    });
+    _loadNotices(); // 검색어에 맞게 목록 다시 로드
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,11 +70,81 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
         title: Text("공지사항"),
       ),
       body: Container(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         child: _noticeList.isEmpty
             ? Center(child: CircularProgressIndicator())  // 리스트가 비어 있으면 로딩 표시
             : Column(
                 children: [
+                  // 검색 입력과 버튼을 배치
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                                              // option 선택 드롭다운
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color.fromARGB(255, 100, 100, 100)),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: DropdownButton<int>(
+                            value: _option,
+                            onChanged: (int? newOption) {
+                              setState(() {
+                                _option = newOption ?? 1; // 선택된 옵션 값으로 변경
+                              });
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: 1,
+                                child: Text('제목'),
+                              ),
+                              DropdownMenuItem(
+                                value: 2,
+                                child: Text('내용'),
+                              ),
+                            ],
+                            underline: SizedBox(), // 기본 밑줄 제거
+                            isExpanded: false,
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        // 검색어 입력란
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: TextField(
+                              controller: _keywordController,
+                              decoration: InputDecoration(
+                                labelText: '검색어를 입력하세요',
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        // 검색 버튼
+                        ElevatedButton(
+                          onPressed: _onSearchPressed,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 103, 24, 250),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text("검색", style: TextStyle(fontSize: 16,color: Colors.white) ),
+                        ),
+                        SizedBox(width: 10),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 12),
                   // 게시글 목록
                   Expanded(
                     child: ListView.builder(
