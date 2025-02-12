@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+
       ),initialRoute: '/main',
       onGenerateRoute: (settings){
         switch (settings.name) {
@@ -92,7 +93,6 @@ class MyApp extends StatelessWidget {
       //   '/notice/read' : (context)=> const NoticeReadScreen(),
       // },
       debugShowCheckedModeBanner: false,
-      
     );
   }
 }
