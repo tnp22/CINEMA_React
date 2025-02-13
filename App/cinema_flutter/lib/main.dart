@@ -14,13 +14,12 @@ void main() {
   // runApp() : Flutter 앱의 시작점을 지정하는 함수
   // - Provider(MyApp) 을 루트 위젯으로 설정하여 앱을 실행
   runApp(
-    // ⭐ Provider
-    // - ChangeNotifierProvider 를 사용하여 UserProvider를 전역으로 사용할 수 있도록 지정
-    ChangeNotifierProvider(
-      create: (context) => UserProvider(),
-      child: const MyApp(),
-    )
-  );
+      // ⭐ Provider
+      // - ChangeNotifierProvider 를 사용하여 UserProvider를 전역으로 사용할 수 있도록 지정
+      ChangeNotifierProvider(
+    create: (context) => UserProvider(),
+    child: const MyApp(),
+  ));
   //runApp(const MyApp());
 }
 
@@ -29,8 +28,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    // 앱 실행 시, 자동로그인 
+    // 앱 실행 시, 자동로그인
     Provider.of<UserProvider>(context, listen: false).autoLogin();
 
     return MaterialApp(
@@ -38,61 +36,66 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-      ),initialRoute: '/main',
-      onGenerateRoute: (settings){
+      ),
+      initialRoute: '/main',
+      onGenerateRoute: (settings) {
         switch (settings.name) {
-        case '/main' :  
+          case '/main':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => MainScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  MainScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        case '/home' :  
+          case '/home':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  HomeScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        case '/login' :  
+          case '/login':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  LoginScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        case '/join' :  
+          case '/join':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => JoinScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  JoinScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        case '/mypage' :  
+          case '/mypage':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => MypageScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  MypageScreen(),
               transitionDuration: Duration(seconds: 0),
             );
 
-        case '/notice/list' :  
+          case '/notice/list':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => NoticeListScreen(),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  NoticeListScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        // case '/notice/read':
-        //   final args = settings.arguments as String?;
-        //   print("Arguments passed to /notice/read: $args");
-        //   return PageRouteBuilder(
-        //     // ModalRoute를 통해 arguments 받기
-        //     pageBuilder: (context, animation, secondaryAnimation) {
-        //       if (args is String) {
-        //         return NoticeReadScreen(id: args);
-        //       }
-        //       return NoticeReadScreen(id: null);
-        //     },
-        //     transitionDuration: Duration(seconds: 0),
-        //   );
+          // case '/notice/read':
+          //   final args = settings.arguments as String?;
+          //   print("Arguments passed to /notice/read: $args");
+          //   return PageRouteBuilder(
+          //     // ModalRoute를 통해 arguments 받기
+          //     pageBuilder: (context, animation, secondaryAnimation) {
+          //       if (args is String) {
+          //         return NoticeReadScreen(id: args);
+          //       }
+          //       return NoticeReadScreen(id: null);
+          //     },
+          //     transitionDuration: Duration(seconds: 0),
+          //   );
         }
-
       },
       routes: {
-        '/notice/read' : (context)=> const NoticeReadScreen(),
+        '/notice/read': (context) => const NoticeReadScreen(),
       },
       debugShowCheckedModeBanner: false,
-      
     );
   }
 }
