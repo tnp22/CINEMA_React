@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<Map<String, dynamic>> homeData;
-  Future<Map<String, dynamic>>? userData;
+  Future<String>? profileImage;
   final movieService = MovieService();
   late UserProvider userProvider; // UserProvider 선언
 
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       try {
         if (userProvider.userInfo != null) {
           setState(() {
-            userData = movieService.getUser(userProvider.userInfo!.id.toString());
+            profileImage = movieService.getUser(userProvider.userInfo!.id.toString());
           });
         }
       } catch (e) {
@@ -53,25 +53,23 @@ Widget build(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if (userProvider.isLogin)
-              FutureBuilder<Map<String, dynamic>>(
-                future: userData,  // 비동기적으로 데이터를 받아옴
+              FutureBuilder<String>(
+                future: movieService.getUser(userProvider.userInfo!.id.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator(); // 로딩 중
                   } else if (snapshot.hasError) {
-                    return Icon(Icons.error);  // 오류 처리
-                  } else if (snapshot.hasData) {
-                    var imageBytes = snapshot.data?['imageBytes']; // 바이너리 이미지 데이터
+                    return Icon(Icons.error); // 에러 발생 시
+                  }
+                  else {
                     return ClipOval(
-                      child: Image.memory(
-                        imageBytes, // 이미지 데이터
-                        height: 40,
+                      child: Image.network(
+                        "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
                         width: 40,
-                        fit: BoxFit.cover,
+                        height: 40,
+                        fit: BoxFit.cover, // 이미지가 꽉 차도록
                       ),
                     );
-                  } else {
-                    return Icon(Icons.account_circle);  // 기본 아이콘
                   }
                 },
               ),
@@ -166,13 +164,11 @@ class _BannerSliderState extends State<BannerSlider> {
   late Timer _timer;
   MovieService movieService = MovieService();
   List<Uint8List> _bannerImages = [];
-  List<String> movieId = [];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentPage);
-    _loadBanners(); // 배너 이미지 로드
     _startAutoSlide();
   }
 
@@ -189,73 +185,68 @@ class _BannerSliderState extends State<BannerSlider> {
     });
   }
 
-  // 배너 이미지 로드
-  Future<void> _loadBanners() async {
-    List<Future<Uint8List>> imageFutures = widget.banners.map((banner) {
-      
-      String fileId = banner["files"]["id"].toString();
-      return movieService.getImage(fileId);
-    }).toList();
-
-    List<Uint8List> images = await Future.wait(imageFutures);
-    if(mounted){
-      setState(() {
-      _bannerImages = images;
-      movieId = widget.banners.map((banner) => banner["movieId"].toString()).toList();
-      });
-    }
-  }
-
   void _onBannerTap(int index) {
-    Navigator.pushNamed(context, "/movieInfo", arguments: movieId[index]);
-    print("전달된 movieId: ${movieId[index]}");
+    Navigator.pushNamed(context, "/movieInfo", arguments: widget.banners[index]["movieId"]);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: double.infinity,
-      child: _bannerImages.isEmpty
-          ? Center(child: CircularProgressIndicator()) // 로딩 표시
-          : PageView.builder(
-              controller: _pageController,
-              itemCount: _bannerImages.length + 2,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                  if (index == _bannerImages.length + 1) {
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      _pageController.jumpToPage(1);
-                    });
-                  } else if (index == 0) {
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      _pageController.jumpToPage(_bannerImages.length);
-                    });
-                  }
-                });
-              },
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return GestureDetector(
-                    onTap: () => _onBannerTap(_bannerImages.length - 1),
-                    child: Image.memory(_bannerImages.last, fit: BoxFit.cover),
-                  );
-                } else if (index == _bannerImages.length + 1) {
-                  return GestureDetector(
-                    onTap: () => _onBannerTap(0),
-                    child: Image.memory(_bannerImages.first, fit: BoxFit.cover),
-                  );
-                } else {
-                  return GestureDetector(
-                    onTap: () => _onBannerTap(index - 1),
-                    child: Image.memory(_bannerImages[index - 1], fit: BoxFit.cover),
-                  );
+Widget build(BuildContext context) {
+  return Container(
+    height: 100,
+    width: double.infinity,
+    child: widget.banners.isEmpty
+        ? Center(child: CircularProgressIndicator()) // 로딩 표시
+        : PageView.builder(
+            controller: _pageController,
+            itemCount: widget.banners.length + 2,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+                if (index == widget.banners.length + 1) {
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    _pageController.jumpToPage(1);
+                  });
+                } else if (index == 0) {
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    _pageController.jumpToPage(widget.banners.length);
+                  });
                 }
-              },
-            ),
-    );
-  }
+              });
+            },
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                String id = widget.banners.last['files']['id'].toString();
+                return GestureDetector(
+                  onTap: () => _onBannerTap(widget.banners.length - 1),
+                  child: Image.network(
+                    "http://10.0.2.2:8080/files/img?id=$id",
+                    fit: BoxFit.cover,
+                  ),
+                );
+              } else if (index == widget.banners.length + 1) {
+                String id = widget.banners.first['files']['id'].toString();
+                return GestureDetector(
+                  onTap: () => _onBannerTap(0),
+                  child: Image.network(
+                    "http://10.0.2.2:8080/files/img?id=$id",
+                    fit: BoxFit.cover,
+                  ),
+                );
+              } else {
+                String id = widget.banners[index - 1]['files']['id'].toString();
+                return GestureDetector(
+                  onTap: () => _onBannerTap(index - 1),
+                  child: Image.network(
+                    "http://10.0.2.2:8080/files/img?id=$id",
+                    fit: BoxFit.cover,
+                  ),
+                );
+              }
+            },
+          ),
+  );
+}
+
 }
 
 
@@ -273,13 +264,10 @@ class MovieSlider extends StatefulWidget {
 class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   MovieService movieService = MovieService();
-  List<Uint8List> movieImages = [];
-  List<Uint8List> expectImages = [];
 
   @override
   void initState() {
     super.initState();
-    _loadMovieImage();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -288,33 +276,6 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
     _tabController.dispose();
     super.dispose();
   }
-
-  // 영화 이미지 로드
-  Future<void> _loadMovieImage() async {
-  try {
-    List<Future<Uint8List>> movieImageFutures = widget.movieList.map((movie) {
-      String fileId = movie["files"]["id"].toString();
-      return movieService.getImage(fileId);
-    }).toList();
-
-    List<Future<Uint8List>> expectImageFutures = widget.expectList.map((movie) {
-      String fileId = movie["files"]["id"].toString();
-      return movieService.getImage(fileId);
-    }).toList();
-
-    List<Uint8List> images1 = await Future.wait(movieImageFutures);
-    List<Uint8List> images2 = await Future.wait(expectImageFutures);
-
-    if (mounted) {
-      setState(() {
-        movieImages = images1;
-        expectImages = images2;
-      });
-    }
-  } catch (e) {
-    print("❌ 이미지 로딩 실패: $e");
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -348,14 +309,14 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
                   // 현재 상영중 영화 리스트
                   SizedBox(
                     height: 350,
-                    child: movieImages.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
+                    child: widget.movieList.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
                         ? Center(child: CircularProgressIndicator())
                         : ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: widget.movieList.length,
                             itemBuilder: (context, index) {
                               return MovieCard(
-                                image: movieImages[index],
+                                image: widget.movieList[index]["files"]["id"],
                                 title: widget.movieList[index]["title"],
                                 id:widget.movieList[index]["id"]
                               );
@@ -365,16 +326,16 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
                   // 상영 예정작 리스트
                   SizedBox(
                   height: 350,
-                  child: expectImages.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
+                  child: widget.expectList.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
                       ? Center(child: CircularProgressIndicator())
                       : ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: widget.expectList.length,
                           itemBuilder: (context, index) {
                             return MovieCard(
-                              image: expectImages[index],  // ✅ expectImages로 변경
+                              image: widget.expectList[index]["files"]["id"],  // ✅ expectImages로 변경
                               title: widget.expectList[index]["title"],
-                              id:widget.movieList[index]["id"]
+                              id:widget.expectList[index]["id"]
                             );
                           },
                         ),
@@ -390,7 +351,7 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
 }
 
 class MovieCard extends StatelessWidget {
-  final Uint8List image;
+  final String image;
   final String title;
   final String id;
 
@@ -414,8 +375,8 @@ class MovieCard extends StatelessWidget {
                   // Navigate to a new screen
                   Navigator.pushNamed(context, "/movieInfo", arguments: id);
                 },
-                child: Image.memory(
-                  image,
+                child: Image.network(
+                  "http://10.0.2.2:8080/files/img?id=$image",
                   fit: BoxFit.cover,
                 ),
               ),
