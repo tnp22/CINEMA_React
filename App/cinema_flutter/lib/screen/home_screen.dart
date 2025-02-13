@@ -433,6 +433,13 @@ class MovieCard extends StatelessWidget {
               child: ElevatedButton(
               onPressed: () {
                 print("예매하기 클릭됨: $title");
+                print("영화 아이디 : $id");
+                print("영화 아이디타입 : ${id.runtimeType}");
+                Navigator.pushReplacementNamed(context, "/ticket", 
+                arguments: {
+                  "movieTitle": title,
+                  "movieId": id,
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF583BBF), // 버튼 배경색: 보라색
