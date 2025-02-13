@@ -72,31 +72,25 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, animation, secondaryAnimation) => NoticeListScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-        case '/notice/read' :  
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => NoticeReadScreen(),
-              transitionDuration: Duration(seconds: 0),
-            );
-        case '/movieInfo' :  
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => MovieInfoScreen(),
-              transitionDuration: Duration(seconds: 0),
-            );
+        // case '/notice/read':
+        //   final args = settings.arguments as String?;
+        //   print("Arguments passed to /notice/read: $args");
+        //   return PageRouteBuilder(
+        //     // ModalRoute를 통해 arguments 받기
+        //     pageBuilder: (context, animation, secondaryAnimation) {
+        //       if (args is String) {
+        //         return NoticeReadScreen(id: args);
+        //       }
+        //       return NoticeReadScreen(id: null);
+        //     },
+        //     transitionDuration: Duration(seconds: 0),
+        //   );
         }
+
       },
-      // routes: {
-      //   '/main' : (context) => const MainScreen(),
-      //   '/home' : (context) => const HomeScreen(),
-      //   '/login' : (context) => const LoginScreen(),
-      //   '/join' : (context) => const JoinScreen(),
-      //   '/mypage' : (context) => const MypageScreen(),
-
-
-
-
-      //   '/notice/list' : (context)=> const NoticeListScreen(),
-      //   '/notice/read' : (context)=> const NoticeReadScreen(),
-      // },
+      routes: {
+        '/notice/read' : (context)=> const NoticeReadScreen(),
+      },
       debugShowCheckedModeBanner: false,
       
     );

@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // 메인으로 이동
                         //Navigator.pop(context);
-                        userProvider.selectedIndex=0;
+                        userProvider.selectedIndex=2;
                         Navigator.pushReplacementNamed(context, '/main');
                         return;
                       }
