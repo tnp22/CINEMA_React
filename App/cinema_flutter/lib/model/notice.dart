@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:uuid/uuid.dart';
 
 class Notice{
@@ -45,8 +43,8 @@ class Notice{
       id: map['id'],
       title: map['title'],
       content: map['content'],
-      regDate: map['regDate'],
-      updDate: map['updDate'],
+      regDate: map['regDate'] != null ? DateTime.parse(map['regDate']) : null,
+      updDate: map['updDate'] != null ? DateTime.parse(map['updDate']) : null,
       view: map['view'],
     );
   }

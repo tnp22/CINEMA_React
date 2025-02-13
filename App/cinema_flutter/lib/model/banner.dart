@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:cinema_flutter/model/Files.dart';
 import 'package:cinema_flutter/model/movie.dart';
+import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 class Banner {
   static final Uuid _uuid = Uuid();  // static 선언
