@@ -275,7 +275,7 @@ public class UserController {
         }
     }
 
-
+    // 스프링부트 원본
     // @PostMapping("/mypageUpdate")
     // public String mypageUpdate(@AuthenticationPrincipal CustomUser authUser,
     //         @RequestParam(value = "file", required = false) MultipartFile file,
@@ -380,123 +380,165 @@ public class UserController {
     //     return "redirect:/user/mypageUpdate";
     // }
 
+    // 리액트에서 사용
+    // @PostMapping("/mypageUpdate")
+    // public ResponseEntity<?> mypageUpdate(@AuthenticationPrincipal CustomUser authUser,
+    //                                   @RequestParam(value = "file", required = false) MultipartFile file,
+    //                                   Users updatedUser) {
+    // log.info(":::::::::: 마이페이지 정보 수정 처리 ::::::::::");
+
+    // if (authUser != null) {
+    //     String currentUsername = authUser.getUsername();
+    //     log.info("현재 로그인 사용자: " + currentUsername);
+
+    //     Map<String, String> response = new HashMap<>();
+
+    //     // 비밀번호 업데이트 로직
+    //     String newPassword = updatedUser.getPassword();
+
+    //     if (newPassword != null && !newPassword.trim().isEmpty()) {
+    //         String encodedPassword = passwordEncoder.encode(newPassword);
+    //         updatedUser.setUsername(currentUsername);
+    //         updatedUser.setPassword(encodedPassword);
+    //         try {
+    //             int updateResult = userService.updatePw(updatedUser);
+    //             if (updateResult > 0) {
+    //                 log.info("비밀번호 변경 성공!");
+    //                 response.put("successMessage", "비밀번호가 성공적으로 변경되었습니다.");
+    //             } else {
+    //                 log.error("비밀번호 변경 실패!");
+    //                 response.put("errorMessage", "비밀번호 변경에 실패했습니다.");
+    //                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //             }
+    //         } catch (Exception e) {
+    //             log.error("비밀번호 변경 중 오류 발생", e);
+    //             response.put("errorMessage", "비밀번호 변경 중 오류가 발생했습니다.");
+    //             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //         }
+    //     } else {
+    //         log.warn("새로운 비밀번호가 입력되지 않았습니다.");
+    //     }
+
+    //     // 이메일 업데이트 로직
+    //     String newEmail = updatedUser.getEmail();
+
+    //     if (newEmail != null && !newEmail.trim().isEmpty()) {
+    //         // 이메일 형식 유효성 검사 (간단한 예시)
+    //         if (newEmail.matches("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+    //             updatedUser.setUsername(currentUsername);
+    //             updatedUser.setEmail(newEmail);
+    //             try {
+    //                 int emailUpdateResult = userService.updateEmail(updatedUser);
+    //                 if (emailUpdateResult > 0) {
+    //                     log.info("이메일 변경 성공!");
+    //                     response.put("successMessage", "이메일이 성공적으로 변경되었습니다.");
+    //                 } else {
+    //                     log.error("이메일 변경 실패!");
+    //                     response.put("errorMessage", "이메일 변경에 실패했습니다.");
+    //                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //                 }
+    //             } catch (Exception e) {
+    //                 log.error("이메일 변경 중 오류 발생", e);
+    //                 response.put("errorMessage", "이메일 변경 중 오류가 발생했습니다.");
+    //                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //             }
+    //         } else {
+    //             log.warn("유효하지 않은 이메일 형식: " + newEmail);
+    //             response.put("errorMessage", "유효한 이메일 주소를 입력해주세요.");
+    //             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    //         }
+    //     } else {
+    //         log.warn("새로운 이메일이 입력되지 않았습니다.");
+    //     }
+
+    //     // 프로필 이미지 변경 처리
+    //     if (file != null && !file.isEmpty()) {
+    //         String profileUploadPath = "C:/upload/profiles/";
+    //         String originalFilename = file.getOriginalFilename();
+    //         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+
+    //         List<String> validExtensions = Arrays.asList("png", "jpg", "jpeg");
+    //         if (!validExtensions.contains(fileExtension)) {
+    //             response.put("errorMessage", "이미지 파일만 업로드 가능합니다. (PNG, JPG, JPEG)");
+    //             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    //         }
+
+    //         String contentType = file.getContentType();
+    //         if (!contentType.startsWith("image/")) {
+    //             response.put("errorMessage", "유효한 이미지 파일만 업로드 가능합니다.");
+    //             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    //         }
+
+    //         String fileNameWithoutExtension = currentUsername;
+    //         File existingFilePng = new File(profileUploadPath + fileNameWithoutExtension + ".png");
+    //         File existingFileJpg = new File(profileUploadPath + fileNameWithoutExtension + ".jpg");
+
+    //         if (existingFilePng.exists() && !existingFilePng.delete()) {
+    //             log.error("기존 PNG 파일 삭제 실패");
+    //         }
+    //         if (existingFileJpg.exists() && !existingFileJpg.delete()) {
+    //             log.error("기존 JPG 파일 삭제 실패");
+    //         }
+
+    //         String fileName = fileNameWithoutExtension + "." + fileExtension;
+    //         File uploadFile = new File(profileUploadPath + fileName);
+    //         try {
+    //             file.transferTo(uploadFile);
+    //             log.info("프로필 이미지 저장 성공: " + uploadFile.getAbsolutePath());
+    //             response.put("profileImage", "/profiles/" + fileName);
+    //         } catch (IOException e) {
+    //             log.error("프로필 이미지 저장 실패", e);
+    //             response.put("errorMessage", "이미지 업로드 중 문제가 발생했습니다.");
+    //             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //         }
+    //     }
+
+    //     return ResponseEntity.ok(response);
+    //     } else {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+    //     }
+    // }
+
+    // 플러터에서 사용
     @PostMapping("/mypageUpdate")
-    public ResponseEntity<?> mypageUpdate(@AuthenticationPrincipal CustomUser authUser,
-                                      @RequestParam(value = "file", required = false) MultipartFile file,
-                                      Users updatedUser) {
+    public ResponseEntity<?> mypageUpdate(
+    @AuthenticationPrincipal CustomUser authUser,
+    @RequestBody Users updatedUser
+) {
     log.info(":::::::::: 마이페이지 정보 수정 처리 ::::::::::");
 
     if (authUser != null) {
         String currentUsername = authUser.getUsername();
         log.info("현재 로그인 사용자: " + currentUsername);
 
-        Map<String, String> response = new HashMap<>();
+        updatedUser.setUsername(currentUsername);
 
         // 비밀번호 업데이트 로직
-        String newPassword = updatedUser.getPassword();
-
-        if (newPassword != null && !newPassword.trim().isEmpty()) {
-            String encodedPassword = passwordEncoder.encode(newPassword);
-            updatedUser.setUsername(currentUsername);
-            updatedUser.setPassword(encodedPassword);
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             try {
-                int updateResult = userService.updatePw(updatedUser);
-                if (updateResult > 0) {
-                    log.info("비밀번호 변경 성공!");
-                    response.put("successMessage", "비밀번호가 성공적으로 변경되었습니다.");
-                } else {
-                    log.error("비밀번호 변경 실패!");
-                    response.put("errorMessage", "비밀번호 변경에 실패했습니다.");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
+                userService.updatePw(updatedUser);
             } catch (Exception e) {
-                log.error("비밀번호 변경 중 오류 발생", e);
-                response.put("errorMessage", "비밀번호 변경 중 오류가 발생했습니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                log.error("Error updating password", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "비밀번호 업데이트 중 오류가 발생했습니다."));
             }
-        } else {
-            log.warn("새로운 비밀번호가 입력되지 않았습니다.");
         }
 
         // 이메일 업데이트 로직
-        String newEmail = updatedUser.getEmail();
-
-        if (newEmail != null && !newEmail.trim().isEmpty()) {
-            // 이메일 형식 유효성 검사 (간단한 예시)
-            if (newEmail.matches("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
-                updatedUser.setUsername(currentUsername);
-                updatedUser.setEmail(newEmail);
-                try {
-                    int emailUpdateResult = userService.updateEmail(updatedUser);
-                    if (emailUpdateResult > 0) {
-                        log.info("이메일 변경 성공!");
-                        response.put("successMessage", "이메일이 성공적으로 변경되었습니다.");
-                    } else {
-                        log.error("이메일 변경 실패!");
-                        response.put("errorMessage", "이메일 변경에 실패했습니다.");
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                    }
-                } catch (Exception e) {
-                    log.error("이메일 변경 중 오류 발생", e);
-                    response.put("errorMessage", "이메일 변경 중 오류가 발생했습니다.");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-            } else {
-                log.warn("유효하지 않은 이메일 형식: " + newEmail);
-                response.put("errorMessage", "유효한 이메일 주소를 입력해주세요.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-        } else {
-            log.warn("새로운 이메일이 입력되지 않았습니다.");
-        }
-
-        // 프로필 이미지 변경 처리
-        if (file != null && !file.isEmpty()) {
-            String profileUploadPath = "C:/upload/profiles/";
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-
-            List<String> validExtensions = Arrays.asList("png", "jpg", "jpeg");
-            if (!validExtensions.contains(fileExtension)) {
-                response.put("errorMessage", "이미지 파일만 업로드 가능합니다. (PNG, JPG, JPEG)");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            String contentType = file.getContentType();
-            if (!contentType.startsWith("image/")) {
-                response.put("errorMessage", "유효한 이미지 파일만 업로드 가능합니다.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-
-            String fileNameWithoutExtension = currentUsername;
-            File existingFilePng = new File(profileUploadPath + fileNameWithoutExtension + ".png");
-            File existingFileJpg = new File(profileUploadPath + fileNameWithoutExtension + ".jpg");
-
-            if (existingFilePng.exists() && !existingFilePng.delete()) {
-                log.error("기존 PNG 파일 삭제 실패");
-            }
-            if (existingFileJpg.exists() && !existingFileJpg.delete()) {
-                log.error("기존 JPG 파일 삭제 실패");
-            }
-
-            String fileName = fileNameWithoutExtension + "." + fileExtension;
-            File uploadFile = new File(profileUploadPath + fileName);
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().trim().isEmpty()) {
             try {
-                file.transferTo(uploadFile);
-                log.info("프로필 이미지 저장 성공: " + uploadFile.getAbsolutePath());
-                response.put("profileImage", "/profiles/" + fileName);
-            } catch (IOException e) {
-                log.error("프로필 이미지 저장 실패", e);
-                response.put("errorMessage", "이미지 업로드 중 문제가 발생했습니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                userService.updateEmail(updatedUser);
+            } catch (Exception e) {
+                log.error("Error updating email", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "이메일 업데이트 중 오류가 발생했습니다."));
             }
         }
 
-        return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
+        return ResponseEntity.ok().body(Map.of("successMessage", "사용자 정보가 업데이트되었습니다."));
     }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("errorMessage", "로그인이 필요합니다."));
+}
+
 
     @GetMapping("/myInquiry/inquiries")
     public ResponseEntity<?> list(   
