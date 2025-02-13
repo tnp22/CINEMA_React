@@ -94,6 +94,7 @@ class MyApp extends StatelessWidget {
       },
       routes: {
         '/notice/read': (context) => const NoticeReadScreen(),
+        '/movieInfo': (context) => const MovieInfoScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
