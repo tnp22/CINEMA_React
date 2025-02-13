@@ -1,4 +1,5 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
+import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,11 @@ class MyApp extends StatelessWidget {
         case '/notice/read' :  
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => NoticeReadScreen(),
+              transitionDuration: Duration(seconds: 0),
+            );
+        case '/movieInfo' :  
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => MovieInfoScreen(),
               transitionDuration: Duration(seconds: 0),
             );
         }

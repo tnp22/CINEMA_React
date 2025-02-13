@@ -26,6 +26,7 @@ class _NoticeReadScreenState extends State<NoticeReadScreen> {
       final args = ModalRoute.of(context)!.settings.arguments;
 
       if( args is String ) {
+        print('넘어오는 중이다');
         setState(() {
           id = args;
           print("id : $id");

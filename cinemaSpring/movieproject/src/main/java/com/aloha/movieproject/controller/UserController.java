@@ -551,4 +551,14 @@ public class UserController {
             return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> profile(@RequestParam("id") String id) throws Exception {
+        Files orifile = fileService.imageUpdate(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("orifile", orifile);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
