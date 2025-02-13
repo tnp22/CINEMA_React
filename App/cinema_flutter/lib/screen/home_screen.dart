@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cinema_flutter/provider/user_provider.dart';
+import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:cinema_flutter/service/movie_service.dart';
 import 'package:cinema_flutter/widget/custom_drawer.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,22 +18,71 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   late Future<Map<String, dynamic>> homeData;
+  Future<Map<String, dynamic>>? userData;
   final movieService = MovieService();
+  late UserProvider userProvider; // UserProvider 선언
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      userProvider = Provider.of<UserProvider>(context, listen: false);
+      // userData에 값을 설정합니다.
+      try {
+        if (userProvider.userInfo != null) {
+          setState(() {
+            userData = movieService.getUser(userProvider.userInfo!.id.toString());
+          });
+        }
+      } catch (e) {
+        print("로그인 되어있지 않습니다.");
+      }
+    });
+
     homeData = movieService.list(); // Map 타입으로 받기
   }
 
   @override
 Widget build(BuildContext context) {
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
   return Scaffold(
     appBar: AppBar(
-      title: Text("사용자님"),
-    ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (userProvider.isLogin)
+              FutureBuilder<Map<String, dynamic>>(
+                future: userData,  // 비동기적으로 데이터를 받아옴
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // 로딩 중
+                  } else if (snapshot.hasError) {
+                    return Icon(Icons.error);  // 오류 처리
+                  } else if (snapshot.hasData) {
+                    var imageBytes = snapshot.data?['imageBytes']; // 바이너리 이미지 데이터
+                    return ClipOval(
+                      child: Image.memory(
+                        imageBytes, // 이미지 데이터
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  } else {
+                    return Icon(Icons.account_circle);  // 기본 아이콘
+                  }
+                },
+              ),
+            SizedBox(width: 8),
+            Text(
+              userProvider.isLogin ? userProvider.userInfo.username.toString()+'님' : '로그인 해주세요',
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+      ),
     body: FutureBuilder<Map<String, dynamic>>(
       future: homeData, // Spring Boot에서 받아온 데이터
       builder: (context, snapshot) {
@@ -49,7 +101,6 @@ Widget build(BuildContext context) {
         List<Map<String, dynamic>> movieList = List<Map<String, dynamic>>.from(data["moviePageInfo"]["list"]?? []);
         List<Map<String, dynamic>> expectList = List<Map<String, dynamic>>.from(data["expectPageInfo"]["list"]?? []);
         List<Map<String, dynamic>> notices = List<Map<String, dynamic>>.from(data["noticeList"] ?? []);
-        print(data["moviePageInfo"]["list"]);
 
         return SingleChildScrollView(
           child: Column(
@@ -61,7 +112,7 @@ Widget build(BuildContext context) {
               SizedBox(height: 20),
 
               // 📌 영화 슬라이더 (데이터 전달)
-              MovieSlider(),
+              MovieSlider(movieList: movieList, expectList: expectList),
 
               SizedBox(height: 20),
 
@@ -150,13 +201,14 @@ class _BannerSliderState extends State<BannerSlider> {
     if(mounted){
       setState(() {
       _bannerImages = images;
-      movieId = widget.banners.map((banner) => banner["movie"]["id"].toString()).toList();
+      movieId = widget.banners.map((banner) => banner["movieId"].toString()).toList();
       });
     }
   }
 
   void _onBannerTap(int index) {
     Navigator.pushNamed(context, "/movieInfo", arguments: movieId[index]);
+    print("전달된 movieId: ${movieId[index]}");
   }
 
   @override
@@ -210,50 +262,24 @@ class _BannerSliderState extends State<BannerSlider> {
 
 // 영화 차트
 class MovieSlider extends StatefulWidget {
+  final List<Map<String, dynamic>> movieList; // 배너 리스트 받기
+  final List<Map<String, dynamic>> expectList; // 배너 리스트 받기
+
+  MovieSlider({required this.movieList, required this.expectList});
   @override
   _MovieSliderState createState() => _MovieSliderState();
 }
 
 class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  final List<String> _movieImages = [
-    'image/moana.png',
-    'image/movie_fire.png',
-    'image/movie_hidden.png',
-    'image/movie_snow.png',
-    'image/movie_wickid.png',
-    'image/movie_win.png',
-    'image/endgame.png',
-  ];
-
-  final List<String> _movieTitles = [
-    '모아나2',
-    '소방관',
-    '히든페이스',
-    '청설',
-    '위키드',
-    '1승',
-    '엔드게임'
-  ];
-
-  final List<String> _upcomingMovieImages = [
-    'image/inter.png',
-    'image/tenet.png',
-    'image/fury.png',
-    'image/gladi.png',
-  ];
-
-  final List<String> _upcomingMovieTitles = [
-    '인터스텔라',
-    '테넷',
-    '퓨리',
-    '글래디에이터',
-  ];
+  MovieService movieService = MovieService();
+  List<Uint8List> movieImages = [];
+  List<Uint8List> expectImages = [];
 
   @override
   void initState() {
     super.initState();
+    _loadMovieImage();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -262,6 +288,33 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
     _tabController.dispose();
     super.dispose();
   }
+
+  // 영화 이미지 로드
+  Future<void> _loadMovieImage() async {
+  try {
+    List<Future<Uint8List>> movieImageFutures = widget.movieList.map((movie) {
+      String fileId = movie["files"]["id"].toString();
+      return movieService.getImage(fileId);
+    }).toList();
+
+    List<Future<Uint8List>> expectImageFutures = widget.expectList.map((movie) {
+      String fileId = movie["files"]["id"].toString();
+      return movieService.getImage(fileId);
+    }).toList();
+
+    List<Uint8List> images1 = await Future.wait(movieImageFutures);
+    List<Uint8List> images2 = await Future.wait(expectImageFutures);
+
+    if (mounted) {
+      setState(() {
+        movieImages = images1;
+        expectImages = images2;
+      });
+    }
+  } catch (e) {
+    print("❌ 이미지 로딩 실패: $e");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -290,35 +343,41 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
             // 탭에 맞는 리스트 (애니메이션 없이 즉시 전환)
             Expanded(
               child: IndexedStack(
-                index: _tabController.index, // 현재 선택된 탭의 인덱스를 사용
+                index: _tabController.index,
                 children: [
-                  // 영화차트 ListView
+                  // 현재 상영중 영화 리스트
                   SizedBox(
                     height: 350,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _movieImages.length,
-                      itemBuilder: (context, index) {
-                        return MovieCard(
-                          image: _movieImages[index],
-                          title: _movieTitles[index],
-                        );
-                      },
-                    ),
+                    child: movieImages.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: widget.movieList.length,
+                            itemBuilder: (context, index) {
+                              return MovieCard(
+                                image: movieImages[index],
+                                title: widget.movieList[index]["title"],
+                                id:widget.movieList[index]["id"]
+                              );
+                            },
+                          ),
                   ),
-                  // 상영 예정작 ListView
+                  // 상영 예정작 리스트
                   SizedBox(
-                    height: 350,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _upcomingMovieImages.length,
-                      itemBuilder: (context, index) {
-                        return MovieCard(
-                          image: _upcomingMovieImages[index],
-                          title: _upcomingMovieTitles[index],
-                        );
-                      },
-                    ),
+                  height: 350,
+                  child: expectImages.isEmpty  // ✅ 이미지가 없을 때 로딩 표시
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: widget.expectList.length,
+                          itemBuilder: (context, index) {
+                            return MovieCard(
+                              image: expectImages[index],  // ✅ expectImages로 변경
+                              title: widget.expectList[index]["title"],
+                              id:widget.movieList[index]["id"]
+                            );
+                          },
+                        ),
                   ),
                 ],
               ),
@@ -331,10 +390,11 @@ class _MovieSliderState extends State<MovieSlider> with SingleTickerProviderStat
 }
 
 class MovieCard extends StatelessWidget {
-  final String image;
+  final Uint8List image;
   final String title;
+  final String id;
 
-  MovieCard({required this.image, required this.title});
+  MovieCard({required this.image, required this.title , required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -349,12 +409,21 @@ class MovieCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Image.asset(image, fit: BoxFit.cover),
+              child: GestureDetector(
+                onTap: () {
+                  // Navigate to a new screen
+                  Navigator.pushNamed(context, "/movieInfo", arguments: id);
+                },
+                child: Image.memory(
+                  image,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
               child: Text(
-                title,
+                title.length > 10 ? "${title.substring(0, 10)}..." : title, // 10글자 초과 시 ... 추가
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
@@ -527,13 +596,6 @@ class NotificationCenter extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    '더보기',
-                    style: TextStyle(color: Colors.purple),
                   ),
                 ),
               ],

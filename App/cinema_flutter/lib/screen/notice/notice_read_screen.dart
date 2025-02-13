@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // intl 패키지 import
 
 class NoticeReadScreen extends StatefulWidget {
+  
   const NoticeReadScreen({super.key});
 
+  // 생성자에서 id를 받음
+  //final String? id;
+  //const NoticeReadScreen({Key? key, this.id}) : super(key: key);
+  
   @override
   State<NoticeReadScreen> createState() => _NoticeReadScreenState();
 }
@@ -17,6 +22,8 @@ class _NoticeReadScreenState extends State<NoticeReadScreen> {
   final noticeService = NoticeService();
   late Future<Map<String, dynamic>?> _notice;
 
+  
+
   @override
   void initState() {
     super.initState();
@@ -24,8 +31,8 @@ class _NoticeReadScreenState extends State<NoticeReadScreen> {
     // id 파라미터 넘겨받기
     WidgetsBinding.instance.addPostFrameCallback( (_) {
       final args = ModalRoute.of(context)!.settings.arguments;
-
       if( args is String ) {
+        print('넘어오는 중이다');
         setState(() {
           id = args;
           print("id : $id");
@@ -36,8 +43,23 @@ class _NoticeReadScreenState extends State<NoticeReadScreen> {
       }
       
     });
-
   }
+
+  //   @override
+  // void initState() {
+  //   super.initState();
+
+  //   // widget.id로 부모에서 전달된 id를 바로 사용할 수 있음
+  //   if (widget.id != null) {
+  //     print("Notice ID: ${widget.id}");
+  //     // 게시글 조회 요청
+  //     _notice = noticeService.select(widget.id!);
+  //   } else {
+  //     // id가 null일 경우 처리
+  //     print("ID is null");
+  //   }
+  // }
+  
     // 날짜와 시간 포맷팅 함수
   String formatDate(String? date) {
     if (date == null) return '등록일 없음';
@@ -60,13 +82,14 @@ class _NoticeReadScreenState extends State<NoticeReadScreen> {
           },
           child: Icon(Icons.arrow_back),
         ),
-        title: Text("공지사항 조회"),
+        title: Text("공지사항"),
         actions: [],
       ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(5, 0, 5, 10),
         child: 
           id == null
+          //widget.id == null
           ? Center(child: CircularProgressIndicator(),)
           : FutureBuilder(
             future: _notice, 

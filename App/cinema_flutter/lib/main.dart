@@ -1,4 +1,5 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
+import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
 import 'package:flutter/material.dart';
@@ -76,24 +77,24 @@ class MyApp extends StatelessWidget {
                   NoticeListScreen(),
               transitionDuration: Duration(seconds: 0),
             );
-          case '/notice/read':
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  NoticeReadScreen(),
-              transitionDuration: Duration(seconds: 0),
-            );
+          // case '/notice/read':
+          //   final args = settings.arguments as String?;
+          //   print("Arguments passed to /notice/read: $args");
+          //   return PageRouteBuilder(
+          //     // ModalRoute를 통해 arguments 받기
+          //     pageBuilder: (context, animation, secondaryAnimation) {
+          //       if (args is String) {
+          //         return NoticeReadScreen(id: args);
+          //       }
+          //       return NoticeReadScreen(id: null);
+          //     },
+          //     transitionDuration: Duration(seconds: 0),
+          //   );
         }
       },
-      // routes: {
-      //   '/main' : (context) => const MainScreen(),
-      //   '/home' : (context) => const HomeScreen(),
-      //   '/login' : (context) => const LoginScreen(),
-      //   '/join' : (context) => const JoinScreen(),
-      //   '/mypage' : (context) => const MypageScreen(),
-
-      //   '/notice/list' : (context)=> const NoticeListScreen(),
-      //   '/notice/read' : (context)=> const NoticeReadScreen(),
-      // },
+      routes: {
+        '/notice/read': (context) => const NoticeReadScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
