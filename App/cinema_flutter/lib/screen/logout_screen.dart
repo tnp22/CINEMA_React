@@ -38,7 +38,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                     onPressed: () async {
                                         // 🔓 로그아웃 처리
                   userProvider.logout();
-                  userProvider.selectedIndex=0;
+                  userProvider.selectedIndex=2;
                   Navigator.pushReplacementNamed(context, '/main');
 
                   Snackbar(
