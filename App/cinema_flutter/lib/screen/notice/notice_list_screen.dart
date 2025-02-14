@@ -45,7 +45,15 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
       // _respon에서 'list'와 'total' 데이터를 추출하여 상태 갱신
       setState(() {
         _noticeList = _respon['list'] ?? [];  // list가 없으면 빈 리스트
-        _total = ((_respon['total'] ?? 0) / _size).toInt();  // total 값을 받는 경우
+        double total = (_respon['total'] ?? 0).toDouble();
+        double size = _size.toDouble();
+        // 나누기 연산 후 올림
+        _total = (total / size).ceilToDouble().toInt();
+        if(_total == 0){
+          _noticeList = [
+          {'title': '결과 없음'}
+          ];
+        }
       });
     } catch (e) {
       print("Error: $e");
@@ -145,6 +153,15 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
                     ),
                   ),
                   SizedBox(height: 12),
+                  _total == 0 ?
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '검색결과 없음',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  )
+                :
                   // 게시글 목록
                   Expanded(
                     child: ListView.builder(

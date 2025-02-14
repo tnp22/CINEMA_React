@@ -1,4 +1,5 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
+import 'package:cinema_flutter/screen/cuscenter/cuscenter_list_screen.dart';
 import 'package:cinema_flutter/screen/home_screen.dart';
 import 'package:cinema_flutter/screen/login_screen.dart';
 import 'package:cinema_flutter/screen/logout_screen.dart';
@@ -53,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
                 case 4:
                   _selectedScreen = NoticeListScreen();
                 case 5:
-                  _selectedScreen = NoticeListScreen();
+                  _selectedScreen = CuscenterListScreen();
                   break;
                 default:
                   _selectedScreen = HomeScreen(); // 기본 화면 설정
@@ -76,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
                 case 4:
                   _selectedScreen = NoticeListScreen();
                 case 5:
-                  _selectedScreen = NoticeListScreen();
+                  _selectedScreen = CuscenterListScreen();
                   break;
                 default:
                   _selectedScreen = HomeScreen(); // 기본 화면 설정
@@ -98,8 +99,9 @@ const _navBarItems = [
     label: '로그인',
   ),
   NavigationDestination(
-    icon: Icon(Icons.home_outlined),
-    selectedIcon: Icon(Icons.home_rounded),
+    icon: Icon(Icons.movie_outlined),
+    selectedIcon: Icon(Icons.movie),
+
     label: '영화',
   ),
     NavigationDestination(
@@ -113,13 +115,13 @@ const _navBarItems = [
     label: '마이페이지',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.announcement_outlined),
+    selectedIcon: Icon(Icons.announcement),
     label: '공지사항',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.help_outline),
+    selectedIcon: Icon(Icons.help_rounded),
     label: '고객센터',
   ),
 ];
@@ -131,8 +133,8 @@ const _navBarItems2 = [
     label: '로그아웃',
   ),
   NavigationDestination(
-    icon: Icon(Icons.home_outlined),
-    selectedIcon: Icon(Icons.home_rounded),
+    icon: Icon(Icons.movie_outlined),
+    selectedIcon: Icon(Icons.movie),
     label: '영화',
   ),
     NavigationDestination(
@@ -146,13 +148,13 @@ const _navBarItems2 = [
     label: '마이페이지',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.announcement_outlined),
+    selectedIcon: Icon(Icons.announcement),
     label: '공지사항',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.help_outline),
+    selectedIcon: Icon(Icons.help_rounded),
     label: '고객센터',
   ),
 ];
