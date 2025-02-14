@@ -67,37 +67,6 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
 
                 const SizedBox(height: 20),
 
-                // 사용자 정보 출력 (UserService)
-                FutureBuilder<Map<String, dynamic>>(
-                  future: userService.getUser(user.username),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return const Text("오류 발생");
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text("사용자 정보 없음");
-                    } else {
-                      final userData = snapshot.data!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInfoRow("아이디 (Service)", userData['username']),
-                          _buildInfoRow("이름 (Service)", userData['name']),
-                          _buildInfoRow("이메일 (Service)", userData['email']),
-                          _buildInfoRow("가입 날짜 (Service)", userData['regDate']),
-                          _buildInfoRow(
-                              "마지막 수정 날짜 (Service)", userData['updDate']),
-                          _buildInfoRow("사용 가능 여부 (Service)",
-                              userData['enabled'] == true ? "활성화됨" : "비활성화됨"),
-                        ],
-                      );
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 20),
-
                 // 아이디 (수정 불가)
                 _buildTextField(user.username ?? '', user.username ?? '',
                     enabled: false),
@@ -161,17 +130,17 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
                 const SizedBox(height: 10),
 
                 // 새로고침 버튼
-                ElevatedButton(
-                  onPressed: () async {
-                    bool success = await userProvider.getUserInfo();
-                    if (!success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("사용자 정보를 가져오는 데 실패했습니다.")),
-                      );
-                    }
-                  },
-                  child: const Text("새로고침"),
-                ),
+                // ElevatedButton(
+                //   onPressed: () async {
+                //     bool success = await userProvider.getUserInfo();
+                //     if (!success) {
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         const SnackBar(content: Text("사용자 정보를 가져오는 데 실패했습니다.")),
+                //       );
+                //     }
+                //   },
+                //   child: const Text("새로고침"),
+                // ),
               ],
             ),
           );

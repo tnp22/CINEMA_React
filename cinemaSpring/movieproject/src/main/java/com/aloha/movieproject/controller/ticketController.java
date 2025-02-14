@@ -194,8 +194,8 @@ public class ticketController {
             response.put("reserve", reserve);
             response.put("reservationSeat", seat);
 
-            response.put("authUserName", authUser.getUsername());
-            response.put("authUserEmail", authUser.getEmail());
+            // response.put("authUserName", authUser.getUsername());
+            // response.put("authUserEmail", authUser.getEmail());
             response.put("theaterId", id);
             response.put("money", money);
             response.put("person", Integer.parseInt(person));

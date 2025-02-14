@@ -19,27 +19,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<Map<String, dynamic>> homeData;
-  Future<String>? profileImage;
   final movieService = MovieService();
   late UserProvider userProvider; // UserProvider 선언
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      userProvider = Provider.of<UserProvider>(context, listen: false);
-      // userData에 값을 설정합니다.
-      try {
-        if (userProvider.userInfo != null) {
-          setState(() {
-            profileImage = movieService.getUser(userProvider.userInfo!.id.toString());
-          });
-        }
-      } catch (e) {
-        print("로그인 되어있지 않습니다.");
-      }
-    });
 
     homeData = movieService.list(); // Map 타입으로 받기
   }
@@ -48,39 +33,48 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget build(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
   return Scaffold(
-    appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (userProvider.isLogin)
-              FutureBuilder<String>(
-                future: movieService.getUser(userProvider.userInfo!.id.toString()),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator(); // 로딩 중
-                  } else if (snapshot.hasError) {
-                    return Icon(Icons.error); // 에러 발생 시
-                  }
-                  else {
-                    return ClipOval(
-                      child: Image.network(
-                        "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover, // 이미지가 꽉 차도록
-                      ),
-                    );
-                  }
-                },
-              ),
-            SizedBox(width: 8),
-            Text(
-              userProvider.isLogin ? userProvider.userInfo.username.toString()+'님' : '로그인 해주세요',
-              style: TextStyle(fontSize: 18),
-            ),
-          ],
-        ),
+appBar: AppBar(
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween, // 양쪽 정렬
+    children: [
+      Image.asset(
+        'image/vora_purple_black.png',
+        width: 70, // 크기 조정
+        height: 70,
       ),
+      Row(
+        children: [
+          if (userProvider.isLogin)
+            FutureBuilder<String?>(
+              future: movieService.getUser(userProvider.userInfo!.id.toString()),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+                  return SizedBox.shrink();
+                } else {
+                  return ClipOval(
+                    child: Image.network(
+                      "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }
+              },
+            ),
+          SizedBox(width: 8),
+          Text(
+            userProvider.isLogin ? userProvider.userInfo.username.toString() + '님' : '로그인 해주세요',
+            style: TextStyle(fontSize: 18),
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+
     body: FutureBuilder<Map<String, dynamic>>(
       future: homeData, // Spring Boot에서 받아온 데이터
       builder: (context, snapshot) {
@@ -394,6 +388,13 @@ class MovieCard extends StatelessWidget {
               child: ElevatedButton(
               onPressed: () {
                 print("예매하기 클릭됨: $title");
+                print("영화 아이디 : $id");
+                print("영화 아이디타입 : ${id.runtimeType}");
+                Navigator.pushReplacementNamed(context, "/ticket", 
+                arguments: {
+                  "movieTitle": title,
+                  "movieId": id,
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF583BBF), // 버튼 배경색: 보라색
@@ -646,6 +647,5 @@ class NotificationCenter extends StatelessWidget {
     );
   }
 }
-
 
 
