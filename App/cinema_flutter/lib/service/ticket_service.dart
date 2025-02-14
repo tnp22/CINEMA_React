@@ -47,24 +47,35 @@ class TicketService {
     try {
       // print("아이디 : $id");
       var response = await dio.get(url);
-      print("::: response - body ::::");
-      print("조회");
-      print("데이타 : ${response.data}");
+      // print("::: response - body ::::");
+      // print("조회");
+      // print("데이타 : ${response.data}");
       var data = response.data as Map<String, dynamic>;
+      
+      // print("정보 : $data");
 
-      print("정보 : $data");
-
-      // seat정보 가져오기
+      
+      // list.add({"movieTitle" : movieTitle}); // 예시
       // 맵정보 MapData
-      // 이미 예매한정보 ReservationSeat
-      // 영화 ID MovieId
-      // 영화 제목 MovieTitle
+      list.add({"mapData" : data["mapData"]});
       // UUID UuuuuId
+      list.add({"uuuuid" : data["uuuuid"]});
+      // 상영관 ID theaterId
+      list.add({"theaterId" : data["theaterId"]});
+      // 금액 Money
+      list.add({"money" : data["money"]});
+      // 인원 person
+      list.add({"person" : data["person"]});
+      // 영화 ID MovieId
+      list.add({"movieId" : data["movieId"]});
+      // 영화 제목 MovieTitle
+      list.add({"movieTitle" : data["movieTitle"]});
+      // 이미 예매한정보 reserve, ReservationSeat
+      list.add({"reserve" : data["reserve"]});
+      // seat정보 가져오기
+      list.add({"reservationSeat" : data["reservationSeat"]});
       // 로그인된 유저 이름 AuthUserName
       // 로그인된 유저 이메일 AuthUserEmail
-      // 상영관 ID theaterId
-      // 금액 Money
-      // 인원 person
 
 
     } catch (e) {

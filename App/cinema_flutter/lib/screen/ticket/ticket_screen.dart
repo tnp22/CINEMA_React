@@ -408,7 +408,7 @@ class _TicketScreenState extends State<TicketScreen> {
     if(message == ""){
       // 스크린 이동 및 좌석 선택 이동
       print("이동!!");
-      Navigator.pushReplacementNamed(context, "/seatselection", 
+      Navigator.pushNamed(context, "/seatselection", 
       arguments: {
         "theatersListId": targetTheaterListId,
         "adultCount": adultCount, // 성인 10000
