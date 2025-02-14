@@ -1,5 +1,5 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
-import 'package:cinema_flutter/screen/cuscenter/cuscenter_list_screen.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
 import 'package:cinema_flutter/screen/home_screen.dart';
 import 'package:cinema_flutter/screen/login_screen.dart';
 import 'package:cinema_flutter/screen/logout_screen.dart';
@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
 
 
-  Widget _selectedScreen = HomeScreen();
+  late Widget _selectedScreen;
   //int selectedIndex = 0;
 
   
@@ -26,6 +26,27 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+              switch (userProvider.selectedIndex) {
+                case 0:
+                  _selectedScreen = userProvider.isLogin?LogoutScreen() : LoginScreen();
+                  break;
+                case 1:
+                  _selectedScreen = HomeScreen();
+                  break;
+                case 2:
+                  _selectedScreen = HomeScreen();
+                  break;
+                case 3:
+                  _selectedScreen = MypageScreen();
+                  break;
+                case 4:
+                  _selectedScreen = NoticeListScreen();
+                case 5:
+                  _selectedScreen = InquiryListScreen();
+                  break;
+                default:
+                  _selectedScreen = HomeScreen(); // 기본 화면 설정
+              }
     return Scaffold(
       // appBar: AppBar(title: Text("메인 화면"),),
       body: _selectedScreen,
@@ -35,54 +56,6 @@ class _MainScreenState extends State<MainScreen> {
         onDestinationSelected: (index) {
           setState(() {
             userProvider.selectedIndex = index;
-
-            // 로그인 상태에 따른 화면 설정
-            if (userProvider.isLogin) {
-              switch (userProvider.selectedIndex) {
-                case 0:
-                  _selectedScreen = LogoutScreen();
-                  break;
-                case 1:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 2:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 3:
-                  _selectedScreen = MypageScreen();
-                  break;
-                case 4:
-                  _selectedScreen = NoticeListScreen();
-                case 5:
-                  _selectedScreen = CuscenterListScreen();
-                  break;
-                default:
-                  _selectedScreen = HomeScreen(); // 기본 화면 설정
-              }
-            } else {
-              // 로그인하지 않았을 경우
-              switch (userProvider.selectedIndex) {
-                case 0:
-                  _selectedScreen = LoginScreen();
-                  break;
-                case 1:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 2:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 3:
-                  _selectedScreen = MypageScreen();
-                  break;
-                case 4:
-                  _selectedScreen = NoticeListScreen();
-                case 5:
-                  _selectedScreen = CuscenterListScreen();
-                  break;
-                default:
-                  _selectedScreen = HomeScreen(); // 기본 화면 설정
-              }
-            }
           });
         },
         destinations: userProvider.isLogin ?

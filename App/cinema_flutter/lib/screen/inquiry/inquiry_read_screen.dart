@@ -6,19 +6,19 @@ import 'package:cinema_flutter/service/notice_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // intl 패키지 import
 
-class CuscenterReadScreen extends StatefulWidget {
+class InquiryReadScreen extends StatefulWidget {
   
-  const CuscenterReadScreen({super.key});
+  const InquiryReadScreen({super.key});
 
   // 생성자에서 id를 받음
   //final String? id;
   //const NoticeReadScreen({Key? key, this.id}) : super(key: key);
   
   @override
-  State<CuscenterReadScreen> createState() => _CuscenterReadScreenState();
+  State<InquiryReadScreen> createState() => _CuscenterReadScreenState();
 }
 
-class _CuscenterReadScreenState extends State<CuscenterReadScreen> {
+class _CuscenterReadScreenState extends State<InquiryReadScreen> {
 
   // 🧊 state
   String? id;

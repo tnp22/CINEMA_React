@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class InquiryService {
-  final Dio dio = Dio();
+ final Dio _dio = Dio();
   final String host = 'http://10.0.2.2:8080';
 
 Future<Map<String, dynamic>> list(int page, int size, int option, String keyword) async {
@@ -10,7 +10,7 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
   Map<String, dynamic> result = {};
 
   try {
-    Response response = await dio.get(url);
+    Response response = await _dio.get(url);
     print("::::: response - body :::::");
     print(response.data);
 
@@ -55,11 +55,10 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
 
     // 데이터 조회
   Future<Map<String, dynamic>?> select(String id) async {
-    Dio dio = Dio();
-    var url = "http://10.0.2.2:8080/inquiry/select/$id";
+    var url = "$host/inquiry/select/$id";
     var notice;
     try{
-      var response = await dio.get(url);
+      var response = await _dio.get(url);
       print("::::: response - body :::::");
       //print(response.body);
 
@@ -87,11 +86,10 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
 
     // 데이터 조회
   Future<Map<String, dynamic>?> selectPassword(String id,String password) async {
-    Dio dio = Dio();
-    var url = "http://10.0.2.2:8080/inquiry/select/$id/$password";
+    var url = "$host/inquiry/select/$id/$password";
     var notice;
     try{
-      var response = await dio.get(url);
+      var response = await _dio.get(url);
       print("::::: response - body :::::");
       //print(response.body);
 
@@ -115,5 +113,19 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
       print(e);
     }
     return notice;
+  }
+
+    /// 회원가입
+  Future<bool> insert(Map<String, dynamic> userData) async {
+    try {
+      final response = await _dio.post('$host/inquiry/insert', data: userData);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }
