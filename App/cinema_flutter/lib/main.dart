@@ -1,6 +1,7 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
-import 'package:cinema_flutter/screen/cuscenter/cuscenter_list_screen.dart';
-import 'package:cinema_flutter/screen/cuscenter/cuscenter_read_screen.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_insert_screen.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_read_screen.dart';
 import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
           case '/inquiry/list':
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  CuscenterListScreen(),
+                  InquiryListScreen(),
               transitionDuration: Duration(seconds: 0),
             );
           case '/ticket':
@@ -124,7 +125,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/notice/read': (context) => const NoticeReadScreen(),
         '/movieInfo': (context) => const MovieInfoScreen(),
-        '/inquiry/read': (context) => const CuscenterReadScreen(),
+        '/inquiry/read': (context) => const InquiryReadScreen(),
+        '/inquiry/insert': (context) => const InquiryInsertScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

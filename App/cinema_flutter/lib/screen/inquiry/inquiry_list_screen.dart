@@ -6,14 +6,14 @@ import 'package:cinema_flutter/service/notice_service.dart';
 import 'package:cinema_flutter/widget/pagination.dart';
 import 'package:flutter/material.dart';
 
-class CuscenterListScreen extends StatefulWidget {
-  const CuscenterListScreen({super.key});
+class InquiryListScreen extends StatefulWidget {
+  const InquiryListScreen({super.key});
 
   @override
-  State<CuscenterListScreen> createState() => _CuscenterListScreenState();
+  State<InquiryListScreen> createState() => _CuscenterListScreenState();
 }
 
-class _CuscenterListScreenState extends State<CuscenterListScreen> {
+class _CuscenterListScreenState extends State<InquiryListScreen> {
 
   // 페이지 변경 시 호출될 함수
   void onPageChanged(int page) {
@@ -293,6 +293,7 @@ Widget build(BuildContext context) {
     floatingActionButton: FloatingActionButton(
       onPressed: () {
         // 버튼을 눌렀을 때 실행할 동작
+        Navigator.pushNamed(context, "/inquiry/insert");
       },
       child: Icon(Icons.edit, color: Colors.white),
       backgroundColor: Color.fromARGB(255, 103, 24, 250),
