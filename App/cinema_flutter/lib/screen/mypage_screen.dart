@@ -44,7 +44,9 @@ class _MypageScreenState extends State<MypageScreen> {
                     builder: (context) => const MyPageEditScreen()),
               );
             }),
-            _buildMenuButton("예매 내역", () {}),
+            _buildMenuButton("예매 내역", () {
+              
+            }),
             _buildMenuButton("문의 내역", () {}),
 
             const SizedBox(height: 30),

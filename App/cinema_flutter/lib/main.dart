@@ -6,6 +6,8 @@ import 'package:cinema_flutter/screen/movie/movie_chart_screen.dart';
 import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
+import 'package:cinema_flutter/screen/ticket/payment_screen.dart';
+import 'package:cinema_flutter/screen/ticket/reserve_screen.dart';
 import 'package:cinema_flutter/screen/ticket/seatSelection_screen.dart';
 import 'package:cinema_flutter/screen/ticket/ticket_screen.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +102,27 @@ class MyApp extends StatelessWidget {
             );
             // 좌석 선택
           case '/seatselection':
+            return PageRouteBuilder(
+              settings: settings,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                final args = settings.arguments as Map<String, dynamic>;
+                return SeatselectionScreen();
+              },
+              transitionDuration: Duration(seconds: 0),
+            );
+          case '/payment' :
+            return PageRouteBuilder(
+              settings: settings,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                print("이동전 타입 ${settings.arguments.runtimeType}");
+                final args = settings.arguments as Map<String, String?>;
+                return PaymentScreen();
+              },
+            );
+          case '/reserve':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  ReserveScreen(),
           return PageRouteBuilder(
             settings: settings,
             pageBuilder: (context, animation, secondaryAnimation) {
