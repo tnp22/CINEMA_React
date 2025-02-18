@@ -1,7 +1,9 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
 import 'package:cinema_flutter/screen/home_screen.dart';
 import 'package:cinema_flutter/screen/login_screen.dart';
 import 'package:cinema_flutter/screen/logout_screen.dart';
+import 'package:cinema_flutter/screen/movie/movie_chart_screen.dart';
 import 'package:cinema_flutter/screen/mypage_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
 
 
-  Widget _selectedScreen = HomeScreen();
+  late Widget _selectedScreen;
   //int selectedIndex = 0;
 
   
@@ -25,6 +27,27 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+              switch (userProvider.selectedIndex) {
+                case 0:
+                  _selectedScreen = userProvider.isLogin?LogoutScreen() : LoginScreen();
+                  break;
+                case 1:
+                  _selectedScreen = MovieChartScreen();
+                  break;
+                case 2:
+                  _selectedScreen = HomeScreen();
+                  break;
+                case 3:
+                  _selectedScreen = MypageScreen();
+                  break;
+                case 4:
+                  _selectedScreen = NoticeListScreen();
+                case 5:
+                  _selectedScreen = InquiryListScreen();
+                  break;
+                default:
+                  _selectedScreen = HomeScreen(); // 기본 화면 설정
+              }
     return Scaffold(
       // appBar: AppBar(title: Text("메인 화면"),),
       body: _selectedScreen,
@@ -34,54 +57,6 @@ class _MainScreenState extends State<MainScreen> {
         onDestinationSelected: (index) {
           setState(() {
             userProvider.selectedIndex = index;
-
-            // 로그인 상태에 따른 화면 설정
-            if (userProvider.isLogin) {
-              switch (userProvider.selectedIndex) {
-                case 0:
-                  _selectedScreen = LogoutScreen();
-                  break;
-                case 1:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 2:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 3:
-                  _selectedScreen = MypageScreen();
-                  break;
-                case 4:
-                  _selectedScreen = NoticeListScreen();
-                case 5:
-                  _selectedScreen = NoticeListScreen();
-                  break;
-                default:
-                  _selectedScreen = HomeScreen(); // 기본 화면 설정
-              }
-            } else {
-              // 로그인하지 않았을 경우
-              switch (userProvider.selectedIndex) {
-                case 0:
-                  _selectedScreen = LoginScreen();
-                  break;
-                case 1:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 2:
-                  _selectedScreen = HomeScreen();
-                  break;
-                case 3:
-                  _selectedScreen = MypageScreen();
-                  break;
-                case 4:
-                  _selectedScreen = NoticeListScreen();
-                case 5:
-                  _selectedScreen = NoticeListScreen();
-                  break;
-                default:
-                  _selectedScreen = HomeScreen(); // 기본 화면 설정
-              }
-            }
           });
         },
         destinations: userProvider.isLogin ?
@@ -98,8 +73,9 @@ const _navBarItems = [
     label: '로그인',
   ),
   NavigationDestination(
-    icon: Icon(Icons.home_outlined),
-    selectedIcon: Icon(Icons.home_rounded),
+    icon: Icon(Icons.movie_outlined),
+    selectedIcon: Icon(Icons.movie),
+
     label: '영화',
   ),
     NavigationDestination(
@@ -113,13 +89,13 @@ const _navBarItems = [
     label: '마이페이지',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.announcement_outlined),
+    selectedIcon: Icon(Icons.announcement),
     label: '공지사항',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.help_outline),
+    selectedIcon: Icon(Icons.help_rounded),
     label: '고객센터',
   ),
 ];
@@ -131,8 +107,8 @@ const _navBarItems2 = [
     label: '로그아웃',
   ),
   NavigationDestination(
-    icon: Icon(Icons.home_outlined),
-    selectedIcon: Icon(Icons.home_rounded),
+    icon: Icon(Icons.movie_outlined),
+    selectedIcon: Icon(Icons.movie),
     label: '영화',
   ),
     NavigationDestination(
@@ -146,13 +122,13 @@ const _navBarItems2 = [
     label: '마이페이지',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.announcement_outlined),
+    selectedIcon: Icon(Icons.announcement),
     label: '공지사항',
   ),
   NavigationDestination(
-    icon: Icon(Icons.person_outline_rounded),
-    selectedIcon: Icon(Icons.person_rounded),
+    icon: Icon(Icons.help_outline),
+    selectedIcon: Icon(Icons.help_rounded),
     label: '고객센터',
   ),
 ];

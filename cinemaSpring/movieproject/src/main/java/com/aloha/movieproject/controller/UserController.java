@@ -275,7 +275,7 @@ public class UserController {
         }
     }
 
-
+    // 스프링부트 원본
     // @PostMapping("/mypageUpdate")
     // public String mypageUpdate(@AuthenticationPrincipal CustomUser authUser,
     //         @RequestParam(value = "file", required = false) MultipartFile file,
@@ -380,6 +380,7 @@ public class UserController {
     //     return "redirect:/user/mypageUpdate";
     // }
 
+    // 리액트에서 사용
     @PostMapping("/mypageUpdate")
     public ResponseEntity<?> mypageUpdate(@AuthenticationPrincipal CustomUser authUser,
                                       @RequestParam(value = "file", required = false) MultipartFile file,
@@ -497,6 +498,47 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
     }
+
+    // 플러터에서 사용
+    @PostMapping("/mypageUpdateF")
+    public ResponseEntity<?> mypageUpdate(
+    @AuthenticationPrincipal CustomUser authUser,
+    @RequestBody Users updatedUser
+) {
+    log.info(":::::::::: 마이페이지 정보 수정 처리 ::::::::::");
+
+    if (authUser != null) {
+        String currentUsername = authUser.getUsername();
+        log.info("현재 로그인 사용자: " + currentUsername);
+
+        updatedUser.setUsername(currentUsername);
+
+        // 비밀번호 업데이트 로직
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            try {
+                userService.updatePw(updatedUser);
+            } catch (Exception e) {
+                log.error("Error updating password", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "비밀번호 업데이트 중 오류가 발생했습니다."));
+            }
+        }
+
+        // 이메일 업데이트 로직
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().trim().isEmpty()) {
+            try {
+                userService.updateEmail(updatedUser);
+            } catch (Exception e) {
+                log.error("Error updating email", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("errorMessage", "이메일 업데이트 중 오류가 발생했습니다."));
+            }
+        }
+
+        return ResponseEntity.ok().body(Map.of("successMessage", "사용자 정보가 업데이트되었습니다."));
+    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("errorMessage", "로그인이 필요합니다."));
+}
+
 
     @GetMapping("/myInquiry/inquiries")
     public ResponseEntity<?> list(   

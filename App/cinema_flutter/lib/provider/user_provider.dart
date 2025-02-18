@@ -11,7 +11,7 @@ class UserProvider extends ChangeNotifier {
   // 로그인 상태 🔐
   bool _loginStat = false;
 
-  int selectedIndex = 0;
+  int selectedIndex = 2;
 
   // getter
   Users get userInfo => _userInfo;
