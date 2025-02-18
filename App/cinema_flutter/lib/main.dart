@@ -123,14 +123,8 @@ class MyApp extends StatelessWidget {
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   ReserveScreen(),
-          return PageRouteBuilder(
-            settings: settings,
-            pageBuilder: (context, animation, secondaryAnimation) {
-              final args = settings.arguments as Map<String, dynamic>;
-              return SeatselectionScreen();
-            },
-            transitionDuration: Duration(seconds: 0),
-          );
+              transitionDuration: Duration(seconds: 0),
+            );
           case '/movieChart':
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
