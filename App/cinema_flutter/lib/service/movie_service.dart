@@ -19,9 +19,9 @@ class MovieService {
     return list;
   }
 
-  // 리뷰리스트 조회
-  Future<Map<String, dynamic>> reviewList(String id, String username) async{
-    var url = "$host/review/list?id=$id&username=$username";
+  // 영화 차트
+  Future<Map<String, dynamic>> movieChart(int page) async{
+    var url = "$host/movie/movieChart?page=$page";
     dynamic list;
     try{
       Response response = await dio.get(url);
@@ -30,6 +30,65 @@ class MovieService {
       print(e);
     }
     return list;
+  }
+
+  // 리뷰리스트 조회
+  Future<Map<String, dynamic>> reviewList(String id, String username, int page) async{
+    print("id 는$id");
+    print("id 는 $username");
+    print("id 는 $page");
+    var url = "$host/review/list?id=$id&username=$username&page=$page";
+    dynamic list;
+    try{
+      Response response = await dio.get(url);
+      return response.data as Map<String, dynamic>;
+    }catch(e){
+      print(e);
+    }
+    return list;
+  }
+
+  /// 리뷰 추가
+  Future<bool> reviewInsert(Map<String, dynamic> reveiwInfo) async {
+    try {
+      final response = await dio.post('$host/review/insert', data: reveiwInfo);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// 리뷰 수정
+  Future<bool> reviewUpdate(Map<String, dynamic> reveiwInfo) async {
+    try {
+      final response = await dio.put('$host/review/update', data: reveiwInfo);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// 리뷰 삭제
+  Future<bool> reviewDelete(String reviewId) async {
+    try {
+      print("리뷰아이디는 $reviewId");
+      final response = await dio.delete('$host/review/delete/$reviewId');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // 영화정보 조회
