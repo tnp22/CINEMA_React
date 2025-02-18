@@ -193,7 +193,7 @@ class _JoinScreenState extends State<JoinScreen> {
             if(result){
               print("회원 가입 성공!");
               Snackbar(
-                text: "회원가입 설공!",
+                text: "회원가입 성공!",
                 icon: Icons.check_circle,
                 backgroundColor: Colors.greenAccent              
               ).showSnackbar(context);
