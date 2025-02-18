@@ -2,6 +2,7 @@ import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_insert_screen.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_read_screen.dart';
+import 'package:cinema_flutter/screen/movie/movie_chart_screen.dart';
 import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
@@ -107,6 +108,12 @@ class MyApp extends StatelessWidget {
             },
             transitionDuration: Duration(seconds: 0),
           );
+          case '/movieChart':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  MovieChartScreen(),
+              transitionDuration: Duration(seconds: 0),
+            );
           // case '/notice/read':
           //   final args = settings.arguments as String?;
           //   print("Arguments passed to /notice/read: $args");
