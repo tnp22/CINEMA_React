@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 
 class TicketService {
+  String host = "http://10.0.2.2:8080";
   
   // 정보 조회
   Future<List<Map<String, dynamic>>> dateSelection(String id) async {
     Dio dio = Dio();
-    var url = "http://10.0.2.2:8080/movie/dateSelection?id=${id}";
+    var url = "$host/movie/dateSelection?id=${id}";
     List<Map<String, dynamic>> list = [];
     try {
       // print("아이디 : $id");
@@ -42,7 +43,7 @@ class TicketService {
     Dio dio = Dio();
     print("theaterListId : $theaterListId");
     print("person : $person");
-    var url = "http://10.0.2.2:8080/movie/seatSelection?theaterListId=${theaterListId}&person=${person}";
+    var url = "$host/movie/seatSelection?theaterListId=${theaterListId}&person=${person}";
     List<Map<String, dynamic>> list = [];
     try {
       // print("아이디 : $id");
@@ -68,6 +69,7 @@ class TicketService {
       list.add({"person" : data["person"]});
       // 영화 ID MovieId
       list.add({"movieId" : data["movieId"]});
+      // print("무비아이디 : ${data["movieId"]}");
       // 영화 제목 MovieTitle
       list.add({"movieTitle" : data["movieTitle"]});
       // 이미 예매한정보 reserve, ReservationSeat
@@ -83,4 +85,45 @@ class TicketService {
     }
     return list;
   }
+
+  // 예매 등록
+  Future<bool> payment(Map<String, String> resverData) async {
+    print("데이터 : $resverData");
+    Dio dio = Dio();
+    try {
+      final response = await dio.post('$host/movie/payment', data: resverData);
+      if( response.statusCode == 200 || response.statusCode == 201 ) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // 예매 Id 조회
+  Future<Response> reserveSelect(String id) async {
+    Dio dio = Dio();
+    try {
+      Response response = await dio.get('$host/movie/payment?id=$id');
+      return response;
+    } catch (e) {
+      print("예매조회중 에러발생");
+      rethrow;
+    }
+  }
+
+  // 예매 내역 조회
+  Future<Response> rsList(String userName) async {
+    Dio dio = Dio();
+    try {
+      Response response = await dio.get('$host/movie/rsList?usesname=$userName');
+      return response;
+    } catch (e) {
+      print("예매내역 조회중 에러 발생");
+      rethrow;
+    }
+  }
+
 }

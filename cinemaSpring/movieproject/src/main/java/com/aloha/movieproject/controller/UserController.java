@@ -179,7 +179,7 @@ public class UserController {
                 if (passwordEncoder.matches(password, user.getPassword())) {
                     // 비밀번호가 맞으면 성공 응답 반환 및 리다이렉트 경로 설정
                     response.put("message", "비밀번호가 일치합니다.");
-                    response.put("redirect", "/mypageedit");
+                    // response.put("redirect", "/mypageedit");
                     return ResponseEntity.ok().body(response);
                 } else {
                     // 비밀번호가 틀리면 에러 응답 반환
@@ -198,6 +198,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    
+
 
     @GetMapping("/mypageUpdate")
     public String mypageUpdate(@AuthenticationPrincipal CustomUser authUser, Model model) throws Exception {
@@ -250,8 +253,6 @@ public class UserController {
     @Secured("ROLE_USER")
     @PostMapping("/mypageImageUpdate")
     public ResponseEntity<?> movieInsert(@ModelAttribute Users users) throws Exception {
-
-
         Users oriUser = userService.select(users.getUsername());
         Files orifile = fileService.imageUpdate(oriUser.getId());
         Files file = new Files();
@@ -260,17 +261,26 @@ public class UserController {
         file.setFkTable("user");
         file.setFkId(oriUser.getId());
         boolean result = false;
-        
-        if(orifile != null){
-           result = fileService.update(file,orifile.getId());
+
+        // 기존 이미지 삭제 로직 추가
+        String profileUploadPath = "C:/upload/";
+        String[] possibleExtensions = { "png", "jpg", "jpeg" };
+        for (String ext : possibleExtensions) {
+            File existingFile = new File(profileUploadPath + oriUser.getUsername() + "." + ext);
+            if (existingFile.exists()) {
+                existingFile.delete();
+            }
         }
-        else{
+
+        if (orifile != null) {
+            result = fileService.update(file, orifile.getId());
+        } else {
             result = fileService.upload(file);
         }
 
-        if(result){
+        if (result) {
             return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
         }
     }
