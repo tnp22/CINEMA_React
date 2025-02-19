@@ -53,9 +53,9 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
   return result;  // 수정된 부분: 'list'와 'total'을 포함한 Map 반환
 }
 
-Future<Map<String, dynamic>> myList(int page, int size, int option, String keyword) async {
+Future<Map<String, dynamic>> myList(int page, int size, int option, String keyword,String username) async {
   var url =
-      "$host/usersss/myInquiry/inquiries/list?page=$page&size=$size&option=$option&keyword=$keyword";
+      "$host/usersss/myInquiry/inquiries/list?page=$page&size=$size&option=$option&keyword=$keyword&username=$username";
   Map<String, dynamic> result = {};
 
   try {

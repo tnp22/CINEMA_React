@@ -1,7 +1,9 @@
 import 'package:cinema_flutter/model/inquiry.dart';
+import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/service/inquiry_service.dart';
 import 'package:cinema_flutter/widget/pagination.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class InquiryListPersonalScreen extends StatefulWidget {
   const InquiryListPersonalScreen({super.key});
@@ -39,8 +41,9 @@ class _CuscenterListScreenState extends State<InquiryListPersonalScreen> {
   // 게시글 목록 요청 함수
   Future<void> _loadNotices() async {
     try {
+      UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
       // 게시글 목록 요청 (비동기 처리)
-      var _respon = await inquiryService.myList(_page, _size, _option, _keyword);
+      var _respon = await inquiryService.myList(_page, _size, _option, _keyword,userProvider.userInfo.username!);
 
       // _respon에서 'list'와 'total' 데이터를 추출하여 상태 갱신
       setState(() {
@@ -73,9 +76,22 @@ class _CuscenterListScreenState extends State<InquiryListPersonalScreen> {
 
 @override
 Widget build(BuildContext context) {
+  
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+  
+
+  if( !userProvider.isLogin){
+    WidgetsBinding.instance.addPostFrameCallback( (_) {
+      if(Navigator.canPop(context)){
+        Navigator.pop(context);
+      }
+      Navigator.pushNamed(context, '/login');
+    });
+  }
+
   return Scaffold(
     appBar: AppBar(
-      title: Text("고객센터"),
+      title: Text("문의내역"),
     ),
     body: Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
