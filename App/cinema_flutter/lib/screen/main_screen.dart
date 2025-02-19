@@ -3,6 +3,7 @@ import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
 import 'package:cinema_flutter/screen/home_screen.dart';
 import 'package:cinema_flutter/screen/login_screen.dart';
 import 'package:cinema_flutter/screen/logout_screen.dart';
+import 'package:cinema_flutter/screen/movie/movie_chart_screen.dart';
 import 'package:cinema_flutter/screen/mypage_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
                   _selectedScreen = userProvider.isLogin?LogoutScreen() : LoginScreen();
                   break;
                 case 1:
-                  _selectedScreen = HomeScreen();
+                  _selectedScreen = MovieChartScreen();
                   break;
                 case 2:
                   _selectedScreen = HomeScreen();

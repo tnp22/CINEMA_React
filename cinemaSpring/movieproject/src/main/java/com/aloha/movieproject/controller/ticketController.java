@@ -193,9 +193,13 @@ public class ticketController {
 
             response.put("reserve", reserve);
             response.put("reservationSeat", seat);
+            if (authUser != null) {
 
-            // response.put("authUserName", authUser.getUsername());
-            // response.put("authUserEmail", authUser.getEmail());
+                response.put("authUserName", authUser.getUsername());
+                response.put("authUserEmail", authUser.getEmail());
+            } else {
+                log.info("유저 정보 없음");
+            }
             response.put("theaterId", id);
             response.put("money", money);
             response.put("person", Integer.parseInt(person));
