@@ -207,7 +207,7 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
     bool result = await ticket_service.payment(resverData!);
     // 예매 성공시 true
     if(result){
-      Navigator.pushNamed(context, "/payment", 
+      Navigator.pushReplacementNamed(context, "/payment", 
       arguments: {
         "orderId" : orderId as String,
         "money" : money.toString(),
