@@ -25,6 +25,7 @@ class _CuscenterListScreenState extends State<InquiryListPersonalScreen> {
   late List<Map<String, dynamic>> _inquiryList = []; // Future 제거, 바로 List로 사용
   late int _total;
   final inquiryService = InquiryService();
+  late UserProvider _userProvider;
   int _page = 1; // 초기 페이지 1
   final int _size = 8;
   int _option = 1; // 기본 옵션 값
@@ -35,15 +36,27 @@ class _CuscenterListScreenState extends State<InquiryListPersonalScreen> {
   @override
   void initState() {
     super.initState();
+    
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // UserProvider 접근을 여기서 처리
+    _userProvider = Provider.of<UserProvider>(context, listen: true);
     _loadNotices(); // 화면 초기화 시 데이터 로드
   }
 
   // 게시글 목록 요청 함수
   Future<void> _loadNotices() async {
+      if (_userProvider == null) {
+        // _userProvider가 초기화되지 않았으면 예외 처리
+        print("Error: UserProvider가 초기화되지 않았습니다.");
+        return;
+      }
     try {
-      UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
       // 게시글 목록 요청 (비동기 처리)
-      var _respon = await inquiryService.myList(_page, _size, _option, _keyword,userProvider.userInfo.username!);
+      var _respon = await inquiryService.myList(_page, _size, _option, _keyword,_userProvider.userInfo.username!);
 
       // _respon에서 'list'와 'total' 데이터를 추출하여 상태 갱신
       setState(() {
@@ -77,10 +90,8 @@ class _CuscenterListScreenState extends State<InquiryListPersonalScreen> {
 @override
 Widget build(BuildContext context) {
   
-  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
-  
 
-  if( !userProvider.isLogin){
+  if( !_userProvider.isLogin){
     WidgetsBinding.instance.addPostFrameCallback( (_) {
       if(Navigator.canPop(context)){
         Navigator.pop(context);
@@ -185,8 +196,9 @@ Widget build(BuildContext context) {
                     itemCount: _inquiryList.length,
                     itemBuilder: (context, index) {
                       final inquiry = Inquiry.fromMap(_inquiryList[index]);
-                      return inquiry.type == 1
-                          ? GestureDetector(
+                      return inquiry.type == 1 ? 
+                          
+                           GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, "/inquiry/read", arguments: inquiry.id);
                               },
@@ -199,91 +211,15 @@ Widget build(BuildContext context) {
                             )
                           : GestureDetector(
                               onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (context) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                      child: Container(
-                                        height: 250,
-                                        padding: EdgeInsets.all(20),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(30),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.grey.withOpacity(0.5),
-                                              spreadRadius: 5,
-                                              blurRadius: 7,
-                                              offset: Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '비밀번호 입력',
-                                              style: TextStyle(
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            TextField(
-                                              controller: _passwordController,
-                                              decoration: InputDecoration(
-                                                hintText: '비밀번호를 입력하시오',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                Navigator.pop(context);
-                                                Navigator.pushNamed(
-                                                  context,
-                                                  "/inquiry/read",
-                                                  arguments: {
+                                Navigator.pushNamed(context, "/inquiry/read",                                                   arguments: {
                                                     'id': inquiry.id,
-                                                    'password': _passwordController.text,
-                                                  },
-                                                );
-                                                _passwordController.clear();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                minimumSize: const Size(double.infinity, 50),
-                                                backgroundColor: Color(0xFF583BBF),
-                                                foregroundColor: Colors.white,
-                                                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(0),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                "입력",
-                                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ).whenComplete(() {
-                                  _passwordController.clear();
-                                });
+                                                    'my': 'my'
+                                                  },);
                               },
                               child: Card(
                                 child: ListTile(
                                   leading: Text(inquiry.no.toString()),
-                                  title: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.lock),
-                                      Text(inquiry.title ?? ''),
-                                    ],
-                                  ),
+                                  title: Text(inquiry.title ?? ''),
                                 ),
                               ),
                             );
