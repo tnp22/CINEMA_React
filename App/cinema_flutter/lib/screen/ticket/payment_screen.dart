@@ -210,6 +210,7 @@ class _PaymentScreen extends State<PaymentScreen> {
         print(text);
         switch(text){
           case '예매 내역' : Navigator.pushNamed(context, "/reserve");
+          case '메인으로' : Navigator.pushReplacementNamed(context, "/main");
         }
       },
       style: ElevatedButton.styleFrom(
