@@ -23,6 +23,7 @@ class _CuscenterReadScreenState extends State<InquiryReadScreen> {
   // 🧊 state
   String? id;
   String? password;
+  String? my;
   final inquiryService = InquiryService();
   late Future<Map<String, dynamic>?> _notice;
 
@@ -54,12 +55,19 @@ class _CuscenterReadScreenState extends State<InquiryReadScreen> {
                   setState(() {
           // arguments에서 id와 password 꺼내기
           id = arguments['id'];
-          password = arguments['password'];          
+          password = arguments['password'];
+          my = arguments['my'];
+          
+          if(my != null){
+            _notice = inquiryService.mySelect(id!);
+          }
+          else{
           password == null ?
           _notice = inquiryService.select(id!)
           :
           // 게시글 조회 요청
           _notice = inquiryService.selectPassword(id!, password!);
+          }
         });
       }
       
@@ -103,7 +111,7 @@ class _CuscenterReadScreenState extends State<InquiryReadScreen> {
           },
           child: Icon(Icons.arrow_back),
         ),
-        title: Text("공지사항"),
+        title: Text("고객센터"),
         actions: [],
       ),
       body: Padding(

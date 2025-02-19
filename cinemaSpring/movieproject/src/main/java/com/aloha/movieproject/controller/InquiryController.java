@@ -6,16 +6,23 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aloha.movieproject.domain.CustomUser;
 import com.aloha.movieproject.domain.Inquiry;
+import com.aloha.movieproject.props.JwtProps;
 import com.aloha.movieproject.service.InquiryService;
 import com.github.pagehelper.PageInfo;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 
 
@@ -34,6 +42,8 @@ public class InquiryController {
 
     @Autowired
     InquiryService inquiryService;
+
+    @Autowired private JwtProps jwtProps;  // secretKey 
 
     @GetMapping("/list")
     public ResponseEntity<?> list(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page
@@ -61,11 +71,53 @@ public class InquiryController {
     }
 
     @GetMapping("/select/{id}")
-    public ResponseEntity<?> select(Model model, @PathVariable("id") String id) {
+    public ResponseEntity<?> select(Model model, @PathVariable("id") String id
+        ,@AuthenticationPrincipal CustomUser customUser) {
         Inquiry inquiry = inquiryService.select(id);
-        Map<String, Object> response = new HashMap<>();
-        response.put("inquiry", inquiry);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        if(inquiry.getType() == 0){
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
+        else{
+            Map<String, Object> response = new HashMap<>();
+            response.put("inquiry", inquiry);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/mySelect/{id}")
+    public ResponseEntity<?> select(Model model, @PathVariable("id") String id
+        ,@RequestHeader(name = "Authorization") String authorization) {
+        //log.info("Authrization : " + authorization);
+
+        // Authrization : "Bearer " + 💍(jwt)
+        String jwt = authorization.substring(7);
+        //log.info("jwt : " + jwt);
+
+        String secretKey = jwtProps.getSecretKey();
+        byte[] signingKey = secretKey.getBytes();
+
+        Inquiry inquiry = inquiryService.select(id);
+        Jws<Claims> parsedToken = Jwts.parser()
+                                .verifyWith(Keys.hmacShaKeyFor(signingKey))
+                                .build()
+                                .parseSignedClaims(jwt);
+
+        String username = parsedToken.getPayload().get("username").toString();
+
+        if(inquiry.getUsername().equals(username) ){
+            Map<String, Object> response = new HashMap<>();
+            response.put("inquiry", inquiry);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else if(inquiry.getType() == 0){
+            return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+        }
+        else{
+            Map<String, Object> response = new HashMap<>();
+            response.put("inquiry", inquiry);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
     
     @PostMapping("/insert")

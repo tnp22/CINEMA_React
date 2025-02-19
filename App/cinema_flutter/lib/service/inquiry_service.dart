@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class InquiryService {
  final Dio _dio = Dio();
   final String host = 'http://10.0.2.2:8080';
+  // 🔒 안전한 저장소
+  final storage = const FlutterSecureStorage();
+
 
 Future<Map<String, dynamic>> list(int page, int size, int option, String keyword) async {
   var url =
@@ -55,7 +59,7 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
 
 Future<Map<String, dynamic>> myList(int page, int size, int option, String keyword,String username) async {
   var url =
-      "$host/usersss/myInquiry/inquiries/list?page=$page&size=$size&option=$option&keyword=$keyword&username=$username";
+      "$host/usersss/myInquiry/inquiries?page=$page&size=$size&option=$option&keyword=$keyword&username=$username";
   Map<String, dynamic> result = {};
 
   try {
@@ -107,7 +111,42 @@ Future<Map<String, dynamic>> myList(int page, int size, int option, String keywo
     var url = "$host/inquiry/select/$id";
     var notice;
     try{
-      var response = await _dio.get(url);
+      Response response = await _dio.get(url);
+      print("::::: response - body :::::");
+      //print(response.body);
+
+      // 응답이 Map<String, dynamic>이라면 바로 사용
+      if (response.data is Map<String, dynamic>) {
+        Map<String, dynamic> jsonResponse = response.data;
+
+        notice = Map<String, dynamic>.from(jsonResponse['inquiry']);
+        print(notice);
+
+
+      } else {
+        print("Error: Response is not a valid Map<String, dynamic>");
+      }
+
+      // 'list' 키에 해당하는 값을 추출
+      //JSON 디코딩
+      // board = jsonDecode(utf8Decoded);
+      // boardList :: List<Map<String, dynamic>>
+    } catch (e){
+      print(e);
+    }
+    return notice;
+  }
+
+    // 데이터 조회
+  Future<Map<String, dynamic>?> mySelect(String id) async {
+    var url = "$host/inquiry/mySelect/$id";
+    var notice;
+    try{
+    String? jwt = await storage.read(key: 'jwt');
+      var response = await _dio.get(url,options: Options(headers: {
+            'Authorization': 'Bearer $jwt',
+            'Content-Type': 'application/json'
+          }));
       print("::::: response - body :::::");
       //print(response.body);
 
