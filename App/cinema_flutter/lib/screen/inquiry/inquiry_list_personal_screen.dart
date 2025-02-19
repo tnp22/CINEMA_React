@@ -111,10 +111,6 @@ Widget build(BuildContext context) {
                               value: 2,
                               child: Text('내용'),
                             ),
-                            DropdownMenuItem(
-                              value: 3,
-                              child: Text('아이디'),
-                            ),
                           ],
                           underline: SizedBox(), // 기본 밑줄 제거
                           isExpanded: false,
