@@ -189,7 +189,7 @@ class _PaymentScreen extends State<PaymentScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildButton("예매 취소"),
+                  _buildButton("결제API"),
                   SizedBox(width: 10),
                   _buildButton("예매 내역"),
                   SizedBox(width: 10),
@@ -211,7 +211,7 @@ class _PaymentScreen extends State<PaymentScreen> {
         switch(text){
           case '예매 내역' : Navigator.pushNamed(context, "/reserve");
           case '메인으로' : Navigator.pushReplacementNamed(context, "/main");
-          case '예매 취소' :Navigator.pushNamed(context, "/ppp");
+          case '결제API' :Navigator.pushNamed(context, "/ppp");
         }
       },
       style: ElevatedButton.styleFrom(
