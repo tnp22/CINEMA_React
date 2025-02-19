@@ -123,19 +123,19 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: _uploadImage,
-                  child: const Text("이미지 업로드"),
+                  child: const Text("이미지 저장"),
                 ),
 
-                const SizedBox(height: 20),
+                // const SizedBox(height: 20),
 
-                // 사용자 정보 출력 (UserProvider)
-                _buildInfoRow("아이디 (Provider)", user.username),
-                _buildInfoRow("이름 (Provider)", user.name),
-                _buildInfoRow("이메일 (Provider)", user.email),
-                _buildInfoRow("가입 날짜 (Provider)", user.regDate?.toString()),
-                _buildInfoRow("마지막 수정 날짜 (Provider)", user.updDate?.toString()),
-                _buildInfoRow("사용 가능 여부 (Provider)",
-                    user.enabled == true ? "활성화됨" : "비활성화됨"),
+                // // 사용자 정보 출력 (UserProvider)
+                // _buildInfoRow("아이디 (Provider)", user.username),
+                // _buildInfoRow("이름 (Provider)", user.name),
+                // _buildInfoRow("이메일 (Provider)", user.email),
+                // _buildInfoRow("가입 날짜 (Provider)", user.regDate?.toString()),
+                // _buildInfoRow("마지막 수정 날짜 (Provider)", user.updDate?.toString()),
+                // _buildInfoRow("사용 가능 여부 (Provider)",
+                //     user.enabled == true ? "활성화됨" : "비활성화됨"),
 
                 const SizedBox(height: 20),
 
@@ -200,19 +200,6 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
                 ),
 
                 const SizedBox(height: 10),
-
-                // 새로고침 버튼
-                ElevatedButton(
-                  onPressed: () async {
-                    bool success = await userProvider.getUserInfo();
-                    if (!success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("사용자 정보를 가져오는 데 실패했습니다.")),
-                      );
-                    }
-                  },
-                  child: const Text("새로고침"),
-                ),
               ],
             ),
           );
