@@ -66,7 +66,7 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("나의 정보"),
-        backgroundColor: Colors.purple, // 상단바 색상
+        backgroundColor: Color(0xFF583BBF), // 상단바 색상
       ),
       body: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
