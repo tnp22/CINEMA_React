@@ -20,7 +20,6 @@ class _MypageScreenState extends State<MypageScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async {
         // 뒤로가기 버튼을 눌렀을 때의 동작을 정의
@@ -68,7 +67,6 @@ class _MypageScreenState extends State<MypageScreen> {
                             radius: 50,
                             backgroundImage:
                                 AssetImage('assets/profile_image.png'),
-
                           );
                         } else {
                           return CircleAvatar(
@@ -100,14 +98,15 @@ class _MypageScreenState extends State<MypageScreen> {
                     if (userProvider.isLogin) {
                       _showPasswordDialog(context);
                     } else {
-                      Navigator.pushReplacementNamed(context, '/login');
+                      Navigator.pushNamed(context, '/login');
                     }
                   }),
                   _buildMenuButton("예매 내역", () {
                     if (userProvider.isLogin) {
                       // 예매 내역 페이지로 이동
+                      Navigator.pushNamed(context, '/reserve');
                     } else {
-                      Navigator.pushReplacementNamed(context, '/login');
+                      Navigator.pushNamed(context, '/login');
                     }
                   }),
                   _buildMenuButton("문의 내역", () {
@@ -115,7 +114,7 @@ class _MypageScreenState extends State<MypageScreen> {
                       // 문의 내역 페이지로 이동
                       Navigator.pushNamed(context, "/inquiry/list/personal");
                     } else {
-                      Navigator.pushReplacementNamed(context, '/login');
+                      Navigator.pushNamed(context, '/login');
                     }
                   }),
 
