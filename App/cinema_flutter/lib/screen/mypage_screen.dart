@@ -4,6 +4,7 @@ import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/service/user_service.dart';
 import 'package:cinema_flutter/service/movie_service.dart';
 import 'mypage_edit_screen.dart';
+import 'login_screen.dart';
 
 class MypageScreen extends StatefulWidget {
   const MypageScreen({super.key});
@@ -19,129 +20,108 @@ class _MypageScreenState extends State<MypageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          return Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 50),
-                // 프로필 영역
-                if (userProvider.isLogin)
-                  FutureBuilder<String?>(
-                    future: movieService
-                        .getUser(userProvider.userInfo!.id.toString()),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircleAvatar(
-                          radius: 50,
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError ||
-                          snapshot.data == null ||
-                          snapshot.data!.isEmpty) {
-                        return const CircleAvatar(
-                          radius: 50,
-                          backgroundImage:
-                              AssetImage('assets/profile_image.png'),
-                        );
-                      } else {
-                        return CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(
-                            "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
-                          ),
-                        );
-                      }
-                    },
-                  )
-                else
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('assets/profile_image.png'),
-                  ),
-                const SizedBox(height: 10),
-                Text(
-                  userProvider.isLogin
-                      ? "${userProvider.userInfo.username}님, 반갑습니다."
-                      : "로그인이 필요합니다.",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-
-                // 메뉴 버튼
-                _buildMenuButton("나의 정보", () {
-                  _showPasswordDialog(context);
-                }),
-                _buildMenuButton("예매 내역", () {}),
-                _buildMenuButton("문의 내역", () {}),
-
-                const SizedBox(height: 30),
-
-                // 비밀번호 입력 필드
-                const Text(
-                  "회원 정보를 수정하려면 비밀번호를 다시 입력해주세요.",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: "비밀번호 입력",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // 확인 & 취소 버튼
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // 취소 버튼 기능 추가
-                        passwordController.clear();
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey),
-                      child: const Text("취소"),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // 비밀번호 확인 기능 추가
-                        final response = await userService
-                            .checkPassword(passwordController.text);
-                        if (response['message'] == '비밀번호가 일치합니다.') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MyPageEditScreen()),
+    return WillPopScope(
+      onWillPop: () async {
+        // 뒤로가기 버튼을 눌렀을 때의 동작을 정의
+        Navigator.of(context).pop();
+        return false; // true로 설정하면 앱이 종료됩니다.
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start, // 왼쪽 정렬
+            children: [
+              Image.asset(
+                'image/vora_purple_black.png',
+                width: 70, // 크기 조정
+                height: 70,
+              ),
+            ],
+          ),
+        ),
+        body: Consumer<UserProvider>(
+          builder: (context, userProvider, child) {
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20), // 높이 조정
+                  // 프로필 영역
+                  if (userProvider.isLogin)
+                    FutureBuilder<String?>(
+                      future: movieService
+                          .getUser(userProvider.userInfo!.id.toString()),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircleAvatar(
+                            radius: 50,
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError ||
+                            snapshot.data == null ||
+                            snapshot.data!.isEmpty) {
+                          return const CircleAvatar(
+                            radius: 50,
+                            backgroundImage:
+                                AssetImage('assets/profile_image.png'),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text(response['message'] ?? '오류가 발생했습니다.')),
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: NetworkImage(
+                              "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
+                            ),
                           );
                         }
                       },
-                      child: const Text("확인"),
+                    )
+                  else
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('assets/profile_image.png'),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
+                  const SizedBox(height: 10),
+                  Text(
+                    userProvider.isLogin
+                        ? "${userProvider.userInfo.username}님, 반갑습니다."
+                        : "로그인이 필요합니다.",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 40), // 원래 간격 유지
+
+                  // 메뉴 버튼
+                  _buildMenuButton("나의 정보", () {
+                    if (userProvider.isLogin) {
+                      _showPasswordDialog(context);
+                    } else {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }
+                  }),
+                  _buildMenuButton("예매 내역", () {
+                    if (userProvider.isLogin) {
+                      // 예매 내역 페이지로 이동
+                    } else {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }
+                  }),
+                  _buildMenuButton("문의 내역", () {
+                    if (userProvider.isLogin) {
+                      // 문의 내역 페이지로 이동
+                    } else {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }
+                  }),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
