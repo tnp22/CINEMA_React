@@ -61,6 +61,7 @@ public class InquiryController {
     @GetMapping("/select/{id}/{password}")
     public ResponseEntity<?> select(@PathVariable("id") String id, @PathVariable("password") String password) {
         Inquiry inquiry = inquiryService.select(id);
+        log.info("패스워드 로 들러옴"+password);
         if(password.equals(inquiry.getPassword())){
             Map<String, Object> response = new HashMap<>();
             response.put("inquiry", inquiry);
