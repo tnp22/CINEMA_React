@@ -211,7 +211,6 @@ class _PaymentScreen extends State<PaymentScreen> {
         switch(text){
           case '예매 내역' : Navigator.pushNamed(context, "/reserve");
           case '메인으로' : Navigator.pushReplacementNamed(context, "/main");
-          case '예매 취소' :Navigator.pushNamed(context, "/ppp");
         }
       },
       style: ElevatedButton.styleFrom(

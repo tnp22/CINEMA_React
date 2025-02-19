@@ -7,7 +7,6 @@ import 'package:cinema_flutter/screen/movie/movie_chart_screen.dart';
 import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_list_screen.dart';
 import 'package:cinema_flutter/screen/notice/notice_read_screen.dart';
-import 'package:cinema_flutter/screen/ticket/pay_screen.dart';
 import 'package:cinema_flutter/screen/ticket/payment_screen.dart';
 import 'package:cinema_flutter/screen/ticket/reserve_screen.dart';
 import 'package:cinema_flutter/screen/ticket/seatSelection_screen.dart';
@@ -137,12 +136,6 @@ class MyApp extends StatelessWidget {
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   MovieChartScreen(),
-              transitionDuration: Duration(seconds: 0),
-            );
-          case '/ppp':
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  PayScreen(),
               transitionDuration: Duration(seconds: 0),
             );
           // case '/notice/read':
