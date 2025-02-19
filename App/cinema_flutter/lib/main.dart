@@ -1,5 +1,6 @@
 import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_insert_screen.dart';
+import 'package:cinema_flutter/screen/inquiry/inquiry_list_personal_screen.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_list_screen.dart';
 import 'package:cinema_flutter/screen/inquiry/inquiry_read_screen.dart';
 import 'package:cinema_flutter/screen/movie/movie_info_screen.dart';
@@ -86,6 +87,12 @@ class MyApp extends StatelessWidget {
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   InquiryListScreen(),
+              transitionDuration: Duration(seconds: 0),
+            );
+          case '/inquiry/list/personal':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  InquiryListPersonalScreen(),
               transitionDuration: Duration(seconds: 0),
             );
           case '/ticket':
