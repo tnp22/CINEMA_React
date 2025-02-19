@@ -62,17 +62,27 @@ class _PaymentScreen extends State<PaymentScreen> {
         if (args != null) {
           obj = args as Map<String, String?>;
           print("obj : $obj");
-          setState(() {
-            orderId = obj["orderId"] as String;
-            money = obj["money"] as String;
-            userName = obj["userName"] as String;
-            person = obj["person"] as String;
-            seat = obj["seat"] as String;
-            id = obj["id"] as String;
-            movieId = obj["movieId"] as String;
-            print(movieId);
-            getReserveData();
-          });
+          if(obj["Impid"] != null){
+            // 예매내역에서 예매정보 불러오기
+            print("예매내역에서 접근");
+            setState(() {
+              orderId = obj["Impid"];
+              getReserveData();
+            });
+          }else{
+            // 결제완료 후 예매정보 불러오기
+            setState(() {
+              orderId = obj["orderId"] as String;
+              money = obj["money"] as String;
+              userName = obj["userName"] as String;
+              person = obj["person"] as String;
+              seat = obj["seat"] as String;
+              id = obj["id"] as String;
+              movieId = obj["movieId"] as String;
+              print(movieId);
+              getReserveData();
+            });
+          }
         }
       });
     });
@@ -80,11 +90,18 @@ class _PaymentScreen extends State<PaymentScreen> {
 
   void getReserveData() async {
     String id = orderId as String;
+    print("아이디 : $id");
     Response response = await ticket_service.reserveSelect(id);
     print("리스폰 데이터 ${response.data}");
     setState(() {
       data = response.data;
       regDate = data["reserve"]["regDate"];
+      print("무비아이디 있나? ${movieId}");
+      if(movieId == null){
+        // 예매내역에서 접근시 movieId 없음
+        print("movieId 없음 ${data["movie"]["files"]["id"]}");
+        movieId = data["movie"]["files"]["id"];
+      }
       print("regDate: $regDate"); // "2025-02-17T07:55:52.000+00:00" 확인
       if (regDate.isNotEmpty) {
         DateFormat dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"); // 시간대 포함 형식
