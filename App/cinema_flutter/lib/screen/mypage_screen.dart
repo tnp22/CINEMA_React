@@ -45,7 +45,8 @@ class _MypageScreenState extends State<MypageScreen> {
               );
             }),
             _buildMenuButton("예매 내역", () {
-              
+              print("예매 내역 클릭");
+              Navigator.pushNamed(context, "/reserve");
             }),
             _buildMenuButton("문의 내역", () {}),
 
