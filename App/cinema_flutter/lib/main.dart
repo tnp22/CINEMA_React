@@ -114,7 +114,7 @@ class MyApp extends StatelessWidget {
             return PageRouteBuilder(
               settings: settings,
               pageBuilder: (context, animation, secondaryAnimation) {
-                print("이동전 타입 ${settings.arguments.runtimeType}");
+                // print("이동전 타입 ${settings.arguments.runtimeType}");
                 final args = settings.arguments as Map<String, String?>;
                 return PaymentScreen();
               },

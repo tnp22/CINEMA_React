@@ -20,6 +20,7 @@ class _MypageScreenState extends State<MypageScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () async {
         // 뒤로가기 버튼을 눌렀을 때의 동작을 정의
@@ -67,6 +68,7 @@ class _MypageScreenState extends State<MypageScreen> {
                             radius: 50,
                             backgroundImage:
                                 AssetImage('assets/profile_image.png'),
+
                           );
                         } else {
                           return CircleAvatar(
