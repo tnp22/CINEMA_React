@@ -130,8 +130,8 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
 
           mapData.add(newRow);
         }
-        print("예매정보 : ${result[7]["reserve"][0]["seat"]}");
-        print("예매정보 : ${result[7]["reserve"][0]["seat"].runtimeType}");
+        //print("예매정보 : ${result[7]["reserve"][0]["seat"]}");
+        //print("예매정보 : ${result[7]["reserve"][0]["seat"].runtimeType}");
         List<dynamic> reserveSeat = result[7]["reserve"];
         List<String> reserve = [];
         for(var reserveseat in reserveSeat){

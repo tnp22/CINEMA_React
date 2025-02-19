@@ -13,7 +13,7 @@ const InquirySelect = () => {
     const getInquiry = async (id,password) => {
         try {
             let response
-            if(password !== null && password == ''){
+            if(password !== null && password !== ''){
                 response = await inquiryAPI.selectPassword(id,password);
             }else{
                 response = await inquiryAPI.select(id);

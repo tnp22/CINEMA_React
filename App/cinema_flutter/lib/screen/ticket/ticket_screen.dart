@@ -1,6 +1,8 @@
+import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/widget/ticket_buttom.dart';
 import 'package:flutter/material.dart';
 import 'package:cinema_flutter/service/ticket_service.dart';
+import 'package:provider/provider.dart';
 
 class TicketScreen extends StatefulWidget {
   
@@ -419,6 +421,17 @@ class _TicketScreenState extends State<TicketScreen> {
 
   @override
   Widget build(BuildContext context) {
+  
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+  if( !userProvider.isLogin){
+    WidgetsBinding.instance.addPostFrameCallback( (_) {
+      if(Navigator.canPop(context)){
+        Navigator.pop(context);
+      }
+      Navigator.pushNamed(context, '/login');
+    });
+  }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("$movieTitle"),
