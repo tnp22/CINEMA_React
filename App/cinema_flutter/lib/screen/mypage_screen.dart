@@ -113,6 +113,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   _buildMenuButton("문의 내역", () {
                     if (userProvider.isLogin) {
                       // 문의 내역 페이지로 이동
+                      Navigator.pushNamed(context, "/inquiry/list/personal");
                     } else {
                       Navigator.pushReplacementNamed(context, '/login');
                     }
