@@ -406,6 +406,9 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
         if (data["reviewList"]["pages"] >= currentPage) {
           setState(() {
             reviews.addAll(newReviews);
+            if(newReviews.length < 6){
+              hasMore = false;
+            }
             currentPage++;
           });
         } else {
@@ -619,7 +622,7 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
               children: [
                 ReviewButton(
                   onPressed: () {
-                    if(count < 1){
+                    if (count < 1) {
                       loggedInUsername != null ? _showAddReviewDialog() : null;
                     }
                   },
@@ -629,8 +632,8 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
                     controller: _scrollController,
                     itemCount: reviews.length + (hasMore ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index == reviews.length) {
-                        return Center(child: CircularProgressIndicator());
+                      if (index >= reviews.length) {
+                        return Center(child: CircularProgressIndicator()); // 로딩 인디케이터
                       }
 
                       final review = reviews[index];
@@ -670,7 +673,7 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
                                       if (value == 'edit') {
                                         _showEditReviewDialog(review, index);
                                       } else if (value == 'delete') {
-                                        _showDeleteConfirmationDialog(index,review['id']);
+                                        _showDeleteConfirmationDialog(index, review['id']);
                                       }
                                     },
                                     itemBuilder: (context) => [
@@ -689,13 +692,13 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
                             SizedBox(height: 5),
                             Row(
                               children: List.generate(
-                                review['ratingValue'],
-                                (i) => Icon(Icons.star, color: Color(0xFF583BBF), size: 16),
-                              ) +
-                              List.generate(
-                                5 - (review['ratingValue'] as int),
-                                (i) => Icon(Icons.star_border, color: Color(0xFF583BBF), size: 16),
-                              ),
+                                    review['ratingValue'],
+                                    (i) => Icon(Icons.star, color: Color(0xFF583BBF), size: 16),
+                                  ) +
+                                  List.generate(
+                                    5 - (review['ratingValue'] as int),
+                                    (i) => Icon(Icons.star_border, color: Color(0xFF583BBF), size: 16),
+                                  ),
                             ),
                             SizedBox(height: 5),
                             Text(

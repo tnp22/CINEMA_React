@@ -68,6 +68,58 @@ class UserService {
     return false;
   }
 
+  // 비밀번호 확인
+  Future<Map<String, String>> checkPassword(String password) async {
+    try {
+      final storage = const FlutterSecureStorage();
+      String? jwt = await storage.read(key: "jwt");
+      final response = await _dio.get('$host/usersss/checkMypage',
+          queryParameters: {'password': password},
+          options: Options(headers: {
+            'Authorization': 'Bearer $jwt',
+            'Content-Type': 'application/json'
+          }));
+      if (response.statusCode == 200) {
+        return Map<String, String>.from(response.data);
+      } else {
+        return {'message': '비밀번호 확인 실패'};
+      }
+    } catch (e) {
+      print('비밀번호 확인 실패 : $e');
+      return {'message': '비밀번호 확인 실패'};
+    }
+  }
+
+  // 이미지 업로드
+  Future<bool> uploadProfileImage(String username, String filePath) async {
+    try {
+      final storage = const FlutterSecureStorage();
+      String? jwt = await storage.read(key: "jwt");
+
+      FormData formData = FormData.fromMap({
+        'username': username,
+        'file': await MultipartFile.fromFile(filePath,
+            filename: 'profile_image.png'),
+      });
+
+      final response = await _dio.post('$host/usersss/mypageImageUpdate',
+          data: formData,
+          options: Options(headers: {
+            'Authorization': 'Bearer $jwt',
+            'Content-Type': 'multipart/form-data'
+          }));
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('이미지 업로드 실패 : $e');
+      return false;
+    }
+  }
+
   /// 회원탈퇴
   // Future<bool> deleteUser(String? username) async {
   //   if( username == null ) {

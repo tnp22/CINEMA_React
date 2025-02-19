@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/service/user_service.dart';
+import 'package:cinema_flutter/service/movie_service.dart';
 
 class MyPageEditScreen extends StatefulWidget {
   const MyPageEditScreen({super.key});
@@ -15,12 +18,47 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   final UserService userService = UserService();
+  final MovieService movieService = MovieService();
+
+  String? _imagePath;
 
   @override
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     emailController.text = userProvider.userInfo.email ?? '';
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imagePath = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (_imagePath != null && userProvider.userInfo.username != null) {
+      final success = await userService.uploadProfileImage(
+          userProvider.userInfo.username!, _imagePath!);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("프로필 이미지가 업데이트되었습니다.")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("프로필 이미지 업데이트에 실패했습니다.")),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("이미지 경로 또는 사용자 이름이 유효하지 않습니다.")),
+      );
+    }
   }
 
   @override
@@ -40,18 +78,52 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // 프로필 이미지 및 버튼
-                CircleAvatar(
-                  radius: 50,
-                  // backgroundImage: user.profileImageUrl != null
-                  //     ? NetworkImage(user.profileImageUrl!)
-                  //     : const AssetImage('assets/profile_image.png') as ImageProvider,
+                if (userProvider.isLogin)
+                  FutureBuilder<String?>(
+                    future: movieService
+                        .getUser(userProvider.userInfo!.id.toString()),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircleAvatar(
+                          radius: 50,
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError ||
+                          snapshot.data == null ||
+                          snapshot.data!.isEmpty) {
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: _imagePath != null
+                              ? FileImage(File(_imagePath!))
+                              : const AssetImage('assets/profile_image.png')
+                                  as ImageProvider,
+                        );
+                      } else {
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: _imagePath != null
+                              ? FileImage(File(_imagePath!))
+                              : NetworkImage(
+                                      "http://10.0.2.2:8080/files/img?id=${snapshot.data!}")
+                                  as ImageProvider,
+                        );
+                      }
+                    },
+                  )
+                else
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/profile_image.png'),
+                  ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: const Text("이미지 변경"),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    // 이미지 변경 로직 추가
-                  },
-                  child: const Text("이미지 변경"),
+                  onPressed: _uploadImage,
+                  child: const Text("이미지 업로드"),
                 ),
 
                 const SizedBox(height: 20),
@@ -130,17 +202,17 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
                 const SizedBox(height: 10),
 
                 // 새로고침 버튼
-                // ElevatedButton(
-                //   onPressed: () async {
-                //     bool success = await userProvider.getUserInfo();
-                //     if (!success) {
-                //       ScaffoldMessenger.of(context).showSnackBar(
-                //         const SnackBar(content: Text("사용자 정보를 가져오는 데 실패했습니다.")),
-                //       );
-                //     }
-                //   },
-                //   child: const Text("새로고침"),
-                // ),
+                ElevatedButton(
+                  onPressed: () async {
+                    bool success = await userProvider.getUserInfo();
+                    if (!success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("사용자 정보를 가져오는 데 실패했습니다.")),
+                      );
+                    }
+                  },
+                  child: const Text("새로고침"),
+                ),
               ],
             ),
           );
