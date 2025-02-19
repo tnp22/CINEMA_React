@@ -73,12 +73,21 @@ class _MypageScreenState extends State<MypageScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // 메뉴 버튼
-                _buildMenuButton("나의 정보", () {
-                  _showPasswordDialog(context);
-                }),
-                _buildMenuButton("예매 내역", () {}),
-                _buildMenuButton("문의 내역", () {}),
+            // 메뉴 버튼
+            _buildMenuButton("나의 정보", () {
+              // "나의 정보" 버튼을 클릭하면 마이페이지 수정 화면으로 이동
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MyPageEditScreen()),
+              );
+            }),
+            _buildMenuButton("예매 내역", () {
+              print("예매 내역 클릭");
+              Navigator.pushNamed(context, "/reserve");
+            }),
+            _buildMenuButton("문의 내역", () {}),
+
 
                 const SizedBox(height: 30),
 
