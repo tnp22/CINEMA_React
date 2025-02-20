@@ -64,8 +64,7 @@ class _MovieChartScreenState extends State<MovieChartScreen> with SingleTickerPr
   setState(() => isLoadingMore = true);
 
   try {
-    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
-    String host = "http://${userProvider.hostIP}:8080";
+    String host = "http://192.168.30.8:8080";
     String type = isMovieTab ? "movie" : "expect";
     var url = "$host/movie/movieChart?page=$currentPage&type=$type";
 
