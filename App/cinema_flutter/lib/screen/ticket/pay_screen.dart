@@ -92,7 +92,7 @@ class _PayScreenState extends State<PayScreen> {
         cardQuota: [2, 3],
       ),
       callback: (Map<String, String> result) {
-        Navigator.pushReplacementNamed(context,'payment',
+        Navigator.pushReplacementNamed(context,'/payment',
           arguments: {
             "orderId" : orderId as String,
             "money" : money.toString(),
