@@ -105,7 +105,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                 width: 100,
                                 height: 150,
                                 child: Image.network(
-                                  "http://${userProvider.hostIP}:8080/files/img?id=${movie["files"]["id"]}",
+                                  "http://192.168.30.8:8080/files/img?id=${movie["files"]["id"]}",
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -188,7 +188,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                                     width: 80,
                                                     height: 80,
                                                     child: Image.network(
-                                                      "http://${userProvider.hostIP}:8080/files/img?id=${castList[index]["files"]["id"]}",
+                                                      "http://192.168.30.8:8080/files/img?id=${castList[index]["files"]["id"]}",
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -235,7 +235,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                               fit: StackFit.expand,
                                               children: [
                                                 Image.network(
-                                                  "http://${userProvider.hostIP}:8080/files/img?id=${stilList[index]["id"]}",
+                                                  "http://192.168.30.8:8080/files/img?id=${stilList[index]["id"]}",
                                                   fit: BoxFit.cover,
                                                 ),
                                                 Container(
@@ -255,7 +255,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                             showFullScreenImage(context, stilList, index);
                                           },
                                           child: Image.network(
-                                            "http://${userProvider.hostIP}:8080/files/img?id=${stilList[index]['id']}",
+                                            "http://192.168.30.8:8080/files/img?id=${stilList[index]['id']}",
                                             fit: BoxFit.cover,
                                           ),
                                         );

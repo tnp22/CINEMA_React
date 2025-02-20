@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<Map<String, dynamic>> homeData;
   final movieService = MovieService();
   late UserProvider userProvider; // UserProvider 선언
+  String host = '192.168.30.8';
 
   @override
   void initState() {
@@ -55,7 +56,7 @@ appBar: AppBar(
                 } else {
                   return ClipOval(
                     child: Image.network(
-                      "http://${userProvider.hostIP}:8080/files/img?id=${snapshot.data!}",
+                      "http://$host:8080/files/img?id=${snapshot.data!}",
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
@@ -185,8 +186,7 @@ class _BannerSliderState extends State<BannerSlider> {
 
   @override
 Widget build(BuildContext context) {
-  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
-
+  String host = '192.168.30.8';
 
   return Container(
     height: 100,
@@ -216,7 +216,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(widget.banners.length - 1),
                   child: Image.network(
-                    "http://${userProvider.hostIP}:8080/files/img?id=$id",
+                    "http://$host:8080/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -225,7 +225,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(0),
                   child: Image.network(
-                    "http://${userProvider.hostIP}:8080/files/img?id=$id",
+                    "http://$host:8080/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -234,7 +234,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(index - 1),
                   child: Image.network(
-                    "http://${userProvider.hostIP}/files/img?id=$id",
+                    "http://$host:8080/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -375,7 +375,7 @@ class MovieCard extends StatelessWidget {
                   Navigator.pushNamed(context, "/movieInfo", arguments: id);
                 },
                 child: Image.network(
-                  "http://${userProvider.hostIP}:8080/files/img?id=$image",
+                  "http://192.168.30.8:8080/files/img?id=$image",
                   fit: BoxFit.cover,
                 ),
               ),
