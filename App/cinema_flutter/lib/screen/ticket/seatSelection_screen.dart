@@ -204,21 +204,21 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
 
     print(resverData);
     
-    bool result = await ticket_service.payment(resverData!);
+    // bool result = await ticket_service.payment(resverData!);
     // 예매 성공시 true
-    if(result){
-      Navigator.pushReplacementNamed(context, "/payment", 
-      arguments: {
-        "orderId" : orderId as String,
-        "money" : money.toString(),
-        "userName" : authUserName as String,
-        "person" : person.toString(),
-        "seat" : resetSeat,
-        "id" : theaterId as String,
-        "movieId" : movieId as String,
-      });
-    }
-    
+
+    // 결제창이동
+    Navigator.pushReplacementNamed(context, "/ppp", 
+    arguments: {
+      "orderId" : orderId as String,
+      "money" : money.toString(),
+      "userName" : authUserName as String,
+      "person" : person.toString(),
+      "seat" : resetSeat,
+      "id" : theaterId as String,
+      "movieId" : movieId as String,
+    });
+  
   }
 
   @override
