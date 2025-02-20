@@ -223,6 +223,8 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: Colors.grey[300], // 전체 배경색 설정
       appBar: AppBar(title: Text("좌석 선택")),
@@ -308,7 +310,7 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
                         child : movieId == null ?
                           Center(child: CircularProgressIndicator()) :
                           Image.network(
-                            "http://10.0.2.2:8080/files/img?id=$movieId", // 실제 이미지 경로로 변경
+                            "http://${userProvider.hostIP}:8080/files/img?id=$movieId", // 실제 이미지 경로로 변경
                             fit: BoxFit.cover, // 이미지 크기에 맞게 조정
                           ),
                       )

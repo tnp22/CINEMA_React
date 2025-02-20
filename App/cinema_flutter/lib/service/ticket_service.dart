@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class TicketService {
-  String host = "http://10.0.2.2:8080";
+  String host = "http://192.168.30.8:8080";
   
   // 정보 조회
   Future<List<Map<String, dynamic>>> dateSelection(String id) async {

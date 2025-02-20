@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserService {
   final Dio _dio = Dio();
-  final String host = 'http://10.0.2.2:8080';
+  final String host = 'http://192.168.30.8:8080';
 
   /// 회원가입
   Future<bool> registerUser(Map<String, dynamic> userData) async {

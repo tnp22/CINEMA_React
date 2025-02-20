@@ -1,6 +1,8 @@
+import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MovieChartScreen extends StatefulWidget {
   const MovieChartScreen({super.key});
@@ -62,7 +64,8 @@ class _MovieChartScreenState extends State<MovieChartScreen> with SingleTickerPr
   setState(() => isLoadingMore = true);
 
   try {
-    String host = "http://10.0.2.2:8080";
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+    String host = "http://${userProvider.hostIP}:8080";
     String type = isMovieTab ? "movie" : "expect";
     var url = "$host/movie/movieChart?page=$currentPage&type=$type";
 
@@ -174,6 +177,9 @@ class MovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+
     String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(movie["releaseDate"]));
 
     return GestureDetector(
@@ -188,7 +194,7 @@ class MovieItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                "http://10.0.2.2:8080/files/img?id=${movie["files"]["id"]}",
+                "http://${userProvider.hostIP}:8080/files/img?id=${movie["files"]["id"]}",
                 width: 100,
                 height: 150,
                 fit: BoxFit.cover,

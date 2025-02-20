@@ -105,7 +105,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                 width: 100,
                                 height: 150,
                                 child: Image.network(
-                                  "http://10.0.2.2:8080/files/img?id=${movie["files"]["id"]}",
+                                  "http://${userProvider.hostIP}:8080/files/img?id=${movie["files"]["id"]}",
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -188,7 +188,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                                     width: 80,
                                                     height: 80,
                                                     child: Image.network(
-                                                      "http://10.0.2.2:8080/files/img?id=${castList[index]["files"]["id"]}",
+                                                      "http://${userProvider.hostIP}:8080/files/img?id=${castList[index]["files"]["id"]}",
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -235,7 +235,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                               fit: StackFit.expand,
                                               children: [
                                                 Image.network(
-                                                  "http://10.0.2.2:8080/files/img?id=${stilList[index]["id"]}",
+                                                  "http://${userProvider.hostIP}:8080/files/img?id=${stilList[index]["id"]}",
                                                   fit: BoxFit.cover,
                                                 ),
                                                 Container(
@@ -255,7 +255,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> with TickerProviderSt
                                             showFullScreenImage(context, stilList, index);
                                           },
                                           child: Image.network(
-                                            "http://10.0.2.2:8080/files/img?id=${stilList[index]['id']}",
+                                            "http://${userProvider.hostIP}:8080/files/img?id=${stilList[index]['id']}",
                                             fit: BoxFit.cover,
                                           ),
                                         );
@@ -322,6 +322,8 @@ class _ExpandableTextState extends State<ExpandableText> {
 }
 
 void showFullScreenImage(BuildContext context, List<Map<String, dynamic>> stilList, int initialIndex) {
+
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
   showDialog(
     context: context,
     builder: (context) {
@@ -334,7 +336,7 @@ void showFullScreenImage(BuildContext context, List<Map<String, dynamic>> stilLi
               scrollPhysics: BouncingScrollPhysics(),
               builder: (context, index) {
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage("http://10.0.2.2:8080/files/img?id=${stilList[index]['id']}"),
+                  imageProvider: NetworkImage("http://${userProvider.hostIP}:8080/files/img?id=${stilList[index]['id']}"),
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 2,
                 );
@@ -648,7 +650,7 @@ class _ReviewListWidgetState extends State<ReviewListWidget> {
                                 CircleAvatar(
                                   radius: 20,
                                   backgroundImage: review['fileId'] != null
-                                      ? NetworkImage("http://10.0.2.2:8080/files/img?id=${review['fileId']}")
+                                      ? NetworkImage("http://${userProvider.hostIP}:8080/files/img?id=${review['fileId']}")
                                       : null,
                                   child: review['fileId'] == null
                                       ? ClipOval(

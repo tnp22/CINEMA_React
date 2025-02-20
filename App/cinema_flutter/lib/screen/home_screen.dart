@@ -55,7 +55,7 @@ appBar: AppBar(
                 } else {
                   return ClipOval(
                     child: Image.network(
-                      "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
+                      "http://${userProvider.hostIP}:8080/files/img?id=${snapshot.data!}",
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
@@ -185,6 +185,9 @@ class _BannerSliderState extends State<BannerSlider> {
 
   @override
 Widget build(BuildContext context) {
+  UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+
+
   return Container(
     height: 100,
     width: double.infinity,
@@ -213,7 +216,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(widget.banners.length - 1),
                   child: Image.network(
-                    "http://10.0.2.2:8080/files/img?id=$id",
+                    "http://${userProvider.hostIP}:8080/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -222,7 +225,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(0),
                   child: Image.network(
-                    "http://10.0.2.2:8080/files/img?id=$id",
+                    "http://${userProvider.hostIP}:8080/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -231,7 +234,7 @@ Widget build(BuildContext context) {
                 return GestureDetector(
                   onTap: () => _onBannerTap(index - 1),
                   child: Image.network(
-                    "http://10.0.2.2:8080/files/img?id=$id",
+                    "http://${userProvider.hostIP}/files/img?id=$id",
                     fit: BoxFit.cover,
                   ),
                 );
@@ -353,6 +356,8 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+
     return GestureDetector(
       onTap: () {
         print("영화 클릭됨: $title");
@@ -370,7 +375,7 @@ class MovieCard extends StatelessWidget {
                   Navigator.pushNamed(context, "/movieInfo", arguments: id);
                 },
                 child: Image.network(
-                  "http://10.0.2.2:8080/files/img?id=$image",
+                  "http://${userProvider.hostIP}:8080/files/img?id=$image",
                   fit: BoxFit.cover,
                 ),
               ),

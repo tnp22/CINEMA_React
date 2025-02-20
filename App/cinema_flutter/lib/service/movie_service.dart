@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 
 class MovieService {
   final Dio dio = Dio();
-  final String host = 'http://10.0.2.2:8080';
+  final String host = 'http://192.168.30.8:8080';
 
   // 홈 화면 조회
   Future<Map<String, dynamic>> list() async{

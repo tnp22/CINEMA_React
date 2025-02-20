@@ -72,7 +72,7 @@ class _MypageScreenState extends State<MypageScreen> {
                           return CircleAvatar(
                             radius: 50,
                             backgroundImage: NetworkImage(
-                              "http://10.0.2.2:8080/files/img?id=${snapshot.data!}",
+                              "http://${userProvider.hostIP}:8080/files/img?id=${snapshot.data!}",
                             ),
                           );
                         }
