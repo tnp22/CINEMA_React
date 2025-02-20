@@ -141,9 +141,11 @@ class MyApp extends StatelessWidget {
             );
           case '/ppp':
             return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  PayScreen(),
-              transitionDuration: Duration(seconds: 0),
+              settings: settings,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                final args = settings.arguments as Map<String, String?>;
+                return PayScreen();
+              }
             );
           // case '/notice/read':
           //   final args = settings.arguments as String?;

@@ -1,52 +1,118 @@
+import 'package:cinema_flutter/screen/ticket/ticket_screen.dart';
+import 'package:cinema_flutter/service/ticket_service.dart';
 import 'package:flutter/material.dart';
 /* 포트원 V1 결제 모듈을 불러옵니다. */
 import 'package:portone_flutter/iamport_payment.dart';
 /* 포트원 V1 결제 데이터 모델을 불러옵니다. */
 import 'package:portone_flutter/model/payment_data.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class PayScreen extends StatelessWidget {
+class PayScreen extends StatefulWidget {
+  @override
+  _PayScreenState createState() => _PayScreenState();
+}
+
+class _PayScreenState extends State<PayScreen> {
+  final ticket_service = TicketService();
+  String? orderId;
+  String? money;
+  String? userName;
+  String? person;
+  String? seat;
+  String? id;
+  String? movieId;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('ko_KR', null).then((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final args = ModalRoute.of(context)!.settings.arguments;
+        print("payment 정보 불러오기");
+        if (args != null) {
+          final obj = args as Map<String, String?>;
+          print("obj : \$obj");
+          if (obj["Impid"] != null) {
+            print("예매내역에서 접근");
+            setState(() {
+              orderId = obj["Impid"];
+              getReserveData();
+            });
+          } else {
+            setState(() {
+              orderId = obj["orderId"];
+              money = obj["money"];
+              userName = obj["userName"];
+              person = obj["person"];
+              seat = obj["seat"];
+              id = obj["id"];
+              movieId = obj["movieId"];
+              print(movieId);
+              getReserveData();
+            });
+          }
+        }
+      });
+    });
+  }
+
+  void getReserveData() {
+    // 예매 정보 불러오는 로직 (구현 필요)
+  }
+
   @override
   Widget build(BuildContext context) {
     return IamportPayment(
-      appBar: new AppBar(
-        title: new Text('앱 결제'),
+      appBar: AppBar(
+        title: Text('앱 결제'),
       ),
-      /* 웹뷰 로딩 컴포넌트 */
-      initialChild: Container(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Image.asset('assets/images/iamport-logo.png'),
-              Padding(padding: EdgeInsets.symmetric(vertical: 15)),
-              Text('잠시만 기다려주세요...', style: TextStyle(fontSize: 20)),
-            ],
-          ),
+      initialChild: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(padding: EdgeInsets.symmetric(vertical: 15)),
+            Text('잠시만 기다려주세요...', style: TextStyle(fontSize: 20)),
+          ],
         ),
       ),
-      /* [필수입력] 가맹점 식별코드 */
       userCode: 'imp00366386',
-      /* [필수입력] 결제 데이터 */
       data: PaymentData(
-        pg: 'kcp',                                          // PG사
-        payMethod: 'card',                                           // 결제수단
-        name: '포트원 V1 결제데이터 분석',                                  // 주문명
-        merchantUid: 'mid_${DateTime.now().millisecondsSinceEpoch}', // 주문번호
-        amount: 100,                                               // 결제금액
-        buyerName: '홍길동',                                           // 구매자 이름
-        buyerTel: '01012345678',                                     // 구매자 연락처
-        buyerEmail: 'example@naver.com',                             // 구매자 이메일
-        buyerAddr: '서울시 강남구 신사동 661-16',                         // 구매자 주소
-        buyerPostcode: '06018',                                      // 구매자 우편번호
-        appScheme: 'example',                                        // 앱 URL scheme
-        cardQuota : [2,3]                                            //결제창 UI 내 할부개월수 제한
+        pg: 'kcp',
+        payMethod: 'card',
+        name: '영화 예매',
+        merchantUid: "$orderId",
+        amount: 100,
+        buyerName: userName ?? '홍길동',
+        buyerTel: '010-1234-5678',
+        buyerEmail: 'test@naver.com',
+        buyerAddr: '테스트 테스트대로',
+        buyerPostcode: '1234-1234', // 결제자 우편번호
+        appScheme: 'example',
+        cardQuota: [2, 3],
       ),
-      /* [필수입력] 콜백 함수 */
-      callback: (Map<String, String> result) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/result',
-          arguments: result,
+      callback: (Map<String, String> result) async{
+        Map<String, String> resverData = ({
+          "orderId" : orderId as String,
+          "money" : money.toString(),
+          "userName" : userName as String,
+          "person" : person.toString(),
+          "seat" : seat as String,
+          "id" : id as String,
+          "movieId" : movieId as String,
+        });
+        bool result = await ticket_service.payment(resverData!);
+
+        Navigator.pushReplacementNamed(context,'payment',
+          arguments: {
+            "orderId" : orderId as String,
+            "money" : money.toString(),
+            "userName" : userName as String,
+            "person" : person.toString(),
+            "seat" : seat,
+            "id" : id as String,
+            "movieId" : movieId as String,
+          }
         );
       },
     );
