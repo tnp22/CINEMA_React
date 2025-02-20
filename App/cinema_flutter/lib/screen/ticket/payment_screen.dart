@@ -145,7 +145,7 @@ class _PaymentScreen extends State<PaymentScreen> {
                 movieId == null
                     ? Center(child: CircularProgressIndicator())
                     : Image.network(
-                        "http://${userProvider.hostIP}:8080/files/img?id=$movieId",
+                        "http://192.168.30.8:8080/files/img?id=$movieId",
                         width: 200,
                         height: 250,
                         fit: BoxFit.cover,

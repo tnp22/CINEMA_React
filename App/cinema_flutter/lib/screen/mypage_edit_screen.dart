@@ -104,7 +104,7 @@ class _MyPageEditScreenState extends State<MyPageEditScreen> {
                           backgroundImage: _imagePath != null
                               ? FileImage(File(_imagePath!))
                               : NetworkImage(
-                                      "http://${userProvider.hostIP}:8080/files/img?id=${snapshot.data!}")
+                                      "http://192.168.30.8:8080/files/img?id=${snapshot.data!}")
                                   as ImageProvider,
                         );
                       }

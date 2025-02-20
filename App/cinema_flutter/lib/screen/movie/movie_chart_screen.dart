@@ -193,7 +193,7 @@ class MovieItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                "http://${userProvider.hostIP}:8080/files/img?id=${movie["files"]["id"]}",
+                "http://192.168.30.8:8080/files/img?id=${movie["files"]["id"]}",
                 width: 100,
                 height: 150,
                 fit: BoxFit.cover,
