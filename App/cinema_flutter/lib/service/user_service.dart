@@ -50,7 +50,7 @@ class UserService {
     try {
       final storage = const FlutterSecureStorage();
       String? jwt = await storage.read(key: "jwt");
-      final response = await _dio.post('$host/usersss/mypageUpdate',
+      final response = await _dio.post('$host/usersss/mypageUpdateF',
           data: userData,
           options: Options(headers: {
             'Authorization': 'Bearer $jwt',
