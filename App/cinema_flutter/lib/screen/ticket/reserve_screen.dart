@@ -53,6 +53,8 @@ class _ReserveScreenState extends State<ReserveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("예매내역"),
@@ -68,7 +70,7 @@ class _ReserveScreenState extends State<ReserveScreen> {
                       itemBuilder: (context, index) {
                         final reserve = reservationList[index];
                         return ReserveCard(
-                          imageUrl: "http://10.0.2.2:8080/files/img?id=${reserve["file"]}",
+                          imageUrl: "http://${userProvider.hostIP}:8080/files/img?id=${reserve["file"]}",
                           title: "${reserve["title"]}",
                           date: "${reserve["date"]} / ${reserve["time"]}",
                           seat: "${reserve["theater"]} / ${reserve["seat"]}",

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 class NoticeService {
   final Dio dio = Dio();
-  final String host = 'http://10.0.2.2:8080';
+  final String host = 'http://192.168.30.8:8080';
 
 Future<Map<String, dynamic>> list(int page, int size, int option, String keyword) async {
   var url =
@@ -57,7 +57,7 @@ Future<Map<String, dynamic>> list(int page, int size, int option, String keyword
     // 데이터 조회
   Future<Map<String, dynamic>?> select(String id) async {
     Dio dio = Dio();
-    var url = "http://10.0.2.2:8080/notice/select?id=$id";
+    var url = "http://$host/notice/select?id=$id";
     var notice;
     try{
       var response = await dio.get(url);

@@ -1,8 +1,10 @@
+import 'package:cinema_flutter/provider/user_provider.dart';
 import 'package:cinema_flutter/service/ticket_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; // 추가
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart'; // 추가
 
 class PaymentScreen extends StatefulWidget {
   final Map<String, dynamic>? arguments;
@@ -121,6 +123,8 @@ class _PaymentScreen extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(title: Text("예매 완료")),
       body: Stack(
@@ -141,7 +145,7 @@ class _PaymentScreen extends State<PaymentScreen> {
                 movieId == null
                     ? Center(child: CircularProgressIndicator())
                     : Image.network(
-                        "http://10.0.2.2:8080/files/img?id=$movieId",
+                        "http://${userProvider.hostIP}:8080/files/img?id=$movieId",
                         width: 200,
                         height: 250,
                         fit: BoxFit.cover,

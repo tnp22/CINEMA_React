@@ -12,6 +12,7 @@ class UserProvider extends ChangeNotifier {
   bool _loginStat = false;
 
   int selectedIndex = 2;
+  String hostIP = '192.168.30.8';
 
   // getter
   Users get userInfo => _userInfo;
@@ -37,7 +38,7 @@ class UserProvider extends ChangeNotifier {
     _loginStat = false; // 로그인 여부 초기화
 
     String url =
-        'http://10.0.2.2:8080/login?username=$username&password=$password';
+        'http://$hostIP:8080/login?username=$username&password=$password';
 
     try {
       final response = await _dio.get(url);
@@ -92,7 +93,7 @@ class UserProvider extends ChangeNotifier {
 
   // 사용자 정보 요청
   Future<bool> getUserInfo() async {
-    final url = 'http://10.0.2.2:8080/users/info';
+    final url = 'http://$hostIP:8080/users/info';
     try {
       String? jwt = await storage.read(key: 'jwt');
       print('jwt : $jwt');
@@ -124,7 +125,7 @@ class UserProvider extends ChangeNotifier {
 
   // 사용자 정보 업데이트 메서드
   Future<void> updateUserInfo(String email, String password) async {
-    final url = 'http://10.0.2.2:8080/users/update';
+    final url = 'http://$hostIP:8080/users/update';
     try {
       String? jwt = await storage.read(key: 'jwt');
       final response = await _dio.post(url,
