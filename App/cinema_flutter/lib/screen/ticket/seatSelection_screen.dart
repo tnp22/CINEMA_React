@@ -204,7 +204,7 @@ class _SeatselectionScreenState extends State<SeatselectionScreen> {
 
     print(resverData);
     
-    // bool result = await ticket_service.payment(resverData!);
+    bool result = await ticket_service.payment(resverData!);
     // 예매 성공시 true
 
     // 결제창이동

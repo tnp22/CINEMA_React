@@ -91,18 +91,7 @@ class _PayScreenState extends State<PayScreen> {
         appScheme: 'example',
         cardQuota: [2, 3],
       ),
-      callback: (Map<String, String> result) async{
-        Map<String, String> resverData = ({
-          "orderId" : orderId as String,
-          "money" : money.toString(),
-          "userName" : userName as String,
-          "person" : person.toString(),
-          "seat" : seat as String,
-          "id" : id as String,
-          "movieId" : movieId as String,
-        });
-        bool result = await ticket_service.payment(resverData!);
-
+      callback: (Map<String, String> result) {
         Navigator.pushReplacementNamed(context,'payment',
           arguments: {
             "orderId" : orderId as String,

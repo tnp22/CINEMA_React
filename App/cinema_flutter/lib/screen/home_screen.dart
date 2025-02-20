@@ -395,7 +395,7 @@ class MovieCard extends StatelessWidget {
                 print("예매하기 클릭됨: $title");
                 print("영화 아이디 : $id");
                 print("영화 아이디타입 : ${id.runtimeType}");
-                Navigator.pushReplacementNamed(context, "/ticket", 
+                Navigator.pushNamed(context, "/ticket", 
                 arguments: {
                   "movieTitle": title,
                   "movieId": id,
